@@ -1,0 +1,90 @@
+@use "sass:color"
+$high-hex-color: rgb(234, 203, 101)
+$medium-hex-color: rgb(210, 77, 186)
+$low-hex-color: rgb(77, 210, 199)
+
+*
+    padding: 0
+    margin: 0
+    box-sizing: border-box
+
+@keyframes rise
+    0%
+        transform: translateY(1rem)
+        opacity: 0
+    50%
+        opacity: 1
+        transform: translateY(-0.2rem)
+    80%
+        transform: translateY(0.02rem)
+
+    100%
+        transform: translateY(0rem)
+        opacity: 1
+
+body
+    background: #fffedf
+
+main
+    height: 100vh
+    display: flex
+    align-content: center
+    justify-content: center
+    align-items: center
+
+svg
+    width: 100%
+    height: 100%
+    display: block
+
+#root
+    transition: transform 300ms ease-in-out
+
+@mixin hex($color)
+    .face
+        fill: $color
+        stroke: color.scale($color, $lightness: 70%)
+    .edge0
+        stroke: color.scale($color, $lightness: 50%)
+        fill: color.scale($color, $lightness: 50%)
+    .edge1
+        stroke: color.scale($color, $lightness: 60%)
+        fill: color.scale($color, $lightness: 60%)
+    .edge2
+        stroke: color.scale($color, $lightness: 70%)
+        fill: color.scale($color, $lightness: 70%)
+
+.hex-container
+    // mask: url(#fadeMask)
+    .hex
+        opacity: 0
+        transform: translateY(1rem)
+        animation: rise 400ms ease forwards
+
+    .face
+        stroke-width: 0.4
+        stroke-linecap: round
+        stroke-linejoin: round
+        transition: transform 200ms ease
+
+    .edge
+        transition: transform 200ms ease
+        paint-order: stroke
+        stroke-width: 0.4
+        stroke-linecap: round
+        stroke-linejoin: round
+
+    &.high
+        transform: translateY(-0.1rem)
+        @include hex($high-hex-color)
+    &.medium
+        @include hex($medium-hex-color)
+        .face
+            &:hover
+                transform: translateY(0.02rem)
+                // & ~ .edge
+                //     transform: translateY(0.05rem)
+
+    &.low
+        transform: translateY(0.1rem)
+        @include hex($low-hex-color)

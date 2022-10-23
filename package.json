@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "elm": "0.19.1-5",
+    "parcel-bundler": "1.12.5"
+  },
+  "devDependencies": {
+    "elm-hot": "1.1.6",
+    "node-elm-compiler": "5.0.6",
+    "sass": "1.55.0"
+  }
+}
