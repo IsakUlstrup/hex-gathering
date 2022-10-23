@@ -211,7 +211,7 @@ renderHex config renderTile ( point, t ) =
         ( x, y ) =
             pointToPixel config.flatTop point
     in
-    g [ Svg.Attributes.style ("transform: translate3d(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px, 0px) scale(0.97);") ]
+    g [ Svg.Attributes.style ("transform: translate3d(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px, 0px) scale(0.99);") ]
         [ renderTile ( point, t ) ]
 
 
