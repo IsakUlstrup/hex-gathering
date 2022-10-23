@@ -10,12 +10,12 @@ $low-hex-color: rgb(77, 210, 199)
 
 @keyframes rise
     0%
-        transform: translateY(1rem)
+        transform: translateY(0.2rem)
         opacity: 0
-    50%
+    30%
         opacity: 1
-        transform: translateY(-0.2rem)
-    80%
+        transform: translateY(-0.15rem)
+    70%
         transform: translateY(0.02rem)
 
     100%
@@ -59,7 +59,7 @@ svg
     .hex
         opacity: 0
         transform: translateY(1rem)
-        animation: rise 400ms ease forwards
+        animation: rise 800ms ease forwards
 
     .face
         stroke-width: 0.4
