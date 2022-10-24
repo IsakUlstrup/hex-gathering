@@ -20,8 +20,13 @@ type Tile
     | High
 
 
+type Entity
+    = Path
+
+
 type alias Model =
     { map : HexMap Tile
+    , entities : HexMap Entity
     , renderConfig : RenderConfig
     }
 
@@ -55,6 +60,7 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
+        HexMap.empty
         Render.initRenderConfig
     , Cmd.none
     )
@@ -147,38 +153,6 @@ viewTile ( point, tile ) =
             ]
             []
         ]
-
-
-
--- <filter id="feblend-white">
---             <feTurbulence baseFrequency="1.2" numOctaves="4" result="turb3" seed="100" />
---             <feDisplacementMap in="SourceGraphic" in2="turb3" scale="25" xChannelSelector="A" yChannelSelector="B" />
---             <feComposite operator="out" in="SourceGraphic" in2="offset-turb23" result="inverse2" />
---             <feFlood flood-color="#aaaaff" flood-opacity="0.3" result="color3" />
---             <feComposite operator="atop" in="color3" in2="inverse3" result="shadow3" />
---             <feBlend in="shadow3" in2="SourceGraphic" mode="multiply" />
---         </filter>
--- defs : List (Svg msg)
--- defs =
---     [ Svg.filter [ Svg.Attributes.id "white-paper" ]
---         [ Svg.feTurbulence
---             [ Svg.Attributes.baseFrequency "1.2"
---             , Svg.Attributes.numOctaves "4"
---             , Svg.Attributes.result "turb"
---             , Svg.Attributes.seed "100"
---             ]
---             []
---         , Svg.feDisplacementMap
---             [ Svg.Attributes.in_ "SourceGraphic"
---             , Svg.Attributes.in2 "turb"
---             , Svg.Attributes.scale "25"
---             , Svg.Attributes.xChannelSelector "A"
---             , Svg.Attributes.yChannelSelector "B"
---             ]
---             []
---         , Svg.feComposite [ Svg.Attributes.operator "out", Svg.Attributes.in_ "SourceGraphic", Svg.Attributes.in2 ] []
---         ]
---     ]
 
 
 view : Model -> Html Msg
