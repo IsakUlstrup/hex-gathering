@@ -6,6 +6,7 @@ module HexEngine.Render exposing
     , fancyHexCorners2
     , initRenderConfig
     , pointAdd
+    , pointToPixel
     , renderGrid
     , renderGrid2
     , withCameraPosition
@@ -202,8 +203,8 @@ renderLayer grid renderTile =
         )
 
 
-renderGrid : RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
-renderGrid config map renderTile =
+renderGrid : RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> List (Svg msg) -> Svg msg
+renderGrid config map renderTile extras =
     svg
         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
@@ -220,7 +221,7 @@ renderGrid config map renderTile =
                 )
             , Svg.Attributes.class "camera"
             ]
-            [ renderLayer map renderTile ]
+            (renderLayer map renderTile :: extras)
         ]
 
 

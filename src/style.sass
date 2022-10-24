@@ -22,6 +22,12 @@ $low-hex-color: rgb(77, 210, 199)
         transform: translateY(0rem)
         opacity: 1
 
+@keyframes fade-in
+    0%
+        opacity: 0
+    100%
+        opacity: 1
+
 body
     background: #fffedf
 
@@ -40,9 +46,14 @@ svg
         transition: transform 300ms ease-in-out
 
 .player
-    font-size: 0.3rem
-    text-align: center
-    transform: rotate3d(1, 0, 0, 25deg)
+    transition: transform 300ms ease-in-out
+    .player-icon
+        animation: rise 500ms 500ms forwards
+        opacity: 0
+        font-size: 0.3rem
+        text-align: center
+        dominant-baseline: middle
+        transform: rotate3d(1, 0, 0, 25deg)
 
 @mixin hex($color)
     .face

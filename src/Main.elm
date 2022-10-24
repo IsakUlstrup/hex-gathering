@@ -20,14 +20,9 @@ type Tile
     | High
 
 
-type Entity
-    = Path
-    | Player
-
-
 type alias Model =
     { map : HexMap Tile
-    , entities : HexMap Entity
+    , player : { position : Point, icon : Char }
     , renderConfig : RenderConfig
     }
 
@@ -61,7 +56,7 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
-        (HexMap.empty |> HexMap.insertReplaceHex ( ( 0, 0, 0 ), Player ))
+        { position = ( 0, 0, 0 ), icon = '🐼' }
         Render.initRenderConfig
     , Cmd.none
     )
@@ -79,7 +74,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FocusTile point ->
-            ( { model | renderConfig = Render.withHexFocus point model.renderConfig }, Cmd.none )
+            ( { model
+                | renderConfig = Render.withHexFocus point model.renderConfig
+                , player = { position = point, icon = model.player.icon }
+              }
+            , Cmd.none
+            )
 
 
 
@@ -156,20 +156,20 @@ viewTile ( point, tile ) =
         ]
 
 
-viewEntity : ( Point, Entity ) -> Svg Msg
-viewEntity ( point, entity ) =
-    case entity of
-        Player ->
-            Svg.text_ [ Svg.Attributes.class "player" ] [ Svg.text "🐼" ]
-
-        Path ->
-            Svg.text_ [] [ Svg.text "*" ]
+viewPlayer : { position : Point, icon : Char } -> Svg Msg
+viewPlayer player =
+    let
+        ( x, y ) =
+            Render.pointToPixel player.position
+    in
+    Svg.g [ Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+        [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid2 model.renderConfig model.map viewTile model.entities viewEntity
+        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayer model.player ]
         ]
 
 
