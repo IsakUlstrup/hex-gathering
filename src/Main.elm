@@ -22,6 +22,7 @@ type Tile
 
 type Entity
     = Path
+    | Player
 
 
 type alias Model =
@@ -60,7 +61,7 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
-        HexMap.empty
+        (HexMap.empty |> HexMap.insertReplaceHex ( ( 0, 0, 0 ), Player ))
         Render.initRenderConfig
     , Cmd.none
     )
@@ -155,10 +156,20 @@ viewTile ( point, tile ) =
         ]
 
 
+viewEntity : ( Point, Entity ) -> Svg Msg
+viewEntity ( point, entity ) =
+    case entity of
+        Player ->
+            Svg.text_ [ Svg.Attributes.class "player" ] [ Svg.text "🐼" ]
+
+        Path ->
+            Svg.text_ [] [ Svg.text "*" ]
+
+
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid [] model.renderConfig model.map viewTile
+        [ Render.renderGrid2 model.renderConfig model.map viewTile model.entities viewEntity
         ]
 
 

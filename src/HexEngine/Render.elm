@@ -7,6 +7,7 @@ module HexEngine.Render exposing
     , initRenderConfig
     , pointAdd
     , renderGrid
+    , renderGrid2
     , withCameraPosition
     , withHexFocus
     , withZoom
@@ -189,14 +190,25 @@ keyedViewHex renderTile tile =
     )
 
 
-renderGrid : List (Svg msg) -> RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
-renderGrid defs config map renderTile =
+renderLayer : HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
+renderLayer grid renderTile =
+    Svg.Keyed.node "g"
+        [ Svg.Attributes.class "layer" ]
+        -- sort by y position and render
+        (grid
+            |> Dict.toList
+            |> List.sortBy (Tuple.first >> pointToYpos)
+            |> List.map (keyedViewHex renderTile)
+        )
+
+
+renderGrid : RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
+renderGrid config map renderTile =
     svg
         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         ]
-        [ Svg.defs [] defs
-        , Svg.Keyed.node "g"
+        [ Svg.g
             [ Svg.Attributes.style
                 ("transform: translate("
                     ++ String.fromFloat -(config.cameraX * config.zoom)
@@ -206,12 +218,31 @@ renderGrid defs config map renderTile =
                     ++ String.fromFloat config.zoom
                     ++ ");"
                 )
-            , Svg.Attributes.id "root"
+            , Svg.Attributes.class "camera"
             ]
-            -- sort by y position and render
-            (map
-                |> Dict.toList
-                |> List.sortBy (Tuple.first >> pointToYpos)
-                |> List.map (keyedViewHex renderTile)
-            )
+            [ renderLayer map renderTile ]
+        ]
+
+
+renderGrid2 : RenderConfig -> HexMap tile1 -> (( Point, tile1 ) -> Svg msg) -> HexMap tile2 -> (( Point, tile2 ) -> Svg msg) -> Svg msg
+renderGrid2 config map1 renderTile1 map2 renderTile2 =
+    svg
+        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+        ]
+        [ Svg.g
+            [ Svg.Attributes.style
+                ("transform: translate("
+                    ++ String.fromFloat -(config.cameraX * config.zoom)
+                    ++ "px, "
+                    ++ String.fromFloat -(config.cameraY * config.zoom)
+                    ++ "px) scale("
+                    ++ String.fromFloat config.zoom
+                    ++ ");"
+                )
+            , Svg.Attributes.class "camera"
+            ]
+            [ renderLayer map1 renderTile1
+            , renderLayer map2 renderTile2
+            ]
         ]
