@@ -94,69 +94,97 @@ viewTile ( point, tile ) =
                     "high"
 
         points =
-            Render.fancyHexCorners2 Render.initRenderConfig
+            Render.fancyHexCorners2
 
         columnHeight =
             case tile of
                 Low ->
-                    3.5
+                    0.5
 
                 Medium ->
-                    5
+                    2
 
                 High ->
-                    6.5
+                    4
 
         animationDelayMultiplier =
             70
     in
     Svg.g
-        [ Svg.Attributes.class "hex-container"
+        [ Svg.Attributes.class "hex"
         , Svg.Attributes.class tileType
+        , Svg.Attributes.style
+            ("animation-delay: "
+                ++ (HexEngine.Point.distanceFloat ( 0, 0, 0 ) point
+                        |> (*) animationDelayMultiplier
+                        |> String.fromFloat
+                   )
+                ++ "ms"
+            )
         ]
-        [ Svg.g
-            [ Svg.Attributes.class "hex"
-            , Svg.Attributes.style
-                ("animation-delay: "
-                    ++ (HexEngine.Point.distanceFloat ( 0, 0, 0 ) point
-                            |> (*) animationDelayMultiplier
-                            |> String.fromFloat
-                       )
-                    ++ "ms"
-                )
+        [ Svg.polygon
+            [ Svg.Attributes.class "edge0"
+            , Svg.Attributes.class "edge"
+            , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornersToString)
             ]
-            [ Svg.polygon
-                [ Svg.Attributes.class "edge0"
-                , Svg.Attributes.class "edge"
-                , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornersToString)
-                ]
-                []
-            , Svg.polygon
-                [ Svg.Attributes.class "edge2"
-                , Svg.Attributes.class "edge"
-                , Svg.Attributes.points ([ points.p2, points.p3, Render.pointAdd points.p3 ( 0, columnHeight ), Render.pointAdd points.p2 ( 0, columnHeight ) ] |> Render.cornersToString)
-                ]
-                []
-            , Svg.polygon
-                [ Svg.Attributes.class "edge1"
-                , Svg.Attributes.class "edge"
-                , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornersToString)
-                ]
-                []
-            , Svg.polygon
-                [ Svg.Attributes.class "face"
-                , Svg.Attributes.points (points |> Render.cornersToString2)
-                , Svg.Events.onClick <| FocusTile point
-                ]
-                []
+            []
+        , Svg.polygon
+            [ Svg.Attributes.class "edge2"
+            , Svg.Attributes.class "edge"
+            , Svg.Attributes.points ([ points.p2, points.p3, Render.pointAdd points.p3 ( 0, columnHeight ), Render.pointAdd points.p2 ( 0, columnHeight ) ] |> Render.cornersToString)
             ]
+            []
+        , Svg.polygon
+            [ Svg.Attributes.class "edge1"
+            , Svg.Attributes.class "edge"
+            , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornersToString)
+            ]
+            []
+        , Svg.polygon
+            [ Svg.Attributes.class "face"
+            , Svg.Attributes.points (points |> Render.cornersToString2)
+            , Svg.Events.onClick <| FocusTile point
+            ]
+            []
         ]
+
+
+
+-- <filter id="feblend-white">
+--             <feTurbulence baseFrequency="1.2" numOctaves="4" result="turb3" seed="100" />
+--             <feDisplacementMap in="SourceGraphic" in2="turb3" scale="25" xChannelSelector="A" yChannelSelector="B" />
+--             <feComposite operator="out" in="SourceGraphic" in2="offset-turb23" result="inverse2" />
+--             <feFlood flood-color="#aaaaff" flood-opacity="0.3" result="color3" />
+--             <feComposite operator="atop" in="color3" in2="inverse3" result="shadow3" />
+--             <feBlend in="shadow3" in2="SourceGraphic" mode="multiply" />
+--         </filter>
+-- defs : List (Svg msg)
+-- defs =
+--     [ Svg.filter [ Svg.Attributes.id "white-paper" ]
+--         [ Svg.feTurbulence
+--             [ Svg.Attributes.baseFrequency "1.2"
+--             , Svg.Attributes.numOctaves "4"
+--             , Svg.Attributes.result "turb"
+--             , Svg.Attributes.seed "100"
+--             ]
+--             []
+--         , Svg.feDisplacementMap
+--             [ Svg.Attributes.in_ "SourceGraphic"
+--             , Svg.Attributes.in2 "turb"
+--             , Svg.Attributes.scale "25"
+--             , Svg.Attributes.xChannelSelector "A"
+--             , Svg.Attributes.yChannelSelector "B"
+--             ]
+--             []
+--         , Svg.feComposite [ Svg.Attributes.operator "out", Svg.Attributes.in_ "SourceGraphic", Svg.Attributes.in2 ] []
+--         ]
+--     ]
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig model.map viewTile
+        [ Render.renderGrid [] model.renderConfig model.map viewTile
         ]
 
 

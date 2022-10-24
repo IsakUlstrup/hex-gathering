@@ -8,7 +8,6 @@ module HexEngine.Render exposing
     , pointAdd
     , renderGrid
     , withCameraPosition
-    , withFlatTop
     , withHexFocus
     , withZoom
     )
@@ -30,13 +29,12 @@ type alias RenderConfig =
     { cameraX : Float
     , cameraY : Float
     , zoom : Float
-    , flatTop : Bool
     }
 
 
 initRenderConfig : RenderConfig
 initRenderConfig =
-    RenderConfig 0 0 1 True
+    RenderConfig 0 0 1
 
 
 withCameraPosition : ( Float, Float ) -> RenderConfig -> RenderConfig
@@ -50,7 +48,7 @@ withHexFocus : Point -> RenderConfig -> RenderConfig
 withHexFocus point config =
     let
         pos =
-            point |> pointToPixel config.flatTop
+            point |> pointToPixel
     in
     config |> withCameraPosition pos
 
@@ -58,11 +56,6 @@ withHexFocus point config =
 withZoom : Float -> RenderConfig -> RenderConfig
 withZoom zoom config =
     { config | zoom = zoom }
-
-
-withFlatTop : Bool -> RenderConfig -> RenderConfig
-withFlatTop flat config =
-    { config | flatTop = flat }
 
 
 
@@ -78,26 +71,20 @@ hexSize =
 
 {-| Get the center of a given point in screen coordinates
 -}
-pointToPixel : Bool -> Point -> ( Float, Float )
-pointToPixel flatTop point =
+pointToPixel : Point -> ( Float, Float )
+pointToPixel point =
     let
         ( q, r ) =
             Point.toAxial point
     in
-    if flatTop then
-        ( hexSize * (3 / 2 * toFloat q)
-        , hexSize * (sqrt 3 / 2 * toFloat q + sqrt 3 * toFloat r)
-        )
-
-    else
-        ( hexSize * (sqrt 3 * toFloat q + sqrt 3 / 2 * toFloat r)
-        , hexSize * (3 / 2 * toFloat r)
-        )
+    ( hexSize * (3 / 2 * toFloat q)
+    , hexSize * (sqrt 3 / 2 * toFloat q + sqrt 3 * toFloat r)
+    )
 
 
-pointToYpos : Bool -> Point -> Float
-pointToYpos flatTop point =
-    pointToPixel flatTop point |> Tuple.second
+pointToYpos : Point -> Float
+pointToYpos point =
+    pointToPixel point |> Tuple.second
 
 
 cornersToString : List ( Float, Float ) -> String
@@ -143,26 +130,16 @@ pointAdd ( x1, y1 ) ( x2, y2 ) =
 
 {-| Calculate hex corners in screen coordinates
 -}
-fancyHexCorners2 : RenderConfig -> HexCorners
-fancyHexCorners2 config =
+fancyHexCorners2 : HexCorners
+fancyHexCorners2 =
     let
         angleRad cornerNumber =
-            if config.flatTop then
-                degrees (60 * cornerNumber |> toFloat)
-
-            else
-                degrees (60 * cornerNumber - 30 |> toFloat)
+            degrees (60 * cornerNumber |> toFloat)
 
         corner cornerNumber =
-            if config.flatTop then
-                ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
-                , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
-                )
-
-            else
-                ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
-                , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
-                )
+            ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
+            , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
+            )
     in
     HexCorners
         (corner 0)
@@ -175,26 +152,16 @@ fancyHexCorners2 config =
 
 {-| Calculate hex corners in screen coordinates
 -}
-fancyHexCorners : RenderConfig -> List ( Float, Float )
-fancyHexCorners config =
+fancyHexCorners : List ( Float, Float )
+fancyHexCorners =
     let
         angleRad cornerNumber =
-            if config.flatTop then
-                degrees (60 * cornerNumber |> toFloat)
-
-            else
-                degrees (60 * cornerNumber - 30 |> toFloat)
+            degrees (60 * cornerNumber |> toFloat)
 
         corner cornerNumber =
-            if config.flatTop then
-                ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
-                , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
-                )
-
-            else
-                ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
-                , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
-                )
+            ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
+            , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
+            )
     in
     [ corner 0
     , corner 1
@@ -205,68 +172,30 @@ fancyHexCorners config =
     ]
 
 
-renderHex : RenderConfig -> (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
-renderHex config renderTile ( point, t ) =
+renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
+renderHex renderTile ( point, t ) =
     let
         ( x, y ) =
-            pointToPixel config.flatTop point
+            pointToPixel point
     in
-    g [ Svg.Attributes.style ("transform: translate3d(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px, 0px) scale(0.99);") ]
+    g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
         [ renderTile ( point, t ) ]
 
 
-keyedViewHex : RenderConfig -> (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> ( String, Svg msg )
-keyedViewHex config renderTile tile =
+keyedViewHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> ( String, Svg msg )
+keyedViewHex renderTile tile =
     ( Point.toString (Tuple.first tile)
-    , Svg.Lazy.lazy (renderHex config renderTile) tile
+    , Svg.Lazy.lazy (renderHex renderTile) tile
     )
 
 
-
--- <defs>
---     <linearGradient id="fadeGrad" y2="1" x2="0">
---       <stop offset="0.5" stop-color="white" stop-opacity="0"/>
---       <stop offset="1" stop-color="white" stop-opacity=".5"/>
---     </linearGradient>
---     <mask id="fade" maskContentUnits="objectBoundingBox">
---       <rect width="1" height="1" fill="url(#fadeGrad)"/>
---     </mask>
---   </defs>
-
-
-fadeMask : Svg msg
-fadeMask =
-    Svg.defs []
-        [ Svg.linearGradient
-            [ Svg.Attributes.id "fadeGradient"
-            , Svg.Attributes.y2 "1"
-            , Svg.Attributes.x2 "0"
-            ]
-            [ Svg.stop [ Svg.Attributes.offset "0.7", Svg.Attributes.stopColor "white", Svg.Attributes.stopOpacity "1" ] []
-            , Svg.stop [ Svg.Attributes.offset "1", Svg.Attributes.stopColor "white", Svg.Attributes.stopOpacity "0" ] []
-            ]
-        , Svg.mask
-            [ Svg.Attributes.id "fadeMask"
-            , Svg.Attributes.maskContentUnits "objectBoundingBox"
-            ]
-            [ Svg.polygon
-                [ Svg.Attributes.points "0,0 1,0 1,0.75 0.75,1 0.25,1 0,0.75"
-
-                -- , Svg.Attributes.fill "url(#fadeGradient)"
-                , Svg.Attributes.fill "white"
-                ]
-                []
-            ]
-        ]
-
-
-renderGrid : RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
-renderGrid config map renderTile =
+renderGrid : List (Svg msg) -> RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
+renderGrid defs config map renderTile =
     svg
         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         ]
-        [ fadeMask
+        [ Svg.defs [] defs
         , Svg.Keyed.node "g"
             [ Svg.Attributes.style
                 ("transform: translate("
@@ -279,11 +208,10 @@ renderGrid config map renderTile =
                 )
             , Svg.Attributes.id "root"
             ]
-            -- (mapHexes (keyedViewHex config renderTile) map)
             -- sort by y position and render
             (map
                 |> Dict.toList
-                |> List.sortBy (Tuple.first >> pointToYpos True)
-                |> List.map (keyedViewHex config renderTile)
+                |> List.sortBy (Tuple.first >> pointToYpos)
+                |> List.map (keyedViewHex renderTile)
             )
         ]
