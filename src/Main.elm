@@ -221,17 +221,9 @@ viewPlayer player =
     let
         ( x, y ) =
             Render.pointToPixel player.position
-
-        playerPath =
-            case player.path of
-                Just path ->
-                    path
-
-                Nothing ->
-                    []
     in
     Svg.g [ Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        (Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] :: List.map viewHighlight playerPath)
+        [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
 
 
 viewHighlight : Point -> Svg msg
