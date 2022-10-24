@@ -1,6 +1,7 @@
 module Main exposing (Model, Msg, main)
 
 import Browser
+import Browser.Events
 import Dict
 import HexEngine.HexMap as HexMap exposing (HexMap)
 import HexEngine.Point as Point exposing (Point)
@@ -25,6 +26,7 @@ type alias Player =
     { position : Point
     , icon : Char
     , path : Maybe (List Point)
+    , moveCooldown : Int
     }
 
 
@@ -48,11 +50,24 @@ playerpath walkable to player =
     { player | path = Point.pathfind walkable player.position to }
 
 
+playerCooldown : Int -> Player -> Player
+playerCooldown dt player =
+    { player | moveCooldown = max 0 (player.moveCooldown - dt) }
+
+
 playerMove : Player -> Player
 playerMove player =
     case player.path of
         Just (t :: ts) ->
-            { player | position = t, path = Just ts }
+            if player.moveCooldown <= 0 then
+                { player
+                    | position = t
+                    , path = Just ts
+                    , moveCooldown = 500
+                }
+
+            else
+                player
 
         _ ->
             player
@@ -95,7 +110,7 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
-        (Player ( 0, 0, 0 ) '🐼' Nothing)
+        (Player ( 0, 0, 0 ) '🐼' Nothing 500)
         ( 0, 0, 0 )
         Render.initRenderConfig
     , Cmd.none
@@ -109,25 +124,35 @@ init _ =
 type Msg
     = FocusTile Point
     | HoverTile Point
+    | Tick Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FocusTile _ ->
-            let
-                newPlayer =
-                    playerMove model.player
-            in
+        FocusTile point ->
             ( { model
-                | renderConfig = Render.withHexFocus newPlayer.position model.renderConfig
-                , player = newPlayer
+                | player = playerpath (isWalkable model.map) point model.player
               }
             , Cmd.none
             )
 
         HoverTile point ->
-            ( { model | highlightTile = point, player = playerpath (isWalkable model.map) point model.player }, Cmd.none )
+            ( { model | highlightTile = point }, Cmd.none )
+
+        Tick dt ->
+            let
+                newPlayer =
+                    model.player
+                        |> playerCooldown dt
+                        |> playerMove
+            in
+            ( { model
+                | player = newPlayer
+                , renderConfig = Render.withHexFocus newPlayer.position model.renderConfig
+              }
+            , Cmd.none
+            )
 
 
 
@@ -222,7 +247,7 @@ viewHighlight point =
             Render.pointToPixel point
     in
     Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "*" ] ]
+        [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "O" ] ]
 
 
 view : Model -> Html Msg
@@ -238,7 +263,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Browser.Events.onAnimationFrameDelta (round >> Tick)
 
 
 
