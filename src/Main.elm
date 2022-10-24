@@ -1,13 +1,11 @@
 module Main exposing (Model, Msg, main)
 
-import AStar.Generalised as Astar
 import Browser
 import Dict
 import HexEngine.HexMap as HexMap exposing (HexMap)
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
-import Set exposing (Set)
 import Svg exposing (Svg)
 import Svg.Attributes
 import Svg.Events
@@ -45,18 +43,9 @@ isWalkable map point =
             False
 
 
-movesFrom : HexMap Tile -> Point -> Set Point
-movesFrom map point =
-    HexEngine.Point.neighbors point |> Set.filter (isWalkable map)
-
-
-playerpath : HexMap Tile -> Point -> Player -> Player
-playerpath map to player =
-    let
-        path =
-            Astar.findPath HexEngine.Point.distanceFloat (movesFrom map) player.position to
-    in
-    { player | path = path }
+playerpath : (Point -> Bool) -> Point -> Player -> Player
+playerpath walkable to player =
+    { player | path = Point.pathfind walkable player.position to }
 
 
 playerMove : Player -> Player
@@ -138,7 +127,7 @@ update msg model =
             )
 
         HoverTile point ->
-            ( { model | highlightTile = point, player = playerpath model.map point model.player }, Cmd.none )
+            ( { model | highlightTile = point, player = playerpath (isWalkable model.map) point model.player }, Cmd.none )
 
 
 
@@ -181,7 +170,7 @@ viewTile ( point, tile ) =
         , Svg.Attributes.class tileType
         , Svg.Attributes.style
             ("animation-delay: "
-                ++ (HexEngine.Point.distanceFloat ( 0, 0, 0 ) point
+                ++ (Point.distanceFloat ( 0, 0, 0 ) point
                         |> (*) animationDelayMultiplier
                         |> String.fromFloat
                    )

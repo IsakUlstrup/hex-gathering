@@ -16,6 +16,7 @@ module HexEngine.Point exposing
     , neighbor
     , neighbors
     , normalize
+    , pathfind
     , rayTraceWithCost
     , ring
     , scale
@@ -26,6 +27,7 @@ module HexEngine.Point exposing
     , valid
     )
 
+import AStar.Generalised as Astar
 import Set exposing (Set)
 
 
@@ -376,3 +378,13 @@ ring radius center =
             List.map (\i -> add (start s) (scale (toFloat i) (direction s))) (List.range 0 radius)
     in
     List.concatMap side (List.range 0 6) |> Set.fromList
+
+
+movesFrom : (Point -> Bool) -> Point -> Set Point
+movesFrom walkable point =
+    neighbors point |> Set.filter walkable
+
+
+pathfind : (Point -> Bool) -> Point -> Point -> Maybe (List Point)
+pathfind walkable from to =
+    Astar.findPath distanceFloat (movesFrom walkable) from to
