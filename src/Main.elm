@@ -1,10 +1,13 @@
 module Main exposing (Model, Msg, main)
 
+import AStar.Generalised as Astar
 import Browser
+import Dict
 import HexEngine.HexMap as HexMap exposing (HexMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
+import Set exposing (Set)
 import Svg exposing (Svg)
 import Svg.Attributes
 import Svg.Events
@@ -20,9 +23,56 @@ type Tile
     | High
 
 
+type alias Player =
+    { position : Point
+    , icon : Char
+    , path : Maybe (List Point)
+    }
+
+
+isWalkable : HexMap Tile -> Point -> Bool
+isWalkable map point =
+    case Dict.get point map of
+        Just tile ->
+            case tile of
+                Medium ->
+                    True
+
+                _ ->
+                    False
+
+        Nothing ->
+            False
+
+
+movesFrom : HexMap Tile -> Point -> Set Point
+movesFrom map point =
+    HexEngine.Point.neighbors point |> Set.filter (isWalkable map)
+
+
+playerpath : HexMap Tile -> Point -> Player -> Player
+playerpath map to player =
+    let
+        path =
+            Astar.findPath HexEngine.Point.distanceFloat (movesFrom map) player.position to
+    in
+    { player | path = path }
+
+
+playerMove : Player -> Player
+playerMove player =
+    case player.path of
+        Just (t :: ts) ->
+            { player | position = t, path = Just ts }
+
+        _ ->
+            player
+
+
 type alias Model =
     { map : HexMap Tile
-    , player : { position : Point, icon : Char }
+    , player : Player
+    , highlightTile : Point
     , renderConfig : RenderConfig
     }
 
@@ -56,7 +106,8 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
-        { position = ( 0, 0, 0 ), icon = '🐼' }
+        (Player ( 0, 0, 0 ) '🐼' Nothing)
+        ( 0, 0, 0 )
         Render.initRenderConfig
     , Cmd.none
     )
@@ -68,18 +119,26 @@ init _ =
 
 type Msg
     = FocusTile Point
+    | HoverTile Point
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FocusTile point ->
+        FocusTile _ ->
+            let
+                newPlayer =
+                    playerMove model.player
+            in
             ( { model
-                | renderConfig = Render.withHexFocus point model.renderConfig
-                , player = { position = point, icon = model.player.icon }
+                | renderConfig = Render.withHexFocus newPlayer.position model.renderConfig
+                , player = newPlayer
               }
             , Cmd.none
             )
+
+        HoverTile point ->
+            ( { model | highlightTile = point, player = playerpath model.map point model.player }, Cmd.none )
 
 
 
@@ -128,6 +187,8 @@ viewTile ( point, tile ) =
                    )
                 ++ "ms"
             )
+        , Svg.Events.onClick <| FocusTile point
+        , Svg.Events.onMouseOver <| HoverTile point
         ]
         [ Svg.polygon
             [ Svg.Attributes.class "edge0"
@@ -150,26 +211,43 @@ viewTile ( point, tile ) =
         , Svg.polygon
             [ Svg.Attributes.class "face"
             , Svg.Attributes.points (points |> Render.cornersToString2)
-            , Svg.Events.onClick <| FocusTile point
             ]
             []
         ]
 
 
-viewPlayer : { position : Point, icon : Char } -> Svg Msg
+viewPlayer : Player -> Svg Msg
 viewPlayer player =
     let
         ( x, y ) =
             Render.pointToPixel player.position
+
+        playerPath =
+            case player.path of
+                Just path ->
+                    path
+
+                Nothing ->
+                    []
     in
     Svg.g [ Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
+        (Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] :: List.map viewHighlight playerPath)
+
+
+viewHighlight : Point -> Svg msg
+viewHighlight point =
+    let
+        ( x, y ) =
+            Render.pointToPixel point
+    in
+    Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+        [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "*" ] ]
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayer model.player ]
+        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayer model.player, viewHighlight model.highlightTile ]
         ]
 
 
