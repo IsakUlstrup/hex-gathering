@@ -221,7 +221,7 @@ renderGrid config map renderTile extras =
                 )
             , Svg.Attributes.class "camera"
             ]
-            (renderLayer map renderTile :: extras)
+            (Svg.Lazy.lazy2 renderLayer map renderTile :: extras)
         ]
 
 
