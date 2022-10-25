@@ -41,6 +41,7 @@ isWalkable map point =
 type alias Model =
     { map : HexMap Tile
     , player : Player
+    , tree : Player
     , renderConfig : RenderConfig
     }
 
@@ -75,6 +76,7 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
         (Player.new ( 0, 0, 0 ) '🐼')
+        (Player.new ( 6, -3, -3 ) '🌲')
         Render.initRenderConfig
     , Cmd.none
     )
@@ -205,7 +207,7 @@ viewPlayer player =
             Render.pointToPixel player.position
     in
     Svg.g [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-3.75" ] [ Svg.text (player.icon |> String.fromChar) ]
+        [ Svg.text_ [ Svg.Attributes.class "player-icon" ] [ Svg.text (player.icon |> String.fromChar) ]
         ]
 
 
@@ -228,7 +230,13 @@ viewPlayerMoveTarget player =
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayerMoveTarget model.player, viewPlayer model.player ]
+        [ Render.renderGrid model.renderConfig
+            model.map
+            viewTile
+            [ viewPlayerMoveTarget model.player
+            , viewPlayer model.tree
+            , viewPlayer model.player
+            ]
         ]
 
 
