@@ -208,21 +208,27 @@ viewPlayer player =
         [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
 
 
+viewHighlight : Point -> Svg msg
+viewHighlight point =
+    let
+        ( x, y ) =
+            Render.pointToPixel point
+    in
+    Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+        [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "O" ] ]
 
--- viewHighlight : Point -> Svg msg
--- viewHighlight point =
---     let
---         ( x, y ) =
---             Render.pointToPixel point
---     in
---     Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
---         [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "O" ] ]
+
+viewPlayerMoveTarget : Player -> List (Svg msg)
+viewPlayerMoveTarget player =
+    Player.moveTarget player
+        |> Maybe.andThen (\t -> Just <| [ viewHighlight t ])
+        |> Maybe.withDefault []
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayer model.player ]
+        [ Render.renderGrid model.renderConfig model.map viewTile (viewPlayer model.player :: viewPlayerMoveTarget model.player)
         ]
 
 

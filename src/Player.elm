@@ -1,4 +1,4 @@
-module Player exposing (Player, playerCooldown, playerMove, playerpath)
+module Player exposing (Player, moveTarget, playerCooldown, playerMove, playerpath)
 
 import HexEngine.Point as Point exposing (Point)
 
@@ -19,6 +19,12 @@ playerpath walkable to player =
 playerCooldown : Int -> Player -> Player
 playerCooldown dt player =
     { player | moveCooldown = max 0 (player.moveCooldown - dt) }
+
+
+moveTarget : Player -> Maybe Point
+moveTarget player =
+    player.path
+        |> Maybe.andThen (\p -> List.reverse p |> List.head)
 
 
 playerMove : Player -> Player
