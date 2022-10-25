@@ -105,7 +105,8 @@ svg
     &.medium
         @include hex($medium-hex-color)
         cursor: pointer
-        &:hover
+        -webkit-tap-highlight-color: transparent
+        &:active
             .face,.edge
                 transform: translateY(0.05rem)
 
