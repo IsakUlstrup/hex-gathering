@@ -7,6 +7,7 @@ import HexEngine.HexMap as HexMap exposing (HexMap)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
+import Player exposing (Player)
 import Svg exposing (Svg)
 import Svg.Attributes
 import Svg.Events
@@ -22,14 +23,6 @@ type Tile
     | High
 
 
-type alias Player =
-    { position : Point
-    , icon : Char
-    , path : Maybe (List Point)
-    , moveCooldown : Int
-    }
-
-
 isWalkable : HexMap Tile -> Point -> Bool
 isWalkable map point =
     case Dict.get point map of
@@ -43,34 +36,6 @@ isWalkable map point =
 
         Nothing ->
             False
-
-
-playerpath : (Point -> Bool) -> Point -> Player -> Player
-playerpath walkable to player =
-    { player | path = Point.pathfind walkable player.position to }
-
-
-playerCooldown : Int -> Player -> Player
-playerCooldown dt player =
-    { player | moveCooldown = max 0 (player.moveCooldown - dt) }
-
-
-playerMove : Player -> Player
-playerMove player =
-    case player.path of
-        Just (t :: ts) ->
-            if player.moveCooldown <= 0 then
-                { player
-                    | position = t
-                    , path = Just ts
-                    , moveCooldown = 800
-                }
-
-            else
-                player
-
-        _ ->
-            player
 
 
 type alias Model =
@@ -129,7 +94,7 @@ update msg model =
     case msg of
         FocusTile point ->
             ( { model
-                | player = playerpath (isWalkable model.map) point model.player
+                | player = Player.playerpath (isWalkable model.map) point model.player
               }
             , Cmd.none
             )
@@ -138,8 +103,8 @@ update msg model =
             let
                 newPlayer =
                     model.player
-                        |> playerCooldown dt
-                        |> playerMove
+                        |> Player.playerCooldown dt
+                        |> Player.playerMove
             in
             ( { model
                 | player = newPlayer
