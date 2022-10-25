@@ -2,6 +2,7 @@ module Main exposing (Model, Msg, main)
 
 import Browser
 import Browser.Events
+import Content.Maps
 import Dict
 import HexEngine.HexMap as HexMap exposing (HexMap)
 import HexEngine.Point as Point exposing (Point)
@@ -11,20 +12,14 @@ import Player exposing (Player)
 import Svg exposing (Svg)
 import Svg.Attributes
 import Svg.Events
+import Tile exposing (Tile(..))
 
 
 
 -- TODO
--- Extract map
 -- Extract view
 -- Make EntityMap module that combines map and entities
 -- MODEL
-
-
-type Tile
-    = Low
-    | Medium
-    | High
 
 
 isWalkable : HexMap Tile -> Point -> Bool
@@ -53,32 +48,7 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        (HexMap.empty
-            |> HexMap.insertReplaceHex ( ( 0, 0, 0 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 0, 1, -1 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 1, 0, -1 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 1, 1, -2 ), High )
-            |> HexMap.insertReplaceHex ( ( -1, 1, 0 ), Low )
-            |> HexMap.insertReplaceHex ( ( -1, 2, -1 ), Medium )
-            |> HexMap.insertReplaceHex ( ( -1, 3, -2 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 0, 3, -3 ), Low )
-            |> HexMap.insertReplaceHex ( ( 1, 2, -3 ), Low )
-            |> HexMap.insertReplaceHex ( ( 1, 3, -4 ), Low )
-            |> HexMap.insertReplaceHex ( ( 2, -1, -1 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 3, -2, -1 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 4, -2, -2 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 6, -3, -3 ), High )
-            |> HexMap.insertReplaceHex ( ( 5, -2, -3 ), Medium )
-            |> HexMap.insertReplaceHex ( ( -4, 2, 2 ), Medium )
-            |> HexMap.insertReplaceHex ( ( -5, 3, 2 ), Medium )
-            |> HexMap.insertReplaceHex ( ( -5, 2, 3 ), Medium )
-            |> HexMap.insertReplaceHex ( ( -4, 3, 1 ), High )
-            |> HexMap.insertReplaceHex ( ( 0, -1, 1 ), Low )
-            |> HexMap.insertReplaceHex ( ( 1, -2, 1 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 1, -1, 0 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
-            |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
-        )
+        Content.Maps.testMap
         (Player.new ( 0, 0, 0 ) '🐼')
         (Player.new ( 6, -3, -3 ) '🌲')
         Render.initRenderConfig
