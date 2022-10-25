@@ -14,8 +14,6 @@ import View
 
 
 
--- TODO
--- Make EntityMap module that combines map and entities
 -- MODEL
 
 
