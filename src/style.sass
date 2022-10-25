@@ -56,27 +56,16 @@ svg
     transition: transform 500ms ease-in-out
 
     .player-icon
-        // transition: transform 500ms ease-in-out
-        // animation: fall 500ms
         filter: drop-shadow( 0rem -0.03rem 0rem #384043)
         transform: rotate3d(1, 0, 0, 35deg)
-        font-size: 0.45rem
+        font-size: 0.5rem
         text-anchor: middle
-        dominant-baseline: middle
+        dominant-baseline: alphabetic
     &.moving .player-icon
         animation: jump 600ms ease
-    // &.cooling .player-icon
-    //     animation: none
-    // &.idle .player-icon
-    //     animation: none
 
 .highlight
     transition: transform 300ms ease-out
-
-// .move-target
-//     animation: fall 500ms forwards
-
-.highlight
     font-size: 0.3rem
     text-align: center
     dominant-baseline: middle
