@@ -8,7 +8,7 @@ $low-hex-color: rgb(77, 210, 199)
     margin: 0
     box-sizing: border-box
 
-@keyframes rise
+@keyframes fall
     0%
         transform: translateY(-0.2rem)
         opacity: 0
@@ -21,6 +21,17 @@ $low-hex-color: rgb(77, 210, 199)
     100%
         transform: translateY(0rem)
         opacity: 1
+
+@keyframes jump
+    10%
+        transform: scale(1, 0.8)
+    50%
+        transform: translateY(-0.3rem) scale(1, 1.2)
+    80%
+        transform: translateY(0rem) scale(1, 0.9)
+
+    100%
+        transform: translateY(0rem) scale(1, 1)
 
 body
     background: #fffedf
@@ -44,20 +55,23 @@ svg
 .player
     transition: transform 500ms ease-in-out
     .player-icon
-        transition: font-size 200ms ease-in-out
-        animation: rise 500ms 500ms forwards
-        opacity: 0
+        transition: transform 500ms ease-in-out
+        animation: fall 500ms
         font-size: 0.3rem
         text-align: center
         dominant-baseline: middle
     &.moving .player-icon
-        font-size: 0.5rem
+        animation: jump 600ms ease
+    &.cooling .player-icon
+        animation: none
+    &.idle .player-icon
+        animation: none
 
 .highlight
     transition: transform 300ms ease-out
 
 .move-target
-    animation: rise 500ms forwards
+    animation: fall 500ms forwards
 
 .highlight
     font-size: 0.3rem
@@ -82,7 +96,7 @@ svg
 .hex
     opacity: 0
     transform: translateY(-0.2rem)
-    animation: rise 800ms ease forwards
+    animation: fall 800ms ease forwards
 
     .face,.edge
         stroke-width: 0.4

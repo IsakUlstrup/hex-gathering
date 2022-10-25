@@ -26,7 +26,7 @@ type alias Player =
 
 moveTime : Int
 moveTime =
-    800
+    600
 
 
 new : Point -> Char -> Player
@@ -117,7 +117,7 @@ playerMove player =
     case player.moveState of
         Moving path cd ->
             if cd == 0 then
-                { player | moveState = Cooling path 300 }
+                { player | moveState = Cooling path 100 }
 
             else
                 player
@@ -143,18 +143,3 @@ playerMove player =
 
         Idle ->
             player
-
-
-
--- Just (t :: ts) ->
---     if player.moveCooldown <= 0 then
---         { player
---             | position = t
---             , path = Just ts
---             , moveCooldown = moveTime
---             , moveState = Moving
---         }
---     else
---         player
--- _ ->
---     player
