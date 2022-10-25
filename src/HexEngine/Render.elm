@@ -207,7 +207,7 @@ renderGrid : RenderConfig -> HexMap tile -> (( Point, tile ) -> Svg msg) -> List
 renderGrid config map renderTile extras =
     svg
         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
-        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+        , Svg.Attributes.preserveAspectRatio "xMidYMid meet"
         ]
         [ Svg.g
             [ Svg.Attributes.style
