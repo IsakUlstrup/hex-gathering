@@ -13,7 +13,16 @@ type alias Player =
 
 playerpath : (Point -> Bool) -> Point -> Player -> Player
 playerpath walkable to player =
-    { player | path = Point.pathfind walkable player.position to }
+    case moveTarget player of
+        Just p ->
+            if p == to then
+                { player | path = Nothing }
+
+            else
+                { player | path = Point.pathfind walkable player.position to }
+
+        _ ->
+            { player | path = Point.pathfind walkable player.position to }
 
 
 playerCooldown : Int -> Player -> Player
