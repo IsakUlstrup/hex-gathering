@@ -215,7 +215,7 @@ viewHighlight point =
             Render.pointToPixel point
     in
     Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "O" ] ]
+        [ Svg.circle [ Svg.Attributes.r "1", Svg.Attributes.fill "white", Svg.Attributes.fillOpacity "0.7" ] [] ]
 
 
 viewPlayerMoveTarget : Player -> List (Svg msg)
