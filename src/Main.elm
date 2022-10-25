@@ -63,7 +63,7 @@ playerMove player =
                 { player
                     | position = t
                     , path = Just ts
-                    , moveCooldown = 500
+                    , moveCooldown = 800
                 }
 
             else

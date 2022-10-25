@@ -45,17 +45,16 @@ svg
     height: 100%
     shape-rendering: geometricPrecision
     .camera
-        transition: transform 400ms 70ms ease-out
+        transition: transform 500ms ease-in-out
 
 .player
-    transition: transform 300ms ease-in-out
+    transition: transform 500ms ease-in-out
     .player-icon
         animation: rise 500ms 500ms forwards
         opacity: 0
         font-size: 0.3rem
         text-align: center
         dominant-baseline: middle
-        transform: rotate3d(1, 0, 0, 25deg)
 
 .highlight
     font-size: 0.3rem
@@ -93,16 +92,19 @@ svg
 
     &.high
         @include hex($high-hex-color)
+        pointer-events: none
         .face,.edge
             transform: translateY(-0.1rem)
 
     &.medium
         @include hex($medium-hex-color)
+        cursor: pointer
         &:hover
             .face,.edge
                 transform: translateY(0.05rem)
 
     &.low
         @include hex($low-hex-color)
+        pointer-events: none
         .face,.edge
             transform: translateY(0.1rem)
