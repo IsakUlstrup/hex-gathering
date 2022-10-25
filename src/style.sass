@@ -24,14 +24,14 @@ $low-hex-color: rgb(77, 210, 199)
 
 @keyframes jump
     10%
-        transform: scale(1, 0.8)
+        transform: rotate3d(1, 0, 0, 35deg) scale(1, 0.8)
     50%
-        transform: translateY(-0.3rem) scale(1, 1.2)
+        transform: rotate3d(1, 0, 0, 35deg) translateY(-0.3rem) scale(1, 1.2)
     80%
-        transform: translateY(0rem) scale(1, 0.9)
+        transform: rotate3d(1, 0, 0, 35deg) translateY(0rem) scale(1, 0.9)
 
     100%
-        transform: translateY(0rem) scale(1, 1)
+        transform: rotate3d(1, 0, 0, 35deg) translateY(0rem) scale(1, 1)
 
 body
     background: #fffedf
@@ -55,17 +55,19 @@ svg
 .player
     transition: transform 500ms ease-in-out
     .player-icon
-        transition: transform 500ms ease-in-out
-        animation: fall 500ms
+        // transition: transform 500ms ease-in-out
+        // animation: fall 500ms
+        filter: drop-shadow( 0rem -0.03rem 0rem #384043)
+        transform: rotate3d(1, 0, 0, 35deg)
         font-size: 0.3rem
         text-align: center
         dominant-baseline: middle
     &.moving .player-icon
         animation: jump 600ms ease
-    &.cooling .player-icon
-        animation: none
-    &.idle .player-icon
-        animation: none
+    // &.cooling .player-icon
+    //     animation: none
+    // &.idle .player-icon
+    //     animation: none
 
 .highlight
     transition: transform 300ms ease-out
