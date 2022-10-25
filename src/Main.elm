@@ -205,7 +205,8 @@ viewPlayer player =
             Render.pointToPixel player.position
     in
     Svg.g [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
+        [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-3.75" ] [ Svg.text (player.icon |> String.fromChar) ]
+        ]
 
 
 viewHighlight : Point -> Svg msg
