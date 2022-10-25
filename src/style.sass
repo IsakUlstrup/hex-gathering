@@ -65,11 +65,8 @@ svg
         animation: jump 600ms ease
 
 .highlight
-    transition: transform 300ms ease-out
-    font-size: 0.3rem
-    text-align: center
-    dominant-baseline: middle
-    pointer-events: none
+    transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)
+    filter: drop-shadow( 0.01rem 0.01rem 0.015rem rgba(50, 64, 67, 0.5))
 
 @mixin hex($color)
     .face
