@@ -62,28 +62,16 @@ setPlayerPath path player =
 
 playerpath : (Point -> Bool) -> Point -> Player -> Player
 playerpath walkable to player =
-    case moveTarget player of
-        Just p ->
-            if p == to then
+    if moveTarget player == to then
+        { player | moveState = Idle }
+
+    else
+        case Point.pathfind walkable player.position to of
+            Just path ->
+                setPlayerPath path player
+
+            Nothing ->
                 { player | moveState = Idle }
-
-            else
-                case Point.pathfind walkable player.position to of
-                    Just path ->
-                        setPlayerPath path player
-
-                    --{ player | moveState = Cooling path 0 }
-                    Nothing ->
-                        { player | moveState = Idle }
-
-        Nothing ->
-            case Point.pathfind walkable player.position to of
-                Just path ->
-                    setPlayerPath path player
-
-                --{ player | moveState = Cooling path 0 }
-                Nothing ->
-                    { player | moveState = Idle }
 
 
 playerCooldown : Int -> Player -> Player
@@ -99,9 +87,9 @@ playerCooldown dt player =
             player
 
 
-moveTarget : Player -> Maybe Point
+moveTarget : Player -> Point
 moveTarget player =
-    case player.moveState of
+    (case player.moveState of
         Moving path _ ->
             path |> List.reverse |> List.head
 
@@ -110,6 +98,8 @@ moveTarget player =
 
         Idle ->
             Nothing
+    )
+        |> Maybe.withDefault player.position
 
 
 playerMove : Player -> Player

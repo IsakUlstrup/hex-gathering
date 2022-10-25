@@ -219,17 +219,16 @@ viewHighlight point =
         [ Svg.circle [ Svg.Attributes.class "move-target", Svg.Attributes.r "1", Svg.Attributes.fill "white", Svg.Attributes.fillOpacity "0.7" ] [] ]
 
 
-viewPlayerMoveTarget : Player -> List (Svg msg)
+viewPlayerMoveTarget : Player -> Svg msg
 viewPlayerMoveTarget player =
     Player.moveTarget player
-        |> Maybe.andThen (\t -> Just <| [ viewHighlight t ])
-        |> Maybe.withDefault []
+        |> viewHighlight
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig model.map viewTile (viewPlayer model.player :: viewPlayerMoveTarget model.player)
+        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayerMoveTarget model.player, viewPlayer model.player ]
         ]
 
 
