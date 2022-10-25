@@ -45,7 +45,7 @@ init _ =
     ( Model
         Content.Maps.testMap
         (Player.new ( 0, 0, 0 ) '🐼')
-        (Player.new ( 6, -3, -3 ) '🌲')
+        (Player.new ( -5, 3, 2 ) '🌲')
         Render.initRenderConfig
     , Cmd.none
     )
