@@ -76,7 +76,6 @@ playerMove player =
 type alias Model =
     { map : HexMap Tile
     , player : Player
-    , highlightTile : Point
     , renderConfig : RenderConfig
     }
 
@@ -111,7 +110,6 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
         (Player ( 0, 0, 0 ) '🐼' Nothing 500)
-        ( 0, 0, 0 )
         Render.initRenderConfig
     , Cmd.none
     )
@@ -123,7 +121,6 @@ init _ =
 
 type Msg
     = FocusTile Point
-    | HoverTile Point
     | Tick Int
 
 
@@ -136,9 +133,6 @@ update msg model =
               }
             , Cmd.none
             )
-
-        HoverTile point ->
-            ( { model | highlightTile = point }, Cmd.none )
 
         Tick dt ->
             let
@@ -191,7 +185,6 @@ viewTile ( point, tile ) =
             case tile of
                 Medium ->
                     [ Svg.Events.onClick <| FocusTile point
-                    , Svg.Events.onMouseOver <| HoverTile point
                     ]
 
                 _ ->
@@ -250,20 +243,21 @@ viewPlayer player =
         [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
 
 
-viewHighlight : Point -> Svg msg
-viewHighlight point =
-    let
-        ( x, y ) =
-            Render.pointToPixel point
-    in
-    Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
-        [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "O" ] ]
+
+-- viewHighlight : Point -> Svg msg
+-- viewHighlight point =
+--     let
+--         ( x, y ) =
+--             Render.pointToPixel point
+--     in
+--     Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+--         [ Svg.text_ [ Svg.Attributes.x "-2.5" ] [ Svg.text "O" ] ]
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayer model.player, viewHighlight model.highlightTile ]
+        [ Render.renderGrid model.renderConfig model.map viewTile [ viewPlayer model.player ]
         ]
 
 
