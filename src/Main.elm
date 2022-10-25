@@ -187,13 +187,23 @@ viewTile ( point, tile ) =
                 High ->
                     4
 
+        events =
+            case tile of
+                Medium ->
+                    [ Svg.Events.onClick <| FocusTile point
+                    , Svg.Events.onMouseOver <| HoverTile point
+                    ]
+
+                _ ->
+                    []
+
         animationDelayMultiplier =
             70
     in
     Svg.g
-        [ Svg.Attributes.class "hex"
-        , Svg.Attributes.class tileType
-        , Svg.Attributes.style
+        ([ Svg.Attributes.class "hex"
+         , Svg.Attributes.class tileType
+         , Svg.Attributes.style
             ("animation-delay: "
                 ++ (Point.distanceFloat ( 0, 0, 0 ) point
                         |> (*) animationDelayMultiplier
@@ -201,9 +211,9 @@ viewTile ( point, tile ) =
                    )
                 ++ "ms"
             )
-        , Svg.Events.onClick <| FocusTile point
-        , Svg.Events.onMouseOver <| HoverTile point
-        ]
+         ]
+            ++ events
+        )
         [ Svg.polygon
             [ Svg.Attributes.class "edge0"
             , Svg.Attributes.class "edge"
