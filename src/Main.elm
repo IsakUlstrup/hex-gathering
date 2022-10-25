@@ -14,6 +14,10 @@ import Svg.Events
 
 
 
+-- TODO
+-- Extract map
+-- Extract view
+-- Make EntityMap module that combines map and entities
 -- MODEL
 
 
@@ -102,15 +106,12 @@ update msg model =
             )
 
         Tick dt ->
-            let
-                newPlayer =
+            ( { model
+                | player =
                     model.player
                         |> Player.playerMove
                         |> Player.playerCooldown dt
-            in
-            ( { model
-                | player = newPlayer
-                , renderConfig = Render.withHexFocus newPlayer.position model.renderConfig
+                , renderConfig = Render.withHexFocus model.player.position model.renderConfig
               }
             , Cmd.none
             )
