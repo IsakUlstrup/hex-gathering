@@ -74,7 +74,7 @@ init _ =
             |> HexMap.insertReplaceHex ( ( 0, -2, 2 ), Medium )
             |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
         )
-        (Player ( 0, 0, 0 ) '🐼' Nothing 500)
+        (Player.new ( 0, 0, 0 ) '🐼')
         Render.initRenderConfig
     , Cmd.none
     )
@@ -103,8 +103,8 @@ update msg model =
             let
                 newPlayer =
                     model.player
-                        |> Player.playerCooldown dt
                         |> Player.playerMove
+                        |> Player.playerCooldown dt
             in
             ( { model
                 | player = newPlayer
@@ -204,7 +204,7 @@ viewPlayer player =
         ( x, y ) =
             Render.pointToPixel player.position
     in
-    Svg.g [ Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+    Svg.g [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
         [ Svg.text_ [ Svg.Attributes.class "player-icon", Svg.Attributes.x "-2.5" ] [ Svg.text (player.icon |> String.fromChar) ] ]
 
 

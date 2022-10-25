@@ -22,12 +22,6 @@ $low-hex-color: rgb(77, 210, 199)
         transform: translateY(0rem)
         opacity: 1
 
-@keyframes fade-in
-    0%
-        opacity: 0
-    100%
-        opacity: 1
-
 body
     background: #fffedf
 
@@ -50,11 +44,14 @@ svg
 .player
     transition: transform 500ms ease-in-out
     .player-icon
+        transition: font-size 200ms ease-in-out
         animation: rise 500ms 500ms forwards
         opacity: 0
         font-size: 0.3rem
         text-align: center
         dominant-baseline: middle
+    &.moving .player-icon
+        font-size: 0.5rem
 
 .highlight
     transition: transform 300ms ease-out
