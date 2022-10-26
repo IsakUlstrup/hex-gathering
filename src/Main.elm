@@ -1,5 +1,6 @@
 module Main exposing (Model, Msg, main)
 
+import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Maps
@@ -89,7 +90,8 @@ update msg model =
 view : Model -> Html Msg
 view model =
     main_ []
-        [ Render.renderGrid model.renderConfig
+        [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
+        , Render.renderGrid model.renderConfig
             model.map
             (View.viewTile FocusTile)
             [ View.viewPlayerMoveTarget model.player

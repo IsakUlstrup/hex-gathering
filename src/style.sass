@@ -49,10 +49,10 @@ svg
     shape-rendering: geometricPrecision
 
 .camera
-    transition: transform 500ms ease-in-out
+    transition: transform var(--player-move-duration) ease-in-out
 
 .player
-    transition: transform 500ms ease-in-out
+    transition: transform var(--player-move-duration) ease-in-out
 
     .player-icon
         filter: drop-shadow( 0rem -0.03rem 0rem #384043)
@@ -60,7 +60,7 @@ svg
         font-size: 0.6rem
         text-anchor: middle
     &.moving .player-icon
-        animation: jump 600ms ease
+        animation: jump var(--player-move-duration) ease
 
 .highlight
     transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)
@@ -82,7 +82,7 @@ svg
 .hex
     opacity: 0
     transform: translateY(-0.2rem)
-    animation: fall 1200ms ease forwards
+    animation: fall var(--fall-duration) ease forwards
 
     .face,.edge
         stroke-width: 0.4
