@@ -8,6 +8,7 @@ module Player exposing
     , playerpath
     )
 
+import AnimationConstants
 import HexEngine.Point as Point exposing (Point)
 
 
@@ -22,11 +23,6 @@ type alias Player =
     , icon : Char
     , moveState : MoveState
     }
-
-
-moveTime : Int
-moveTime =
-    600
 
 
 new : Point -> Char -> Player
@@ -115,7 +111,7 @@ playerMove player =
         Cooling (p :: path) cd ->
             if cd <= 0 then
                 { player
-                    | moveState = Moving path moveTime
+                    | moveState = Moving path (Tuple.second AnimationConstants.playerMoveTime)
                     , position = p
                 }
 
