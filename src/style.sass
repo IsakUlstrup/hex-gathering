@@ -68,16 +68,16 @@ svg
 @mixin hex($color)
     .face
         fill: $color
-        stroke: color.scale($color, $lightness: 70%)
+        stroke: color.scale($color, $lightness: 50%)
     .edge0
+        stroke: color.scale($color, $lightness: 40%)
+        fill: color.scale($color, $lightness: 40%)
+    .edge1
         stroke: color.scale($color, $lightness: 50%)
         fill: color.scale($color, $lightness: 50%)
-    .edge1
+    .edge2
         stroke: color.scale($color, $lightness: 60%)
         fill: color.scale($color, $lightness: 60%)
-    .edge2
-        stroke: color.scale($color, $lightness: 70%)
-        fill: color.scale($color, $lightness: 70%)
 
 .hex
     opacity: 0
