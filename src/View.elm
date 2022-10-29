@@ -116,6 +116,20 @@ viewEntity ( point, entity ) =
                 ]
                 [ Svg.text (String.fromChar icon) ]
 
+        NPC icon ->
+            Svg.text_
+                [ Svg.Attributes.class "resource"
+                , Svg.Attributes.style
+                    ("animation-delay: "
+                        ++ (Point.distanceFloat ( 0, 0, 0 ) point
+                                |> (*) animationDelayMultiplier
+                                |> String.fromFloat
+                           )
+                        ++ "ms"
+                    )
+                ]
+                [ Svg.text (String.fromChar icon) ]
+
 
 viewPlayer : Player -> Svg msg
 viewPlayer player =
