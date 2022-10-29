@@ -5,12 +5,12 @@ import Browser
 import Browser.Events
 import Content.Maps
 import Dict
-import HexEngine.HexMap exposing (HexMap)
+import HexEngine.HexEntityMap exposing (HexEntityMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
-import Tile exposing (Tile(..))
+import Tile exposing (Entity, Tile(..))
 import View
 
 
@@ -18,25 +18,28 @@ import View
 -- MODEL
 
 
-isWalkable : HexMap Tile -> Point -> Bool
+isWalkable : HexEntityMap Tile Entity -> Point -> Bool
 isWalkable map point =
-    case Dict.get point map of
-        Just tile ->
-            case tile of
-                Medium ->
-                    True
+    let
+        tileWalkable =
+            case Dict.get point map.tiles of
+                Just tile ->
+                    case tile of
+                        Medium ->
+                            True
 
-                _ ->
+                        _ ->
+                            False
+
+                Nothing ->
                     False
-
-        Nothing ->
-            False
+    in
+    tileWalkable
 
 
 type alias Model =
-    { map : HexMap Tile
+    { map : HexEntityMap Tile Entity
     , player : Player
-    , tree : Player
     , renderConfig : RenderConfig
     }
 
@@ -44,9 +47,8 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        Content.Maps.testMap
+        Content.Maps.testMap2
         (Player.new ( 0, 0, 0 ) '🐼')
-        (Player.new ( -5, 3, 2 ) '🌲')
         Render.initRenderConfig
     , Cmd.none
     )
@@ -91,11 +93,11 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , Render.renderGrid model.renderConfig
+        , Render.renderTileEntityMap model.renderConfig
             model.map
             (View.viewTile FocusTile)
+            View.viewEntity
             [ View.viewPlayerMoveTarget model.player
-            , View.viewPlayer model.tree
             , View.viewPlayer model.player
             ]
         ]

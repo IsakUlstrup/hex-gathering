@@ -9,12 +9,14 @@ module HexEngine.Render exposing
     , pointToPixel
     , renderGrid
     , renderGrid2
+    , renderTileEntityMap
     , withCameraPosition
     , withHexFocus
     , withZoom
     )
 
 import Dict
+import HexEngine.HexEntityMap exposing (HexEntityMap)
 import HexEngine.HexMap exposing (HexMap)
 import HexEngine.Point as Point exposing (Point)
 import Svg exposing (Svg, g, svg)
@@ -222,6 +224,32 @@ renderGrid config map renderTile extras =
             , Svg.Attributes.class "camera"
             ]
             (Svg.Lazy.lazy2 renderLayer map renderTile :: extras)
+        ]
+
+
+renderTileEntityMap : RenderConfig -> HexEntityMap tile entity -> (( Point, tile ) -> Svg msg) -> (( Point, entity ) -> Svg msg) -> List (Svg msg) -> Svg msg
+renderTileEntityMap config map renderTile renderEntity extras =
+    svg
+        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+        ]
+        [ Svg.g
+            [ Svg.Attributes.style
+                ("transform: translate("
+                    ++ String.fromFloat -(config.cameraX * config.zoom)
+                    ++ "px, "
+                    ++ String.fromFloat -(config.cameraY * config.zoom)
+                    ++ "px) scale("
+                    ++ String.fromFloat config.zoom
+                    ++ ");"
+                )
+            , Svg.Attributes.class "camera"
+            ]
+            ([ Svg.Lazy.lazy2 renderLayer map.tiles renderTile
+             , Svg.Lazy.lazy2 renderLayer map.entities renderEntity
+             ]
+                ++ extras
+            )
         ]
 
 

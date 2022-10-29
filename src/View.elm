@@ -6,7 +6,7 @@ import Player exposing (Player)
 import Svg exposing (Svg)
 import Svg.Attributes
 import Svg.Events
-import Tile exposing (Tile(..))
+import Tile exposing (Entity(..), Tile(..))
 
 
 viewTile : (Point -> msg) -> ( Point, Tile ) -> Svg msg
@@ -87,6 +87,15 @@ viewTile clickEvent ( point, tile ) =
             ]
             []
         ]
+
+
+viewEntity : ( Point, Entity ) -> Svg msg
+viewEntity ( point, entity ) =
+    case entity of
+        Resource icon ->
+            Svg.text_
+                [ Svg.Attributes.class "resource" ]
+                [ Svg.text (String.fromChar icon) ]
 
 
 viewPlayer : Player -> Svg msg
