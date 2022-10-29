@@ -9,6 +9,19 @@ import Svg.Events
 import Tile exposing (Entity(..), Tile(..))
 
 
+
+-- CONSTANTS
+
+
+animationDelayMultiplier : number
+animationDelayMultiplier =
+    70
+
+
+
+-- VIEW FUNCTIONS
+
+
 viewTile : (Point -> msg) -> ( Point, Tile ) -> Svg msg
 viewTile clickEvent ( point, tile ) =
     let
@@ -45,9 +58,6 @@ viewTile clickEvent ( point, tile ) =
 
                 _ ->
                     []
-
-        animationDelayMultiplier =
-            70
     in
     Svg.g
         ([ Svg.Attributes.class "hex"
@@ -94,7 +104,16 @@ viewEntity ( point, entity ) =
     case entity of
         Resource icon ->
             Svg.text_
-                [ Svg.Attributes.class "resource" ]
+                [ Svg.Attributes.class "resource"
+                , Svg.Attributes.style
+                    ("animation-delay: "
+                        ++ (Point.distanceFloat ( 0, 0, 0 ) point
+                                |> (*) animationDelayMultiplier
+                                |> String.fromFloat
+                           )
+                        ++ "ms"
+                    )
+                ]
                 [ Svg.text (String.fromChar icon) ]
 
 
