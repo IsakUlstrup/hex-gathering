@@ -15,6 +15,7 @@ import HexEngine.Point as Point exposing (Point)
 type MoveState
     = Moving (List Point) Int
     | Cooling (List Point) Int
+    | BlockedPath Point Int
     | Idle
 
 
@@ -39,6 +40,9 @@ moveStateString player =
         Cooling _ _ ->
             "cooling"
 
+        BlockedPath _ _ ->
+            "blocked"
+
         Idle ->
             "idle"
 
@@ -51,6 +55,9 @@ setPlayerPath path player =
 
         Cooling _ cd ->
             { player | moveState = Cooling path cd }
+
+        BlockedPath _ _ ->
+            { player | moveState = Cooling path 0 }
 
         Idle ->
             { player | moveState = Cooling path 0 }
@@ -67,7 +74,7 @@ playerpath walkable to player =
                 setPlayerPath path player
 
             Nothing ->
-                { player | moveState = Idle }
+                { player | moveState = BlockedPath to 200 }
 
 
 playerCooldown : Int -> Player -> Player
@@ -78,6 +85,9 @@ playerCooldown dt player =
 
         Cooling path cd ->
             { player | moveState = Cooling path (max 0 (cd - dt)) }
+
+        BlockedPath to cd ->
+            { player | moveState = BlockedPath to (max 0 (cd - dt)) }
 
         Idle ->
             player
@@ -91,6 +101,9 @@ moveTarget player =
 
         Cooling path _ ->
             path |> List.reverse |> List.head
+
+        BlockedPath to _ ->
+            Just to
 
         Idle ->
             Nothing
@@ -119,6 +132,15 @@ playerMove player =
                 player
 
         Cooling [] cd ->
+            if cd <= 0 then
+                { player
+                    | moveState = Idle
+                }
+
+            else
+                player
+
+        BlockedPath _ cd ->
             if cd <= 0 then
                 { player
                     | moveState = Idle

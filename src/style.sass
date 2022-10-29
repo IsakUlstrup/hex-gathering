@@ -31,6 +31,16 @@ $low-hex-color: rgb(77, 210, 199)
     100%
         transform: translateY(0rem) scaleY(1)
 
+@keyframes shake
+    0%
+        transform: translateX(0)
+    33%
+        transform: translateX(-0.2rem) rotate(-10deg)
+    66%
+        transform: translateX(0.2rem) rotate(10deg)
+    100%
+        transform: translateX(0rem)
+
 body
     background: #fffedf
 
@@ -61,6 +71,8 @@ svg
         text-anchor: middle
     &.moving .player-animation
         animation: jump var(--player-move-duration) ease
+    &.blocked .player-animation
+        animation: shake 200ms ease infinite
 
 .resource-animation
     animation: fall var(--fall-duration) ease forwards
