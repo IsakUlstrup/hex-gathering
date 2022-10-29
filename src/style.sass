@@ -21,6 +21,19 @@ $low-hex-color: rgb(77, 210, 199)
         transform: translateY(0rem)
         opacity: 1
 
+@keyframes entity-fall
+    0%
+        transform: translateY(-0.5rem) rotateX(0deg)
+        opacity: 0
+    30%
+        opacity: 1
+        transform: translateY(0.15rem) rotateX(35deg) scaleY(0.9)
+    70%
+        transform: translateY(-0.02rem) rotateX(35deg) scaleY(1.05)
+    100%
+        transform: translateY(0rem) rotateX(35deg) scaleY(1)
+        opacity: 1
+
 @keyframes jump
     10%
         transform: scaleY(0.8)
@@ -64,13 +77,11 @@ svg
 .player
     transition: transform var(--player-move-duration) ease-in-out
 
-    .player-animation
-        opacity: 0
-        animation: fall var(--fall-duration) ease forwards
-
     .player-icon
+        opacity: 0
+        animation: entity-fall var(--fall-duration) ease forwards
         filter: drop-shadow( 0rem -0.03rem 0rem #384043) saturate(80%) sepia(30%)
-        transform: rotateX(35deg)
+        // transform: rotateX(35deg)
         font-size: 0.6rem
         text-anchor: middle
     &.moving .player-animation
@@ -80,10 +91,10 @@ svg
 
 .resource-animation
     opacity: 0
-    animation: fall var(--fall-duration) ease forwards
+    animation: entity-fall var(--fall-duration) ease forwards
     .resource
         filter: drop-shadow( 0rem -0.03rem 0rem #384043) saturate(80%) sepia(30%)
-        transform: rotateX(35deg)
+        // transform: rotateX(35deg)
         font-size: 0.6rem
         text-anchor: middle
 

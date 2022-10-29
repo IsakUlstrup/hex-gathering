@@ -15,7 +15,7 @@ import Tile exposing (Entity(..), Tile(..))
 
 animationDelayMultiplier : number
 animationDelayMultiplier =
-    70
+    150
 
 
 
