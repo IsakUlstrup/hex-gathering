@@ -102,8 +102,8 @@ moveTarget player =
         Cooling path _ ->
             path |> List.reverse |> List.head
 
-        BlockedPath to _ ->
-            Just to
+        BlockedPath _ _ ->
+            Nothing
 
         Idle ->
             Nothing
