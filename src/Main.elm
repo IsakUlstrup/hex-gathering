@@ -18,23 +18,32 @@ import View
 -- MODEL
 
 
+{-| determine if a given point is walkable
+
+Only tiles that exist and are of variant Medium are walkable
+
+Entities are not walkable
+
+-}
 isWalkable : HexEntityMap Tile Entity -> Point -> Bool
 isWalkable map point =
-    let
-        tileWalkable =
-            case Dict.get point map.tiles of
-                Just tile ->
-                    case tile of
-                        Medium ->
-                            True
+    case ( Dict.get point map.tiles, Dict.get point map.entities ) of
+        ( Just t, Nothing ) ->
+            case t of
+                Medium ->
+                    True
 
-                        _ ->
-                            False
-
-                Nothing ->
+                _ ->
                     False
-    in
-    tileWalkable
+
+        ( Just _, Just _ ) ->
+            False
+
+        ( Nothing, Just _ ) ->
+            False
+
+        ( Nothing, Nothing ) ->
+            False
 
 
 type alias Model =
