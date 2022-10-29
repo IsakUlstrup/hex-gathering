@@ -62,13 +62,14 @@ svg
     &.moving .player-animation
         animation: jump var(--player-move-duration) ease
 
-.resource
-    filter: drop-shadow( 0rem -0.03rem 0rem #384043)
-    transform: rotateX(35deg)
-    font-size: 0.6rem
-    text-anchor: middle
-    opacity: 0
+.resource-animation
     animation: fall var(--fall-duration) ease forwards
+    opacity: 0
+    .resource
+        filter: drop-shadow( 0rem -0.03rem 0rem #384043)
+        transform: rotateX(35deg)
+        font-size: 0.6rem
+        text-anchor: middle
 
 .highlight
     transition: transform 200ms ease-out

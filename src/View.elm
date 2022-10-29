@@ -103,8 +103,8 @@ viewEntity : ( Point, Entity ) -> Svg msg
 viewEntity ( point, entity ) =
     case entity of
         Resource icon ->
-            Svg.text_
-                [ Svg.Attributes.class "resource"
+            Svg.g
+                [ Svg.Attributes.class "resource-animation"
                 , Svg.Attributes.style
                     ("animation-delay: "
                         ++ (Point.distanceFloat ( 0, 0, 0 ) point
@@ -114,11 +114,17 @@ viewEntity ( point, entity ) =
                         ++ "ms"
                     )
                 ]
-                [ Svg.text (String.fromChar icon) ]
+                [ Svg.text_
+                    [ Svg.Attributes.class "resource"
+                    , Svg.Attributes.x "2.5"
+                    , Svg.Attributes.y "2.5"
+                    ]
+                    [ Svg.text (String.fromChar icon) ]
+                ]
 
         NPC icon ->
-            Svg.text_
-                [ Svg.Attributes.class "resource"
+            Svg.g
+                [ Svg.Attributes.class "resource-animation"
                 , Svg.Attributes.style
                     ("animation-delay: "
                         ++ (Point.distanceFloat ( 0, 0, 0 ) point
@@ -128,7 +134,13 @@ viewEntity ( point, entity ) =
                         ++ "ms"
                     )
                 ]
-                [ Svg.text (String.fromChar icon) ]
+                [ Svg.text_
+                    [ Svg.Attributes.class "resource"
+                    , Svg.Attributes.x "2.5"
+                    , Svg.Attributes.y "2.5"
+                    ]
+                    [ Svg.text (String.fromChar icon) ]
+                ]
 
 
 viewPlayer : Player -> Svg msg
