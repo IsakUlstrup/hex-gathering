@@ -55,7 +55,7 @@ svg
     transition: transform var(--player-move-duration) ease-in-out
 
     .player-icon
-        filter: drop-shadow( 0rem -0.03rem 0rem #384043)
+        filter: drop-shadow( 0rem -0.03rem 0rem #384043) saturate(80%) sepia(30%)
         transform: rotateX(35deg)
         font-size: 0.6rem
         text-anchor: middle
@@ -66,7 +66,7 @@ svg
     animation: fall var(--fall-duration) ease forwards
     opacity: 0
     .resource
-        filter: drop-shadow( 0rem -0.03rem 0rem #384043)
+        filter: drop-shadow( 0rem -0.03rem 0rem #384043) saturate(80%) sepia(30%)
         transform: rotateX(35deg)
         font-size: 0.6rem
         text-anchor: middle
@@ -112,9 +112,9 @@ svg
         @include hex($medium-hex-color)
         cursor: pointer
         -webkit-tap-highlight-color: transparent
-        &:active
-            .face,.edge
-                transform: translateY(0.05rem)
+        // &:active
+        //     .face,.edge
+        //         transform: translateY(0.05rem)
 
     &.low
         @include hex($low-hex-color)
