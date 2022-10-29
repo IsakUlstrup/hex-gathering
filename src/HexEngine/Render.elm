@@ -2,13 +2,11 @@ module HexEngine.Render exposing
     ( RenderConfig
     , cornersToString
     , cornersToString2
-    , fancyHexCorners
     , fancyHexCorners2
     , initRenderConfig
     , pointAdd
     , pointToPixel
     , renderGrid
-    , renderGrid2
     , renderTileEntityMap
     , withCameraPosition
     , withHexFocus
@@ -63,7 +61,7 @@ withZoom zoom config =
 
 
 
----- GENERAL STUFF ----
+-- HELPERS
 
 
 {-| Hex size constant
@@ -154,26 +152,8 @@ fancyHexCorners2 =
         (corner 5)
 
 
-{-| Calculate hex corners in screen coordinates
--}
-fancyHexCorners : List ( Float, Float )
-fancyHexCorners =
-    let
-        angleRad cornerNumber =
-            degrees (60 * cornerNumber |> toFloat)
 
-        corner cornerNumber =
-            ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
-            , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
-            )
-    in
-    [ corner 0
-    , corner 1
-    , corner 2
-    , corner 3
-    , corner 4
-    , corner 5
-    ]
+-- RENDER
 
 
 renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
@@ -250,28 +230,4 @@ renderTileEntityMap config map renderTile renderEntity extras =
              ]
                 ++ extras
             )
-        ]
-
-
-renderGrid2 : RenderConfig -> HexMap tile1 -> (( Point, tile1 ) -> Svg msg) -> HexMap tile2 -> (( Point, tile2 ) -> Svg msg) -> Svg msg
-renderGrid2 config map1 renderTile1 map2 renderTile2 =
-    svg
-        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
-        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
-        ]
-        [ Svg.g
-            [ Svg.Attributes.style
-                ("transform: translate("
-                    ++ String.fromFloat -(config.cameraX * config.zoom)
-                    ++ "px, "
-                    ++ String.fromFloat -(config.cameraY * config.zoom)
-                    ++ "px) scale("
-                    ++ String.fromFloat config.zoom
-                    ++ ");"
-                )
-            , Svg.Attributes.class "camera"
-            ]
-            [ renderLayer map1 renderTile1
-            , renderLayer map2 renderTile2
-            ]
         ]
