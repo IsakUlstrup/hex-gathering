@@ -3,6 +3,7 @@ module HexEngine.Render exposing
     , cornersToString
     , cornersToString2
     , fancyHexCorners2
+    , hardcodedPoints
     , initRenderConfig
     , pointAdd
     , pointToPixel
@@ -128,6 +129,17 @@ type alias HexCorners =
 pointAdd : ( Float, Float ) -> ( Float, Float ) -> ( Float, Float )
 pointAdd ( x1, y1 ) ( x2, y2 ) =
     ( x1 + x2, y1 + y2 )
+
+
+hardcodedPoints : HexCorners
+hardcodedPoints =
+    HexCorners
+        ( 7.5, 2.5 )
+        ( 5, 6.830127018922193 )
+        ( 8.881784197001252e-16, 6.8301270189221945 )
+        ( -2.5, 2.5000000000000004 )
+        ( -2.220446049250313e-15, -1.8301270189221919 )
+        ( 5, -1.8301270189221928 )
 
 
 {-| Calculate hex corners in screen coordinates

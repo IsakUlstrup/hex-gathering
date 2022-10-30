@@ -37,7 +37,7 @@ viewTile clickEvent ( point, tile ) =
                     "high"
 
         points =
-            Render.fancyHexCorners2
+            Render.hardcodedPoints
 
         columnHeight =
             case tile of
