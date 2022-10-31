@@ -68,7 +68,7 @@ testMap2 =
         |> HexEntityMap.insertEntity (Resource '🌴') ( -5, 2, 3 )
         |> HexEntityMap.insertEntity (Resource '🌴') ( -5, 2, 3 )
         |> HexEntityMap.insertEntity (Resource '🌴') ( 1, -2, 1 )
-        |> HexEntityMap.insertEntity (NPC '🧙') ( 2, 0, -2 )
+        |> HexEntityMap.insertEntity (NPC '🦖') ( 2, 0, -2 )
     )
 
 
