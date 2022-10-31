@@ -150,6 +150,7 @@ update msg model =
         FocusTile point ->
             ( { model
                 | player = Player.playerpath (isWalkable <| currentMap model) point model.player
+                , selectedEntity = Nothing
               }
             , Cmd.none
             )
