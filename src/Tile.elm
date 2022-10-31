@@ -10,3 +10,4 @@ type Tile
 type Entity
     = Resource Char
     | NPC Char
+    | MapTransition String

@@ -99,48 +99,39 @@ viewTile clickEvent ( point, tile ) =
         ]
 
 
+viewEntityHelper : Point -> Char -> Svg msg
+viewEntityHelper point icon =
+    Svg.g
+        [ Svg.Attributes.class "resource-animation"
+        , Svg.Attributes.style
+            ("animation-delay: "
+                ++ (Point.distanceFloat ( 0, 0, 0 ) point
+                        |> (*) animationDelayMultiplier
+                        |> String.fromFloat
+                   )
+                ++ "ms"
+            )
+        ]
+        [ Svg.text_
+            [ Svg.Attributes.class "resource"
+            , Svg.Attributes.x "2.5"
+            , Svg.Attributes.y "2.5"
+            ]
+            [ Svg.text (String.fromChar icon) ]
+        ]
+
+
 viewEntity : ( Point, Entity ) -> Svg msg
 viewEntity ( point, entity ) =
     case entity of
         Resource icon ->
-            Svg.g
-                [ Svg.Attributes.class "resource-animation"
-                , Svg.Attributes.style
-                    ("animation-delay: "
-                        ++ (Point.distanceFloat ( 0, 0, 0 ) point
-                                |> (*) animationDelayMultiplier
-                                |> String.fromFloat
-                           )
-                        ++ "ms"
-                    )
-                ]
-                [ Svg.text_
-                    [ Svg.Attributes.class "resource"
-                    , Svg.Attributes.x "2.5"
-                    , Svg.Attributes.y "2.5"
-                    ]
-                    [ Svg.text (String.fromChar icon) ]
-                ]
+            viewEntityHelper point icon
 
         NPC icon ->
-            Svg.g
-                [ Svg.Attributes.class "resource-animation"
-                , Svg.Attributes.style
-                    ("animation-delay: "
-                        ++ (Point.distanceFloat ( 0, 0, 0 ) point
-                                |> (*) animationDelayMultiplier
-                                |> String.fromFloat
-                           )
-                        ++ "ms"
-                    )
-                ]
-                [ Svg.text_
-                    [ Svg.Attributes.class "resource"
-                    , Svg.Attributes.x "2.5"
-                    , Svg.Attributes.y "2.5"
-                    ]
-                    [ Svg.text (String.fromChar icon) ]
-                ]
+            viewEntityHelper point icon
+
+        MapTransition _ ->
+            viewEntityHelper point 'x'
 
 
 viewPlayer : Player -> Svg msg
