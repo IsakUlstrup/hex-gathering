@@ -172,13 +172,13 @@ viewEntityInteractions transitionEvent mbyEntity =
         panelContents e =
             case e of
                 Resource _ ->
-                    Html.text "Resource"
+                    [ Html.text "Resource" ]
 
                 NPC _ ->
-                    Html.text "NPC"
+                    [ Html.text "NPC" ]
 
                 MapTransition destination ->
-                    Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "travel" ]
+                    [ Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "travel" ] ]
     in
     case mbyEntity of
         Just ( point, entity ) ->
@@ -189,9 +189,10 @@ viewEntityInteractions transitionEvent mbyEntity =
                     , Svg.Attributes.height <| String.fromInt height
                     , Svg.Attributes.x <| String.fromInt -(width // 2)
                     , Svg.Attributes.y <| String.fromInt -(height + height // 2)
+                    , Svg.Attributes.pointerEvents "none"
                     ]
-                    [ Html.div [ Html.Attributes.class "entity-interactions", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
-                        [ panelContents entity
+                    [ Html.aside [ Html.Attributes.class "interaction-container", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
+                        [ Html.div [ Html.Attributes.class "entity-interactions" ] (panelContents entity)
                         ]
                     ]
                 ]
