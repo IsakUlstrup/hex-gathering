@@ -136,23 +136,27 @@ viewEntity transitionEvent ( point, entity ) =
             viewEntityHelper [ Svg.Events.onClick <| transitionEvent destination ] point '🚕'
 
 
-viewPlayer : Player -> Svg msg
-viewPlayer player =
+positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
+positionNode position attributes children =
     let
         ( x, y ) =
-            Render.pointToPixel player.position
+            Render.pointToPixel position
     in
-    Svg.g [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "player", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+    Svg.g (Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") :: attributes)
+        children
+
+
+viewPlayer : Player -> Svg msg
+viewPlayer player =
+    positionNode player.position
+        [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "player" ]
         [ Svg.g [ Svg.Attributes.class "player-animation" ] [ Svg.text_ [ Svg.Attributes.class "player-icon" ] [ Svg.text (player.icon |> String.fromChar) ] ] ]
 
 
 viewHighlight : Point -> Svg msg
 viewHighlight point =
-    let
-        ( x, y ) =
-            Render.pointToPixel point
-    in
-    Svg.g [ Svg.Attributes.class "highlight", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") ]
+    positionNode point
+        [ Svg.Attributes.class "highlight" ]
         [ Svg.circle [ Svg.Attributes.class "move-target", Svg.Attributes.r "1", Svg.Attributes.fill "beige", Svg.Attributes.fillOpacity "0.9" ] [] ]
 
 
