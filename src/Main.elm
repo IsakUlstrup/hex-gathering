@@ -6,7 +6,7 @@ import Browser.Events
 import Content.Maps
 import Dict exposing (Dict)
 import HexEngine.HexEntityMap exposing (HexEntityMap)
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
@@ -176,8 +176,17 @@ update msg model =
             , Cmd.none
             )
 
-        SelectEntity entity ->
-            ( { model | selectedEntity = Just entity }, Cmd.none )
+        SelectEntity ( position, entity ) ->
+            ( { model
+                | selectedEntity =
+                    if Point.distance model.player.position position == 1 then
+                        Just ( position, entity )
+
+                    else
+                        Nothing
+              }
+            , Cmd.none
+            )
 
 
 
