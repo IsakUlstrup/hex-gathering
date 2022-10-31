@@ -67,7 +67,7 @@ init _ =
          ]
             |> Dict.fromList
         )
-        (Enter 500 (Tuple.first Content.Maps.testMap2))
+        (Enter transitionTime (Tuple.first Content.Maps.testMap2))
         (Player.new ( 0, 0, 0 ) '🐼')
         Render.initRenderConfig
     , Cmd.none
@@ -76,6 +76,11 @@ init _ =
 
 
 -- MAP TRANSITION
+
+
+transitionTime : Int
+transitionTime =
+    500
 
 
 currentMap : Model -> HexEntityMap Tile Entity
@@ -102,6 +107,30 @@ currentMapName model =
         |> Maybe.withDefault "Error"
 
 
+tickMapTransition : Int -> MapTransition -> MapTransition
+tickMapTransition dt transition =
+    case transition of
+        Enter dur map ->
+            Enter (max 0 (dur - dt)) map
+
+        Leave dur from to ->
+            if dur <= 0 then
+                Enter transitionTime to
+
+            else
+                Leave (max 0 (dur - dt)) from to
+
+
+resetPlayerPosition : MapTransition -> Player -> Player
+resetPlayerPosition transition player =
+    case transition of
+        Leave 0 _ _ ->
+            { player | position = ( 0, 0, 0 ) } |> Player.stop
+
+        _ ->
+            player
+
+
 
 -- UPDATE
 
@@ -124,8 +153,10 @@ update msg model =
 
         Tick dt ->
             ( { model
-                | player =
+                | mapTransition = tickMapTransition dt model.mapTransition
+                , player =
                     model.player
+                        |> resetPlayerPosition model.mapTransition
                         |> Player.playerMove
                         |> Player.playerCooldown dt
                 , renderConfig = Render.withHexFocus model.player.position model.renderConfig

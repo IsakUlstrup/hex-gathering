@@ -80,7 +80,7 @@ testMap3 =
         |> HexEntityMap.insertTile Medium ( -1, 1, 0 )
         |> HexEntityMap.insertTile Medium ( -2, 1, 1 )
         |> HexEntityMap.insertTile Medium ( -1, 0, 1 )
-        |> HexEntityMap.insertEntity (MapTransition "Mine") ( -1, 0, 1 )
+        |> HexEntityMap.insertEntity (MapTransition "Home") ( -1, 0, 1 )
     )
 
 

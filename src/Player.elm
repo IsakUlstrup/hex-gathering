@@ -6,6 +6,7 @@ module Player exposing
     , playerCooldown
     , playerMove
     , playerpath
+    , stop
     )
 
 import AnimationConstants
@@ -91,6 +92,11 @@ playerCooldown dt player =
 
         Idle ->
             player
+
+
+stop : Player -> Player
+stop player =
+    { player | moveState = Idle }
 
 
 moveTarget : Player -> Point
