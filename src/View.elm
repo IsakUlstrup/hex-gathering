@@ -178,7 +178,9 @@ viewEntityInteractions transitionEvent mbyEntity =
                     [ Html.text "NPC" ]
 
                 MapTransition destination ->
-                    [ Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "travel" ] ]
+                    [ Html.text ("Taxi to " ++ destination)
+                    , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
+                    ]
     in
     case mbyEntity of
         Just ( point, entity ) ->
