@@ -54,6 +54,7 @@ testMap2 =
         |> HexEntityMap.insertTile Medium ( 4, -2, -2 )
         |> HexEntityMap.insertTile High ( 6, -3, -3 )
         |> HexEntityMap.insertTile Medium ( 5, -2, -3 )
+        |> HexEntityMap.insertEntity (MapTransition "Mine") ( 5, -2, -3 )
         |> HexEntityMap.insertTile Medium ( -4, 2, 2 )
         |> HexEntityMap.insertTile Medium ( -5, 3, 2 )
         |> HexEntityMap.insertTile Medium ( -5, 2, 3 )
@@ -79,6 +80,7 @@ testMap3 =
         |> HexEntityMap.insertTile Medium ( -1, 1, 0 )
         |> HexEntityMap.insertTile Medium ( -2, 1, 1 )
         |> HexEntityMap.insertTile Medium ( -1, 0, 1 )
+        |> HexEntityMap.insertEntity (MapTransition "Mine") ( -1, 0, 1 )
     )
 
 
