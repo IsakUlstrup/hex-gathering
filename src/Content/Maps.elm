@@ -34,9 +34,10 @@ testMap =
         |> HexMap.insertReplaceHex ( ( 0, -3, 3 ), Medium )
 
 
-testMap2 : HexEntityMap Tile Entity
+testMap2 : ( String, HexEntityMap Tile Entity )
 testMap2 =
-    HexEntityMap.empty
+    ( "Home"
+    , HexEntityMap.empty
         |> HexEntityMap.insertTile Medium ( 0, 0, 0 )
         |> HexEntityMap.insertTile Medium ( 0, 1, -1 )
         |> HexEntityMap.insertTile Medium ( 1, 0, -1 )
@@ -67,15 +68,18 @@ testMap2 =
         |> HexEntityMap.insertEntity (Resource '🌴') ( -5, 2, 3 )
         |> HexEntityMap.insertEntity (Resource '🌴') ( 1, -2, 1 )
         |> HexEntityMap.insertEntity (NPC '🧙') ( 2, 0, -2 )
+    )
 
 
-testMap3 : HexEntityMap Tile Entity
+testMap3 : ( String, HexEntityMap Tile Entity )
 testMap3 =
-    HexEntityMap.empty
+    ( "Mine"
+    , HexEntityMap.empty
         |> HexEntityMap.insertTile Medium ( 0, 0, 0 )
         |> HexEntityMap.insertTile Medium ( -1, 1, 0 )
         |> HexEntityMap.insertTile Medium ( -2, 1, 1 )
         |> HexEntityMap.insertTile Medium ( -1, 0, 1 )
+    )
 
 
 errorMap : HexEntityMap Tile Entity

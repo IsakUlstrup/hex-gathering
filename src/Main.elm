@@ -62,12 +62,12 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        ([ ( "Home", Content.Maps.testMap2 )
-         , ( "Mine", Content.Maps.testMap3 )
+        ([ Content.Maps.testMap2
+         , Content.Maps.testMap3
          ]
             |> Dict.fromList
         )
-        (Enter 500 "Mine")
+        (Enter 500 (Tuple.first Content.Maps.testMap2))
         (Player.new ( 0, 0, 0 ) '🐼')
         Render.initRenderConfig
     , Cmd.none
