@@ -48,7 +48,7 @@ isWalkable map point =
 
 type MapTransition
     = Enter Int String
-    | Leave Int String
+    | Leave Int String String
 
 
 type alias Model =
@@ -75,12 +75,7 @@ init _ =
 
 
 
--- UPDATE
-
-
-type Msg
-    = FocusTile Point
-    | Tick Int
+-- MAP TRANSITION
 
 
 currentMap : Model -> HexEntityMap Tile Entity
@@ -89,10 +84,32 @@ currentMap model =
         Enter _ map ->
             Dict.get map model.maps
 
-        Leave _ map ->
-            Dict.get map model.maps
+        Leave _ from _ ->
+            Dict.get from model.maps
     )
         |> Maybe.withDefault Content.Maps.errorMap
+
+
+currentMapName : Model -> String
+currentMapName model =
+    (case model.mapTransition of
+        Enter _ map ->
+            Just map
+
+        Leave _ from _ ->
+            Just from
+    )
+        |> Maybe.withDefault "Error"
+
+
+
+-- UPDATE
+
+
+type Msg
+    = FocusTile Point
+    | Tick Int
+    | MapTransition String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -116,6 +133,9 @@ update msg model =
             , Cmd.none
             )
 
+        MapTransition destination ->
+            ( { model | mapTransition = Leave 500 (currentMapName model) destination }, Cmd.none )
+
 
 
 -- VIEW
@@ -128,7 +148,7 @@ view model =
         , Render.renderTileEntityMap model.renderConfig
             (currentMap model)
             (View.viewTile FocusTile)
-            View.viewEntity
+            (View.viewEntity MapTransition)
             [ View.viewPlayerMoveTarget model.player
             , View.viewPlayer model.player
             ]

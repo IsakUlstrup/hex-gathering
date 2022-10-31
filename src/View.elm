@@ -3,7 +3,7 @@ module View exposing (..)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render
 import Player exposing (Player)
-import Svg exposing (Svg)
+import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
 import Tile exposing (Entity(..), Tile(..))
@@ -99,8 +99,8 @@ viewTile clickEvent ( point, tile ) =
         ]
 
 
-viewEntityHelper : Point -> Char -> Svg msg
-viewEntityHelper point icon =
+viewEntityHelper : List (Attribute msg) -> Point -> Char -> Svg msg
+viewEntityHelper attrs point icon =
     Svg.g
         [ Svg.Attributes.class "resource-animation"
         , Svg.Attributes.style
@@ -113,25 +113,27 @@ viewEntityHelper point icon =
             )
         ]
         [ Svg.text_
-            [ Svg.Attributes.class "resource"
-            , Svg.Attributes.x "2.5"
-            , Svg.Attributes.y "2.5"
-            ]
+            ([ Svg.Attributes.class "resource"
+             , Svg.Attributes.x "2.5"
+             , Svg.Attributes.y "2.5"
+             ]
+                ++ attrs
+            )
             [ Svg.text (String.fromChar icon) ]
         ]
 
 
-viewEntity : ( Point, Entity ) -> Svg msg
-viewEntity ( point, entity ) =
+viewEntity : (String -> msg) -> ( Point, Entity ) -> Svg msg
+viewEntity transitionEvent ( point, entity ) =
     case entity of
         Resource icon ->
-            viewEntityHelper point icon
+            viewEntityHelper [] point icon
 
         NPC icon ->
-            viewEntityHelper point icon
+            viewEntityHelper [] point icon
 
-        MapTransition _ ->
-            viewEntityHelper point 'x'
+        MapTransition destination ->
+            viewEntityHelper [ Svg.Events.onClick <| transitionEvent destination ] point 'x'
 
 
 viewPlayer : Player -> Svg msg
