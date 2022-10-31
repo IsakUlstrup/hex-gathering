@@ -4,7 +4,7 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Maps
-import Dict
+import Dict exposing (Dict)
 import HexEngine.HexEntityMap exposing (HexEntityMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
@@ -52,7 +52,8 @@ type MapTransition
 
 
 type alias Model =
-    { map : HexEntityMap Tile Entity
+    { maps : Dict String (HexEntityMap Tile Entity)
+    , mapTransition : MapTransition
     , player : Player
     , renderConfig : RenderConfig
     }
@@ -61,7 +62,12 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        Content.Maps.testMap2
+        ([ ( "Home", Content.Maps.testMap2 )
+         , ( "Mine", Content.Maps.testMap3 )
+         ]
+            |> Dict.fromList
+        )
+        (Enter 500 "Mine")
         (Player.new ( 0, 0, 0 ) '🐼')
         Render.initRenderConfig
     , Cmd.none
@@ -77,12 +83,24 @@ type Msg
     | Tick Int
 
 
+currentMap : Model -> HexEntityMap Tile Entity
+currentMap model =
+    (case model.mapTransition of
+        Enter _ map ->
+            Dict.get map model.maps
+
+        Leave _ map ->
+            Dict.get map model.maps
+    )
+        |> Maybe.withDefault Content.Maps.errorMap
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FocusTile point ->
             ( { model
-                | player = Player.playerpath (isWalkable model.map) point model.player
+                | player = Player.playerpath (isWalkable <| currentMap model) point model.player
               }
             , Cmd.none
             )
@@ -108,7 +126,7 @@ view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , Render.renderTileEntityMap model.renderConfig
-            model.map
+            (currentMap model)
             (View.viewTile FocusTile)
             View.viewEntity
             [ View.viewPlayerMoveTarget model.player
