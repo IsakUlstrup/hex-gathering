@@ -133,7 +133,7 @@ viewEntity transitionEvent ( point, entity ) =
             viewEntityHelper [] point icon
 
         MapTransition destination ->
-            viewEntityHelper [ Svg.Events.onClick <| transitionEvent destination ] point 'x'
+            viewEntityHelper [ Svg.Events.onClick <| transitionEvent destination ] point '🚕'
 
 
 viewPlayer : Player -> Svg msg
