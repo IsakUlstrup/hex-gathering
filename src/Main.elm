@@ -168,7 +168,12 @@ update msg model =
             )
 
         MapTransition destination ->
-            ( { model | mapTransition = Leave 500 (currentMapName model) destination }, Cmd.none )
+            ( { model
+                | mapTransition = Leave 500 (currentMapName model) destination
+                , selectedEntity = Nothing
+              }
+            , Cmd.none
+            )
 
         SelectEntity entity ->
             ( { model | selectedEntity = Just entity }, Cmd.none )
