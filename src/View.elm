@@ -167,7 +167,7 @@ viewEntityInteractions : (String -> msg) -> Maybe ( Point, Entity ) -> Svg msg
 viewEntityInteractions transitionEvent mbyEntity =
     let
         ( width, height ) =
-            ( 30, 20 )
+            ( 40, 30 )
 
         panelContents e =
             case e of
@@ -175,7 +175,7 @@ viewEntityInteractions transitionEvent mbyEntity =
                     [ Html.text "Resource" ]
 
                 NPC _ ->
-                    [ Html.text "NPC" ]
+                    [ Html.text "Vilde the Flottosaur" ]
 
                 MapTransition destination ->
                     [ Html.text ("Taxi to " ++ destination)
