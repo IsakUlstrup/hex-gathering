@@ -50,6 +50,7 @@ withCameraPosition ( x, y ) config =
 withHexFocus : Point -> RenderConfig -> RenderConfig
 withHexFocus point config =
     let
+        pos : ( Float, Float )
         pos =
             point |> pointToPixel
     in
@@ -93,6 +94,7 @@ pointToYpos point =
 cornersToString : List ( Float, Float ) -> String
 cornersToString points =
     let
+        tupleToString : ( Float, Float ) -> String
         tupleToString ( x, y ) =
             String.fromFloat x ++ "," ++ String.fromFloat y
     in
@@ -102,6 +104,7 @@ cornersToString points =
 cornersToString2 : HexCorners -> String
 cornersToString2 points =
     let
+        tupleToString : ( Float, Float ) -> String
         tupleToString ( x, y ) =
             String.fromFloat x ++ "," ++ String.fromFloat y
     in
@@ -147,9 +150,11 @@ hardcodedPoints =
 fancyHexCorners2 : HexCorners
 fancyHexCorners2 =
     let
+        angleRad : Float -> Float
         angleRad cornerNumber =
-            degrees (60 * cornerNumber |> toFloat)
+            degrees (60 * cornerNumber)
 
+        corner : Float -> ( Float, Float )
         corner cornerNumber =
             ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
             , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
