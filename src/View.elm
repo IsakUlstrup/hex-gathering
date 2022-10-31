@@ -2,6 +2,8 @@ module View exposing (..)
 
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render
+import Html
+import Html.Attributes
 import Player exposing (Player)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
@@ -123,14 +125,14 @@ viewEntityHelper attrs point icon =
         ]
 
 
-viewEntity : (String -> msg) -> ( Point, Entity ) -> Svg msg
-viewEntity transitionEvent ( point, entity ) =
+viewEntity : (String -> msg) -> (( Point, Entity ) -> msg) -> ( Point, Entity ) -> Svg msg
+viewEntity transitionEvent selectEvent ( point, entity ) =
     case entity of
         Resource icon ->
-            viewEntityHelper [] point icon
+            viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point icon
 
         NPC icon ->
-            viewEntityHelper [] point icon
+            viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point icon
 
         MapTransition destination ->
             viewEntityHelper [ Svg.Events.onClick <| transitionEvent destination ] point '🚕'
@@ -158,6 +160,34 @@ viewHighlight point =
     positionNode point
         [ Svg.Attributes.class "highlight" ]
         [ Svg.circle [ Svg.Attributes.class "move-target", Svg.Attributes.r "1", Svg.Attributes.fill "beige", Svg.Attributes.fillOpacity "0.9" ] [] ]
+
+
+viewEntityInteractions : Maybe ( Point, Entity ) -> Svg msg
+viewEntityInteractions mbyEntity =
+    let
+        ( width, height ) =
+            ( 30, 20 )
+    in
+    case mbyEntity of
+        Just ( point, _ ) ->
+            positionNode point
+                []
+                [ Svg.foreignObject
+                    [ Svg.Attributes.width <| String.fromInt width
+                    , Svg.Attributes.height <| String.fromInt height
+                    , Svg.Attributes.x <| String.fromInt -(width // 2)
+                    , Svg.Attributes.y <| String.fromInt -(height + height // 2)
+                    ]
+                    [ Html.div [ Html.Attributes.class "entity-interactions", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
+                        [ Html.text "hei"
+                        ]
+                    ]
+                ]
+
+        Nothing ->
+            positionNode ( 0, 0, 0 )
+                []
+                []
 
 
 viewPlayerMoveTarget : Player -> Svg msg

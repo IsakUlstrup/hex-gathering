@@ -10,7 +10,7 @@ import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
-import Tile exposing (Entity, Tile(..))
+import Tile exposing (Entity(..), Tile(..))
 import View
 
 
@@ -55,6 +55,7 @@ type alias Model =
     { maps : Dict String (HexEntityMap Tile Entity)
     , mapTransition : MapTransition
     , player : Player
+    , selectedEntity : Maybe ( Point, Entity )
     , renderConfig : RenderConfig
     }
 
@@ -69,6 +70,7 @@ init _ =
         )
         (Enter transitionTime (Tuple.first Content.Maps.testMap2))
         (Player.new ( 0, 0, 0 ) '🐼')
+        Nothing
         Render.initRenderConfig
     , Cmd.none
     )
@@ -139,6 +141,7 @@ type Msg
     = FocusTile Point
     | Tick Int
     | MapTransition String
+    | SelectEntity ( Point, Entity )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -167,6 +170,9 @@ update msg model =
         MapTransition destination ->
             ( { model | mapTransition = Leave 500 (currentMapName model) destination }, Cmd.none )
 
+        SelectEntity entity ->
+            ( { model | selectedEntity = Just entity }, Cmd.none )
+
 
 
 -- VIEW
@@ -179,9 +185,10 @@ view model =
         , Render.renderTileEntityMap model.renderConfig
             (currentMap model)
             (View.viewTile FocusTile)
-            (View.viewEntity MapTransition)
+            (View.viewEntity MapTransition SelectEntity)
             [ View.viewPlayerMoveTarget model.player
             , View.viewPlayer model.player
+            , View.viewEntityInteractions model.selectedEntity
             ]
         ]
 
