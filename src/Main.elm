@@ -46,6 +46,11 @@ isWalkable map point =
             False
 
 
+type MapTransition
+    = Enter Int String
+    | Leave Int String
+
+
 type alias Model =
     { map : HexEntityMap Tile Entity
     , player : Player

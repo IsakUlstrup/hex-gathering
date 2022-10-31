@@ -1,4 +1,4 @@
-module Content.Maps exposing (testMap, testMap2)
+module Content.Maps exposing (testMap, testMap2, testMap3)
 
 import HexEngine.HexEntityMap as HexEntityMap exposing (HexEntityMap)
 import HexEngine.HexMap as HexMap exposing (HexMap)
@@ -67,3 +67,12 @@ testMap2 =
         |> HexEntityMap.insertEntity (Resource '🌴') ( -5, 2, 3 )
         |> HexEntityMap.insertEntity (Resource '🌴') ( 1, -2, 1 )
         |> HexEntityMap.insertEntity (NPC '🧙') ( 2, 0, -2 )
+
+
+testMap3 : HexEntityMap Tile Entity
+testMap3 =
+    HexEntityMap.empty
+        |> HexEntityMap.insertTile Medium ( 0, 0, 0 )
+        |> HexEntityMap.insertTile Medium ( -1, 1, 0 )
+        |> HexEntityMap.insertTile Medium ( -2, 1, 1 )
+        |> HexEntityMap.insertTile Medium ( -1, 0, 1 )
