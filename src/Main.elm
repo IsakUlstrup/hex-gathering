@@ -185,10 +185,10 @@ view model =
         , Render.renderTileEntityMap model.renderConfig
             (currentMap model)
             (View.viewTile FocusTile)
-            (View.viewEntity MapTransition SelectEntity)
+            (View.viewEntity SelectEntity)
             [ View.viewPlayerMoveTarget model.player
             , View.viewPlayer model.player
-            , View.viewEntityInteractions model.selectedEntity
+            , View.viewEntityInteractions MapTransition model.selectedEntity
             ]
         ]
 

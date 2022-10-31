@@ -4,6 +4,7 @@ import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render
 import Html
 import Html.Attributes
+import Html.Events
 import Player exposing (Player)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
@@ -125,8 +126,8 @@ viewEntityHelper attrs point icon =
         ]
 
 
-viewEntity : (String -> msg) -> (( Point, Entity ) -> msg) -> ( Point, Entity ) -> Svg msg
-viewEntity transitionEvent selectEvent ( point, entity ) =
+viewEntity : (( Point, Entity ) -> msg) -> ( Point, Entity ) -> Svg msg
+viewEntity selectEvent ( point, entity ) =
     case entity of
         Resource icon ->
             viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point icon
@@ -134,8 +135,8 @@ viewEntity transitionEvent selectEvent ( point, entity ) =
         NPC icon ->
             viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point icon
 
-        MapTransition destination ->
-            viewEntityHelper [ Svg.Events.onClick <| transitionEvent destination ] point '🚕'
+        MapTransition _ ->
+            viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point '🚕'
 
 
 positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
@@ -162,14 +163,25 @@ viewHighlight point =
         [ Svg.circle [ Svg.Attributes.class "move-target", Svg.Attributes.r "1", Svg.Attributes.fill "beige", Svg.Attributes.fillOpacity "0.9" ] [] ]
 
 
-viewEntityInteractions : Maybe ( Point, Entity ) -> Svg msg
-viewEntityInteractions mbyEntity =
+viewEntityInteractions : (String -> msg) -> Maybe ( Point, Entity ) -> Svg msg
+viewEntityInteractions transitionEvent mbyEntity =
     let
         ( width, height ) =
             ( 30, 20 )
+
+        panelContents e =
+            case e of
+                Resource _ ->
+                    Html.text "Resource"
+
+                NPC _ ->
+                    Html.text "NPC"
+
+                MapTransition destination ->
+                    Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "travel" ]
     in
     case mbyEntity of
-        Just ( point, _ ) ->
+        Just ( point, entity ) ->
             positionNode point
                 []
                 [ Svg.foreignObject
@@ -179,7 +191,7 @@ viewEntityInteractions mbyEntity =
                     , Svg.Attributes.y <| String.fromInt -(height + height // 2)
                     ]
                     [ Html.div [ Html.Attributes.class "entity-interactions", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
-                        [ Html.text "hei"
+                        [ panelContents entity
                         ]
                     ]
                 ]
