@@ -1,4 +1,4 @@
-module Content.Maps exposing (errorMap, testMap)
+module Content.Maps exposing (errorMap, testMap, testMap3)
 
 import HexEngine.HexMap as HexMap exposing (HexMap)
 import Tile exposing (Entity(..), Terrain(..), Tile(..))
@@ -6,7 +6,7 @@ import Tile exposing (Entity(..), Terrain(..), Tile(..))
 
 testMap : HexMap Tile
 testMap =
-    HexMap.empty "Test"
+    HexMap.empty "Home"
         |> HexMap.insertTile ( 0, 0, 0 ) (Terrain Medium)
         |> HexMap.insertTile ( 0, 1, -1 ) (Terrain Medium)
         |> HexMap.insertTile ( 1, 0, -1 ) (Terrain Medium)
@@ -70,16 +70,15 @@ testMap =
 --         |> HexEntityMap.insertEntity (Resource '🌴') ( 1, -2, 1 )
 --         |> HexEntityMap.insertEntity (NPC '🦖') ( 2, 0, -2 )
 --     )
--- testMap3 : ( String, HexEntityMap Tile Entity )
--- testMap3 =
---     ( "Mine"
---     , HexEntityMap.empty
---         |> HexEntityMap.insertTile Medium ( 0, 0, 0 )
---         |> HexEntityMap.insertTile Medium ( -1, 1, 0 )
---         |> HexEntityMap.insertTile Medium ( -2, 1, 1 )
---         |> HexEntityMap.insertTile Medium ( -1, 0, 1 )
---         |> HexEntityMap.insertEntity (MapTransition "Home") ( -1, 0, 1 )
---     )
+
+
+testMap3 : HexMap Tile
+testMap3 =
+    HexMap.empty "Mine"
+        |> HexMap.insertTile ( 0, 0, 0 ) (Terrain Medium)
+        |> HexMap.insertTile ( -1, 1, 0 ) (Terrain Medium)
+        |> HexMap.insertTile ( -2, 1, 1 ) (Terrain Medium)
+        |> HexMap.insertTile ( -1, 0, 1 ) (TerrainEntity Medium (MapTransition "Home"))
 
 
 errorMap : HexMap Tile

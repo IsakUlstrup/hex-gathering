@@ -60,7 +60,9 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        [ Content.Maps.testMap ]
+        [ Content.Maps.testMap
+        , Content.Maps.testMap3
+        ]
         (Enter transitionTime Content.Maps.testMap.name)
         (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
