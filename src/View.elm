@@ -9,7 +9,7 @@ import Player exposing (Player)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
-import Tile exposing (Entity(..), Tile(..))
+import Tile exposing (Entity(..), Terrain(..), Tile(..))
 
 
 
@@ -25,8 +25,21 @@ animationDelayMultiplier =
 -- VIEW FUNCTIONS
 
 
-viewTile : (Point -> msg) -> ( Point, Tile ) -> Svg msg
-viewTile clickEvent ( point, tile ) =
+viewTile : (Point -> msg) -> (( Point, Entity ) -> msg) -> ( Point, Tile ) -> Svg msg
+viewTile clickEvent selectEvent ( point, tile ) =
+    case tile of
+        Terrain terrain ->
+            viewTerrain clickEvent ( point, terrain )
+
+        TerrainEntity terrain entity ->
+            Svg.g []
+                [ viewTerrain clickEvent ( point, terrain )
+                , viewEntity selectEvent ( point, entity )
+                ]
+
+
+viewTerrain : (Point -> msg) -> ( Point, Terrain ) -> Svg msg
+viewTerrain clickEvent ( point, tile ) =
     let
         tileType =
             case tile of

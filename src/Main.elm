@@ -4,13 +4,13 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Maps
-import Dict exposing (Dict)
-import HexEngine.HexEntityMap exposing (HexEntityMap)
+import Dict
+import HexEngine.HexMap exposing (HexMap)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
-import Tile exposing (Entity(..), Tile(..))
+import Tile exposing (Entity(..), Terrain(..), Tile(..))
 import View
 
 
@@ -25,10 +25,10 @@ Only tiles that exist and are of variant Medium are walkable
 Entities are not walkable
 
 -}
-isWalkable : HexEntityMap Tile Entity -> Point -> Bool
+isWalkable : HexMap Tile -> Point -> Bool
 isWalkable map point =
-    case ( Dict.get point map.tiles, Dict.get point map.entities ) of
-        ( Just t, Nothing ) ->
+    case Dict.get point map.grid of
+        Just (Terrain t) ->
             case t of
                 Medium ->
                     True
@@ -36,13 +36,10 @@ isWalkable map point =
                 _ ->
                     False
 
-        ( Just _, Just _ ) ->
+        Just (TerrainEntity _ _) ->
             False
 
-        ( Nothing, Just _ ) ->
-            False
-
-        ( Nothing, Nothing ) ->
+        Nothing ->
             False
 
 
@@ -52,7 +49,7 @@ type MapTransition
 
 
 type alias Model =
-    { maps : Dict String (HexEntityMap Tile Entity)
+    { maps : List (HexMap Tile)
     , mapTransition : MapTransition
     , player : Player
     , selectedEntity : Maybe ( Point, Entity )
@@ -63,12 +60,8 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        ([ Content.Maps.testMap2
-         , Content.Maps.testMap3
-         ]
-            |> Dict.fromList
-        )
-        (Enter transitionTime (Tuple.first Content.Maps.testMap2))
+        [ Content.Maps.testMap ]
+        (Enter transitionTime Content.Maps.testMap.name)
         (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         Render.initRenderConfig
@@ -85,14 +78,19 @@ transitionTime =
     500
 
 
-currentMap : Model -> HexEntityMap Tile Entity
+getMap : String -> List (HexMap Tile) -> Maybe (HexMap Tile)
+getMap name maps =
+    maps |> List.filter (\m -> m.name == name) |> List.head
+
+
+currentMap : Model -> HexMap Tile
 currentMap model =
     (case model.mapTransition of
         Enter _ map ->
-            Dict.get map model.maps
+            getMap map model.maps
 
         Leave _ from _ ->
-            Dict.get from model.maps
+            getMap from model.maps
     )
         |> Maybe.withDefault Content.Maps.errorMap
 
@@ -197,10 +195,10 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , Render.renderTileEntityMap model.renderConfig
+        , Render.renderMap model.renderConfig
             (currentMap model)
-            (View.viewTile FocusTile)
-            (View.viewEntity SelectEntity)
+            (View.viewTile FocusTile SelectEntity)
+            -- (View.viewEntity SelectEntity)
             [ View.viewPlayerMoveTarget model.player
             , View.viewPlayer model.player
             , View.viewEntityInteractions MapTransition model.selectedEntity

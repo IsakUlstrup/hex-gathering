@@ -1,25 +1,22 @@
-module HexEngine.HexMap exposing (HexMap, empty, insertReplaceHex, mapHexes)
+module HexEngine.HexMap exposing (HexMap, empty, insertTile)
 
 import Dict exposing (Dict)
 import HexEngine.Point exposing (Point)
 
 
 type alias HexMap tile =
-    Dict Point tile
+    { name : String
+    , grid : Dict Point tile
+    }
 
 
-empty : HexMap tile
-empty =
-    [] |> Dict.fromList
-
-
-mapHexes : (( Point, tile ) -> a) -> HexMap tile -> List a
-mapHexes f map =
-    Dict.toList map |> List.map f
+empty : String -> HexMap tile
+empty name =
+    HexMap name Dict.empty
 
 
 {-| Insert hex, replace on collision
 -}
-insertReplaceHex : ( Point, tile ) -> HexMap tile -> HexMap tile
-insertReplaceHex ( point, tile ) map =
-    Dict.insert point tile map
+insertTile : Point -> tile -> HexMap tile -> HexMap tile
+insertTile point tile map =
+    { map | grid = Dict.insert point tile map.grid }
