@@ -203,7 +203,7 @@ viewEntityInteractions transitionEvent mbyEntity =
                     [ Svg.Attributes.width <| String.fromInt width
                     , Svg.Attributes.height <| String.fromInt height
                     , Svg.Attributes.x <| String.fromInt -(width // 2)
-                    , Svg.Attributes.y <| String.fromInt -(height + height // 2)
+                    , Svg.Attributes.y <| String.fromInt -(height + height // 3)
                     , Svg.Attributes.pointerEvents "none"
                     ]
                     [ Html.aside [ Html.Attributes.class "interaction-container", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
