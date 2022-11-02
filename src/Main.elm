@@ -6,7 +6,7 @@ import Browser.Events
 import Content.Maps
 import Dict
 import HexEngine.HexMap exposing (HexMap)
-import HexEngine.Point as Point exposing (Point)
+import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
@@ -138,23 +138,21 @@ resetPlayerPosition transition player =
 
 
 type Msg
-    = FocusTile Point
-    | Tick Int
+    = Tick Int
     | MapTransition String
-    | SelectEntity ( Point, Entity )
+    | ClickHex Point
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FocusTile point ->
-            ( { model
-                | player = Player.playerpath (isWalkable <| currentMap model) point model.player
-                , selectedEntity = Nothing
-              }
-            , Cmd.none
-            )
-
+        -- FocusTile point ->
+        --     ( { model
+        --         | player = Player.playerpath (isWalkable <| currentMap model) point model.player
+        --         , selectedEntity = Nothing
+        --       }
+        --     , Cmd.none
+        --     )
         Tick dt ->
             ( { model
                 | mapTransition = tickMapTransition dt model.mapTransition
@@ -176,14 +174,20 @@ update msg model =
             , Cmd.none
             )
 
-        SelectEntity ( position, entity ) ->
+        -- SelectEntity ( position, entity ) ->
+        --     ( { model
+        --         | selectedEntity =
+        --             if Point.distance model.player.position position == 1 then
+        --                 Just ( position, entity )
+        --             else
+        --                 Nothing
+        --       }
+        --     , Cmd.none
+        --     )
+        ClickHex point ->
             ( { model
-                | selectedEntity =
-                    if Point.distance model.player.position position == 1 then
-                        Just ( position, entity )
-
-                    else
-                        Nothing
+                | player = Player.playerpath (isWalkable <| currentMap model) point model.player
+                , selectedEntity = Nothing
               }
             , Cmd.none
             )
@@ -199,8 +203,7 @@ view model =
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , Render.renderMap model.renderConfig
             (currentMap model)
-            (View.viewTile FocusTile SelectEntity)
-            -- (View.viewEntity SelectEntity)
+            (View.viewTile ClickHex)
             [ View.viewPlayerMoveTarget model.player
             , View.viewPlayer model.player
             , View.viewEntityInteractions MapTransition model.selectedEntity

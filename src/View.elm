@@ -25,21 +25,30 @@ animationDelayMultiplier =
 -- VIEW FUNCTIONS
 
 
-viewTile : (Point -> msg) -> (( Point, Entity ) -> msg) -> ( Point, Tile ) -> Svg msg
-viewTile clickEvent selectEvent ( point, tile ) =
+viewTile : (Point -> msg) -> ( Point, Tile ) -> Svg msg
+viewTile clickEvent ( point, tile ) =
+    let
+        wrapper cs =
+            Svg.g
+                [ Svg.Attributes.class "hex"
+                , Svg.Events.onClick <| clickEvent point
+                ]
+                cs
+    in
     case tile of
         Terrain terrain ->
-            viewTerrain clickEvent ( point, terrain )
+            wrapper
+                [ viewTerrain ( point, terrain ) ]
 
         TerrainEntity terrain entity ->
-            Svg.g []
-                [ viewTerrain clickEvent ( point, terrain )
-                , viewEntity selectEvent ( point, entity )
+            wrapper
+                [ viewTerrain ( point, terrain )
+                , viewEntity ( point, entity )
                 ]
 
 
-viewTerrain : (Point -> msg) -> ( Point, Terrain ) -> Svg msg
-viewTerrain clickEvent ( point, tile ) =
+viewTerrain : ( Point, Terrain ) -> Svg msg
+viewTerrain ( point, tile ) =
     let
         tileType =
             case tile of
@@ -65,20 +74,11 @@ viewTerrain clickEvent ( point, tile ) =
 
                 High ->
                     4
-
-        events =
-            case tile of
-                Medium ->
-                    [ Svg.Events.onClick (clickEvent point)
-                    ]
-
-                _ ->
-                    []
     in
     Svg.g
-        ([ Svg.Attributes.class "hex"
-         , Svg.Attributes.class tileType
-         , Svg.Attributes.style
+        [ Svg.Attributes.class "terrain"
+        , Svg.Attributes.class tileType
+        , Svg.Attributes.style
             ("animation-delay: "
                 ++ (Point.distanceFloat ( 0, 0, 0 ) point
                         |> (*) animationDelayMultiplier
@@ -86,9 +86,7 @@ viewTerrain clickEvent ( point, tile ) =
                    )
                 ++ "ms"
             )
-         ]
-            ++ events
-        )
+        ]
         [ Svg.polygon
             [ Svg.Attributes.class "edge0"
             , Svg.Attributes.class "edge"
@@ -118,7 +116,7 @@ viewTerrain clickEvent ( point, tile ) =
 viewEntityHelper : List (Attribute msg) -> Point -> Char -> Svg msg
 viewEntityHelper attrs point icon =
     Svg.g
-        [ Svg.Attributes.class "resource-animation"
+        [ Svg.Attributes.class "entity"
         , Svg.Attributes.style
             ("animation-delay: "
                 ++ (Point.distanceFloat ( 0, 0, 0 ) point
@@ -129,7 +127,7 @@ viewEntityHelper attrs point icon =
             )
         ]
         [ Svg.text_
-            ([ Svg.Attributes.class "resource"
+            ([ Svg.Attributes.class "content"
              , Svg.Attributes.x "2.5"
              , Svg.Attributes.y "2.5"
              ]
@@ -139,17 +137,17 @@ viewEntityHelper attrs point icon =
         ]
 
 
-viewEntity : (( Point, Entity ) -> msg) -> ( Point, Entity ) -> Svg msg
-viewEntity selectEvent ( point, entity ) =
+viewEntity : ( Point, Entity ) -> Svg msg
+viewEntity ( point, entity ) =
     case entity of
         Resource icon ->
-            viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point icon
+            viewEntityHelper [] point icon
 
         NPC icon ->
-            viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point icon
+            viewEntityHelper [] point icon
 
         MapTransition _ ->
-            viewEntityHelper [ Svg.Events.onClick <| selectEvent ( point, entity ) ] point '🚕'
+            viewEntityHelper [] point '🚕'
 
 
 positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
@@ -165,8 +163,11 @@ positionNode position attributes children =
 viewPlayer : Player -> Svg msg
 viewPlayer player =
     positionNode player.position
-        [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "player" ]
-        [ Svg.g [ Svg.Attributes.class "player-animation" ] [ Svg.text_ [ Svg.Attributes.class "player-icon" ] [ Svg.text (player.icon |> String.fromChar) ] ] ]
+        [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "entity" ]
+        [ Svg.g [ Svg.Attributes.class "player-animation" ]
+            [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (player.icon |> String.fromChar) ]
+            ]
+        ]
 
 
 viewHighlight : Point -> Svg msg
