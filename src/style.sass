@@ -74,24 +74,7 @@ svg
 .camera
     transition: transform var(--player-move-duration) ease-in-out
 
-// .player
-//     transition: transform var(--player-move-duration) ease-in-out
-
-//     .player-icon
-//         opacity: 0
-//         animation: entity-fall var(--fall-duration) ease forwards
-//         filter: drop-shadow( 0rem -0.03rem 0rem #384043) saturate(80%) sepia(30%)
-//         // transform: rotateX(35deg)
-//         font-size: 0.6rem
-//         text-anchor: middle
-//     &.moving .player-animation
-//         animation: jump var(--player-move-duration) ease
-//     &.blocked .player-animation
-//         animation: shake 200ms ease infinite
-
 .entity
-    // opacity: 0
-    // animation: entity-fall var(--fall-duration) ease forwards
     transition: transform var(--player-move-duration) ease-in-out
 
     .content
@@ -149,15 +132,11 @@ svg
 
 .hex
     -webkit-tap-highlight-color: transparent
+    animation: fall var(--fall-duration) ease forwards
+    opacity: 0
 
 .terrain
-    opacity: 0
-    transform: translateY(-0.2rem)
-    animation: fall var(--fall-duration) ease forwards
-
     .face,.edge
-        stroke-width: 0.4
-        transition: transform 200ms ease
         stroke-width: 0.4
         stroke-linejoin: round
 

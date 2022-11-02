@@ -32,6 +32,14 @@ viewTile clickEvent ( point, tile ) =
             Svg.g
                 [ Svg.Attributes.class "hex"
                 , Svg.Events.onClick <| clickEvent point
+                , Svg.Attributes.style
+                    ("animation-delay: "
+                        ++ (Point.distanceFloat ( 0, 0, 0 ) point
+                                |> (*) animationDelayMultiplier
+                                |> String.fromFloat
+                           )
+                        ++ "ms"
+                    )
                 ]
                 cs
     in
@@ -78,14 +86,6 @@ viewTerrain ( point, tile ) =
     Svg.g
         [ Svg.Attributes.class "terrain"
         , Svg.Attributes.class tileType
-        , Svg.Attributes.style
-            ("animation-delay: "
-                ++ (Point.distanceFloat ( 0, 0, 0 ) point
-                        |> (*) animationDelayMultiplier
-                        |> String.fromFloat
-                   )
-                ++ "ms"
-            )
         ]
         [ Svg.polygon
             [ Svg.Attributes.class "edge0"
@@ -113,18 +113,10 @@ viewTerrain ( point, tile ) =
         ]
 
 
-viewEntityHelper : List (Attribute msg) -> Point -> Char -> Svg msg
-viewEntityHelper attrs point icon =
+viewEntityHelper : List (Attribute msg) -> Char -> Svg msg
+viewEntityHelper attrs icon =
     Svg.g
         [ Svg.Attributes.class "entity"
-        , Svg.Attributes.style
-            ("animation-delay: "
-                ++ (Point.distanceFloat ( 0, 0, 0 ) point
-                        |> (*) animationDelayMultiplier
-                        |> String.fromFloat
-                   )
-                ++ "ms"
-            )
         ]
         [ Svg.text_
             ([ Svg.Attributes.class "content"
@@ -138,16 +130,16 @@ viewEntityHelper attrs point icon =
 
 
 viewEntity : ( Point, Entity ) -> Svg msg
-viewEntity ( point, entity ) =
+viewEntity ( _, entity ) =
     case entity of
         Resource icon ->
-            viewEntityHelper [] point icon
+            viewEntityHelper [] icon
 
         NPC icon ->
-            viewEntityHelper [] point icon
+            viewEntityHelper [] icon
 
         MapTransition _ ->
-            viewEntityHelper [] point '🚕'
+            viewEntityHelper [] '🚕'
 
 
 positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
