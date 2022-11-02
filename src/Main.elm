@@ -4,8 +4,9 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Maps
+import Dict
 import HexEngine.HexMap exposing (HexMap)
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
@@ -108,6 +109,20 @@ resetPlayerPosition transition player =
 
 
 
+-- MAP INTERACTION
+
+
+getEntity : Point -> HexMap Tile -> Maybe Entity
+getEntity position map =
+    case Dict.get position map.grid of
+        Just (TerrainEntity _ entity) ->
+            Just entity
+
+        _ ->
+            Nothing
+
+
+
 -- UPDATE
 
 
@@ -120,13 +135,6 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        -- FocusTile point ->
-        --     ( { model
-        --         | player = Player.playerpath (isWalkable <| currentMap model) point model.player
-        --         , selectedEntity = Nothing
-        --       }
-        --     , Cmd.none
-        --     )
         Tick dt ->
             ( { model
                 | mapTransition = tickMapTransition dt model.mapTransition
@@ -148,20 +156,15 @@ update msg model =
             , Cmd.none
             )
 
-        -- SelectEntity ( position, entity ) ->
-        --     ( { model
-        --         | selectedEntity =
-        --             if Point.distance model.player.position position == 1 then
-        --                 Just ( position, entity )
-        --             else
-        --                 Nothing
-        --       }
-        --     , Cmd.none
-        --     )
         ClickHex point ->
             ( { model
                 | player = Player.playerpath (Tile.isWalkable <| currentMap model) point model.player
-                , selectedEntity = Nothing
+                , selectedEntity =
+                    if Point.distance model.player.position point == 1 then
+                        getEntity point (currentMap model) |> Maybe.map (Tuple.pair point)
+
+                    else
+                        Nothing
               }
             , Cmd.none
             )
