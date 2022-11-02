@@ -2,7 +2,12 @@ module Tile exposing
     ( Entity(..)
     , Terrain(..)
     , Tile(..)
+    , isWalkable
     )
+
+import Dict
+import HexEngine.HexMap exposing (HexMap)
+import HexEngine.Point exposing (Point)
 
 
 type Terrain
@@ -20,3 +25,28 @@ type Entity
 type Tile
     = Terrain Terrain
     | TerrainEntity Terrain Entity
+
+
+{-| determine if a given point is walkable
+
+Only tiles that exist and are of variant Medium are walkable
+
+Entities are not walkable
+
+-}
+isWalkable : HexMap Tile -> Point -> Bool
+isWalkable map point =
+    case Dict.get point map.grid of
+        Just (Terrain t) ->
+            case t of
+                Medium ->
+                    True
+
+                _ ->
+                    False
+
+        Just (TerrainEntity _ _) ->
+            False
+
+        Nothing ->
+            False

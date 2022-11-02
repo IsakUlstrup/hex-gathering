@@ -4,7 +4,6 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Maps
-import Dict
 import HexEngine.HexMap exposing (HexMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
@@ -16,31 +15,6 @@ import View
 
 
 -- MODEL
-
-
-{-| determine if a given point is walkable
-
-Only tiles that exist and are of variant Medium are walkable
-
-Entities are not walkable
-
--}
-isWalkable : HexMap Tile -> Point -> Bool
-isWalkable map point =
-    case Dict.get point map.grid of
-        Just (Terrain t) ->
-            case t of
-                Medium ->
-                    True
-
-                _ ->
-                    False
-
-        Just (TerrainEntity _ _) ->
-            False
-
-        Nothing ->
-            False
 
 
 type MapTransition
@@ -186,7 +160,7 @@ update msg model =
         --     )
         ClickHex point ->
             ( { model
-                | player = Player.playerpath (isWalkable <| currentMap model) point model.player
+                | player = Player.playerpath (Tile.isWalkable <| currentMap model) point model.player
                 , selectedEntity = Nothing
               }
             , Cmd.none
