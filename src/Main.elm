@@ -158,7 +158,16 @@ update msg model =
 
         ClickHex point ->
             ( { model
-                | player = Player.playerpath (Tile.isWalkable <| currentMap model) point model.player
+                | player =
+                    case Dict.get point (currentMap model).grid of
+                        Just (Terrain _) ->
+                            Player.playerpath (Tile.isWalkable <| currentMap model) point model.player
+
+                        Just (TerrainEntity _ _) ->
+                            Player.playerpathAdjacent (Tile.isWalkable <| currentMap model) point model.player
+
+                        _ ->
+                            model.player
                 , selectedEntity =
                     if Point.distance model.player.position point == 1 then
                         getEntity point (currentMap model) |> Maybe.map (Tuple.pair point)

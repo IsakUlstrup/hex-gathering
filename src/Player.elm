@@ -6,11 +6,13 @@ module Player exposing
     , playerCooldown
     , playerMove
     , playerpath
+    , playerpathAdjacent
     , stop
     )
 
 import AnimationConstants
 import HexEngine.Point as Point exposing (Point)
+import Set
 
 
 type MoveState
@@ -76,6 +78,30 @@ playerpath walkable to player =
 
             Nothing ->
                 { player | moveState = BlockedPath to 200 }
+
+
+{-| find shortest path to a tile adjacent to target tile
+-}
+playerpathAdjacent : (Point -> Bool) -> Point -> Player -> Player
+playerpathAdjacent walkable to player =
+    if moveTarget player == to then
+        { player | moveState = Idle }
+
+    else
+        Point.neighbors to
+            |> Set.toList
+            |> List.map (Point.pathfind walkable player.position)
+            |> List.filterMap identity
+            |> List.sortBy List.length
+            |> List.head
+            |> (\p ->
+                    case p of
+                        Just path ->
+                            setPlayerPath path player
+
+                        Nothing ->
+                            { player | moveState = BlockedPath to 200 }
+               )
 
 
 playerCooldown : Int -> Player -> Player
