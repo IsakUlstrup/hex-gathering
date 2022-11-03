@@ -52,7 +52,7 @@ init _ =
 
 transitionTime : Int
 transitionTime =
-    500
+    50
 
 
 getMap : String -> List (HexMap Tile) -> Maybe (HexMap Tile)
@@ -150,7 +150,7 @@ update msg model =
 
         MapTransition destination ->
             ( { model
-                | mapTransition = Leave 500 (currentMapName model) destination
+                | mapTransition = Leave transitionTime (currentMapName model) destination
                 , selectedEntity = Nothing
               }
             , Cmd.none
