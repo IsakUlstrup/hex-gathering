@@ -179,8 +179,7 @@ view model =
         , Render.renderMap model.renderConfig
             (currentMap model)
             (View.viewTile model.selectedPoint ClickHex)
-            [ View.viewPlayerMoveTarget model.player
-            , View.viewPlayer model.player
+            [ View.viewPlayer model.player
             , View.viewEntityInteractions MapTransition model.selectedEntity
             ]
         ]
