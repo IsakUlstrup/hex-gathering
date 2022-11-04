@@ -2,6 +2,7 @@ module Tile exposing
     ( Entity(..)
     , Terrain(..)
     , Tile(..)
+    , getEntity
     , isWalkable
     )
 
@@ -50,3 +51,13 @@ isWalkable map point =
 
         Nothing ->
             False
+
+
+getEntity : Point -> HexMap Tile -> Maybe Entity
+getEntity position map =
+    case Dict.get position map.grid of
+        Just (TerrainEntity _ entity) ->
+            Just entity
+
+        _ ->
+            Nothing

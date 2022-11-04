@@ -109,20 +109,6 @@ resetPlayerPosition transition player =
 
 
 
--- MAP INTERACTION
-
-
-getEntity : Point -> HexMap Tile -> Maybe Entity
-getEntity position map =
-    case Dict.get position map.grid of
-        Just (TerrainEntity _ entity) ->
-            Just entity
-
-        _ ->
-            Nothing
-
-
-
 -- UPDATE
 
 
@@ -170,7 +156,7 @@ update msg model =
                             model.player
                 , selectedEntity =
                     if Point.distance model.player.position point == 1 then
-                        getEntity point (currentMap model) |> Maybe.map (Tuple.pair point)
+                        Tile.getEntity point (currentMap model) |> Maybe.map (Tuple.pair point)
 
                     else
                         Nothing
