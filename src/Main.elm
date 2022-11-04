@@ -28,6 +28,7 @@ type alias Model =
     , mapTransition : MapTransition
     , player : Player
     , selectedEntity : Maybe ( Point, Entity )
+    , selectedPoint : Point
     , renderConfig : RenderConfig
     }
 
@@ -41,6 +42,7 @@ init _ =
         (Enter transitionTime Content.Maps.testMap.name)
         (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
+        ( 0, 0, 0 )
         Render.initRenderConfig
     , Cmd.none
     )
@@ -160,6 +162,7 @@ update msg model =
 
                     else
                         Nothing
+                , selectedPoint = point
               }
             , Cmd.none
             )
@@ -175,7 +178,7 @@ view model =
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , Render.renderMap model.renderConfig
             (currentMap model)
-            (View.viewTile ClickHex)
+            (View.viewTile model.selectedPoint ClickHex)
             [ View.viewPlayerMoveTarget model.player
             , View.viewPlayer model.player
             , View.viewEntityInteractions MapTransition model.selectedEntity

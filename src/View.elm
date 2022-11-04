@@ -21,16 +21,26 @@ animationDelayMultiplier =
     150
 
 
+svgClassList : List ( String, Bool ) -> Attribute msg
+svgClassList classes =
+    classes
+        |> List.filter Tuple.second
+        |> List.map Tuple.first
+        |> List.intersperse " "
+        |> String.concat
+        |> Svg.Attributes.class
+
+
 
 -- VIEW FUNCTIONS
 
 
-viewTile : (Point -> msg) -> ( Point, Tile ) -> Svg msg
-viewTile clickEvent ( point, tile ) =
+viewTile : Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
+viewTile selectedPoint clickEvent ( point, tile ) =
     let
         wrapper cs =
             Svg.g
-                [ Svg.Attributes.class "hex"
+                [ svgClassList [ ( "hex", True ), ( "selected", point == selectedPoint ) ]
                 , Svg.Events.onClick <| clickEvent point
                 , Svg.Attributes.style
                     ("animation-delay: "
