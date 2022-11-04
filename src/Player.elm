@@ -1,5 +1,6 @@
 module Player exposing
     ( Player
+    , isIdle
     , moveStateString
     , moveTarget
     , new
@@ -183,3 +184,13 @@ playerMove player =
 
         Idle ->
             player
+
+
+isIdle : Player -> Bool
+isIdle player =
+    case player.moveState of
+        Idle ->
+            True
+
+        _ ->
+            False

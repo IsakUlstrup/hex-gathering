@@ -179,8 +179,8 @@ viewHighlight point =
         [ Svg.circle [ Svg.Attributes.class "move-target", Svg.Attributes.r "1", Svg.Attributes.fill "beige", Svg.Attributes.fillOpacity "0.9" ] [] ]
 
 
-viewEntityInteractions : (String -> msg) -> Maybe ( Point, Entity ) -> Svg msg
-viewEntityInteractions transitionEvent mbyEntity =
+viewEntityInteractions : (String -> msg) -> ( Point, Entity ) -> Svg msg
+viewEntityInteractions transitionEvent ( point, entity ) =
     let
         ( width, height ) =
             ( 40, 30 )
@@ -198,27 +198,20 @@ viewEntityInteractions transitionEvent mbyEntity =
                     , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
                     ]
     in
-    case mbyEntity of
-        Just ( point, entity ) ->
-            positionNode point
-                []
-                [ Svg.foreignObject
-                    [ Svg.Attributes.width <| String.fromInt width
-                    , Svg.Attributes.height <| String.fromInt height
-                    , Svg.Attributes.x <| String.fromInt -(width // 2)
-                    , Svg.Attributes.y <| String.fromInt -(height + height // 3)
-                    , Svg.Attributes.pointerEvents "none"
-                    ]
-                    [ Html.aside [ Html.Attributes.class "interaction-container", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
-                        [ Html.div [ Html.Attributes.class "entity-interactions" ] (panelContents entity)
-                        ]
-                    ]
+    positionNode point
+        []
+        [ Svg.foreignObject
+            [ Svg.Attributes.width <| String.fromInt width
+            , Svg.Attributes.height <| String.fromInt height
+            , Svg.Attributes.x <| String.fromInt -(width // 2)
+            , Svg.Attributes.y <| String.fromInt -(height + height // 3)
+            , Svg.Attributes.pointerEvents "none"
+            ]
+            [ Html.aside [ Html.Attributes.class "interaction-container", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
+                [ Html.div [ Html.Attributes.class "entity-interactions" ] (panelContents entity)
                 ]
-
-        Nothing ->
-            positionNode ( 0, 0, 0 )
-                []
-                []
+            ]
+        ]
 
 
 viewPlayerMoveTarget : Player -> Svg msg

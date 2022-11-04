@@ -10,6 +10,7 @@ import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
+import Svg exposing (Svg)
 import Tile exposing (Entity(..), Terrain(..), Tile(..))
 import View
 
@@ -27,7 +28,6 @@ type alias Model =
     { maps : List (HexMap Tile)
     , mapTransition : MapTransition
     , player : Player
-    , selectedEntity : Maybe ( Point, Entity )
     , selectedPoint : Point
     , renderConfig : RenderConfig
     }
@@ -41,7 +41,6 @@ init _ =
         ]
         (Enter transitionTime Content.Maps.testMap.name)
         (Player.new ( 0, 0, 0 ) '🐼')
-        Nothing
         ( 0, 0, 0 )
         Render.initRenderConfig
     , Cmd.none
@@ -139,7 +138,7 @@ update msg model =
         MapTransition destination ->
             ( { model
                 | mapTransition = Leave transitionTime (currentMapName model) destination
-                , selectedEntity = Nothing
+                , selectedPoint = ( 0, 0, 0 )
               }
             , Cmd.none
             )
@@ -156,12 +155,6 @@ update msg model =
 
                         _ ->
                             model.player
-                , selectedEntity =
-                    if Point.distance model.player.position point == 1 then
-                        Tile.getEntity point (currentMap model) |> Maybe.map (Tuple.pair point)
-
-                    else
-                        Nothing
                 , selectedPoint = point
               }
             , Cmd.none
@@ -172,6 +165,20 @@ update msg model =
 -- VIEW
 
 
+maybeViewInteractions : Model -> List (Svg Msg)
+maybeViewInteractions model =
+    case Tile.getEntity model.selectedPoint (currentMap model) of
+        Just e ->
+            if Point.distance model.selectedPoint model.player.position == 1 && Player.isIdle model.player then
+                [ View.viewEntityInteractions MapTransition ( model.selectedPoint, e ) ]
+
+            else
+                []
+
+        Nothing ->
+            []
+
+
 view : Model -> Html Msg
 view model =
     main_ []
@@ -179,9 +186,7 @@ view model =
         , Render.renderMap model.renderConfig
             (currentMap model)
             (View.viewTile model.selectedPoint ClickHex)
-            [ View.viewPlayer model.player
-            , View.viewEntityInteractions MapTransition model.selectedEntity
-            ]
+            (View.viewPlayer model.player :: maybeViewInteractions model)
         ]
 
 
