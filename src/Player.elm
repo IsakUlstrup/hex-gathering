@@ -1,5 +1,6 @@
 module Player exposing
     ( Player
+    , hasPath
     , isIdle
     , moveStateString
     , moveTarget
@@ -194,3 +195,19 @@ isIdle player =
 
         _ ->
             False
+
+
+hasPath : Player -> Bool
+hasPath player =
+    case player.moveState of
+        Idle ->
+            False
+
+        BlockedPath _ _ ->
+            False
+
+        Moving _ _ ->
+            True
+
+        Cooling _ _ ->
+            True

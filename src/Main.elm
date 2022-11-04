@@ -144,8 +144,8 @@ update msg model =
             )
 
         ClickHex point ->
-            ( { model
-                | player =
+            let
+                newPlayer =
                     case Dict.get point (currentMap model).grid of
                         Just (Terrain _) ->
                             Player.playerpath (Tile.isWalkable <| currentMap model) point model.player
@@ -155,7 +155,16 @@ update msg model =
 
                         _ ->
                             model.player
-                , selectedPoint = point
+            in
+            ( { model
+                | player =
+                    newPlayer
+                , selectedPoint =
+                    if Player.hasPath newPlayer then
+                        point
+
+                    else
+                        model.selectedPoint
               }
             , Cmd.none
             )
