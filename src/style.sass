@@ -144,7 +144,7 @@ svg
 
 .terrain
     .face,.edge
-        stroke-width: 0.4
+        stroke-width: 0.15
         stroke-linejoin: round
         transition: fill 300ms ease
 
@@ -155,7 +155,7 @@ svg
         @include hex($high-hex-color)
         pointer-events: none
         .face,.edge
-            transform: translateY(-0.1rem)
+            transform: translateY(-0.12rem)
 
     &.medium
         @include hex($medium-hex-color)
@@ -165,4 +165,4 @@ svg
         @include hex($low-hex-color)
         pointer-events: none
         .face,.edge
-            transform: translateY(0.1rem)
+            transform: translateY(0.09rem)
