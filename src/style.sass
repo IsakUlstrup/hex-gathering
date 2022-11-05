@@ -120,13 +120,13 @@ svg
     .face
         fill: $color
         stroke: color.scale($color, $lightness: 50%)
-    .edge0
+    .column-right
         stroke: color.scale($color, $lightness: 40%)
         fill: color.scale($color, $lightness: 40%)
-    .edge1
+    .column-middle
         stroke: color.scale($color, $lightness: 50%)
         fill: color.scale($color, $lightness: 50%)
-    .edge2
+    .column-left
         stroke: color.scale($color, $lightness: 60%)
         fill: color.scale($color, $lightness: 60%)
 
@@ -143,18 +143,18 @@ svg
             filter: drop-shadow( 0rem 0rem 0.03rem #5afcff)
 
 .terrain
-    .face,.edge
+    .face,.column-segment
         stroke-width: 0.15
         stroke-linejoin: round
         transition: fill 300ms ease
 
-    .edge
+    .column-segment
         paint-order: stroke
 
     &.high
         @include hex($high-hex-color)
         pointer-events: none
-        .face,.edge
+        .face,.column-segment
             transform: translateY(-0.12rem)
 
     &.medium
@@ -164,5 +164,5 @@ svg
     &.low
         @include hex($low-hex-color)
         pointer-events: none
-        .face,.edge
+        .face,.column-segment
             transform: translateY(0.09rem)

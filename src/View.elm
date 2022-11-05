@@ -98,20 +98,20 @@ viewTerrain ( point, tile ) =
         , Svg.Attributes.class tileType
         ]
         [ Svg.polygon
-            [ Svg.Attributes.class "edge0"
-            , Svg.Attributes.class "edge"
+            [ Svg.Attributes.class "column-right"
+            , Svg.Attributes.class "column-segment"
             , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornersToString)
             ]
             []
         , Svg.polygon
-            [ Svg.Attributes.class "edge2"
-            , Svg.Attributes.class "edge"
+            [ Svg.Attributes.class "column-left"
+            , Svg.Attributes.class "column-segment"
             , Svg.Attributes.points ([ points.p2, points.p3, Render.pointAdd points.p3 ( 0, columnHeight ), Render.pointAdd points.p2 ( 0, columnHeight ) ] |> Render.cornersToString)
             ]
             []
         , Svg.polygon
-            [ Svg.Attributes.class "edge1"
-            , Svg.Attributes.class "edge"
+            [ Svg.Attributes.class "column-middle"
+            , Svg.Attributes.class "column-segment"
             , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornersToString)
             ]
             []
