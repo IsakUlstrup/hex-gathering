@@ -186,13 +186,18 @@ viewEntityInteractions transitionEvent ( point, entity ) =
         panelContents e =
             case e of
                 Resource _ ->
-                    [ Html.text "Resource" ]
+                    [ Html.h1 [] [ Html.text "Resource" ]
+                    , Html.p [] [ Html.text "Resource" ]
+                    ]
 
                 NPC _ ->
-                    [ Html.text "Vilde the Flottosaur" ]
+                    [ Html.h1 [] [ Html.text "Awesomesaur" ]
+                    , Html.p [] [ Html.text "Awesomesaur" ]
+                    ]
 
                 MapTransition destination ->
-                    [ Html.text ("Taxi to " ++ destination)
+                    [ Html.h1 [] [ Html.text "Taxi" ]
+                    , Html.text ("Taxi to " ++ destination)
                     , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
                     ]
     in
