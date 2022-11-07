@@ -53,20 +53,16 @@ svg
     height: 100%
 
 .entity-interactions
-    pointer-events: all
-    animation: fall 300ms
-    padding: 0.1rem
-    font-size: 0.15rem
-    border-radius: 0.1rem
-    text-align: center
-    background: rgb(55, 61, 64)
-    color: rgb(255, 253, 231)
-    button
-        font-size: 0.15rem
-        padding: 0.1rem
-        border-radius: 0.1rem
-        border: 0.01rem solid #262626
-        outline: none
+    background: rgb(46, 50, 54)
+    color: rgb(255, 253, 220)
+    border: none
+    border-radius: 1rem
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    padding: 1rem
+    &::backdrop
+        background: rgb(0 0 0 / 0.4)
 
 @mixin hex($color)
     .face
