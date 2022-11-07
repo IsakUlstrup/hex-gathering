@@ -206,7 +206,7 @@ renderMap config map renderTile extras =
         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         ]
-        [ Svg.g
+        [ Svg.Keyed.node "g"
             [ Svg.Attributes.style
                 ("transform: translate("
                     ++ String.fromFloat -(config.cameraX * config.zoom)
@@ -218,7 +218,9 @@ renderMap config map renderTile extras =
                 )
             , Svg.Attributes.class "camera"
             ]
-            (Svg.Lazy.lazy2 renderLayer map renderTile :: extras)
+            [ ( map.name, Svg.Lazy.lazy2 renderLayer map renderTile )
+            , ( "extras", Svg.g [] extras )
+            ]
         ]
 
 
