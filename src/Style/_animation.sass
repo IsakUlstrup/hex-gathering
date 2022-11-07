@@ -1,0 +1,46 @@
+
+@keyframes fall
+    0%
+        transform: translateY(-0.5rem)
+        opacity: 0
+    30%
+        opacity: 1
+        transform: translateY(0.15rem)
+    70%
+        transform: translateY(-0.02rem)
+    100%
+        transform: translateY(0rem)
+        opacity: 1
+
+@keyframes entity-fall
+    0%
+        transform: translateY(-0.5rem) rotateX(0deg)
+        opacity: 0
+    30%
+        opacity: 1
+        transform: translateY(0.15rem) rotateX(35deg) scaleY(0.9)
+    70%
+        transform: translateY(-0.02rem) rotateX(35deg) scaleY(1.05)
+    100%
+        transform: translateY(0rem) rotateX(35deg) scaleY(1)
+        opacity: 1
+
+@keyframes jump
+    10%
+        transform: scaleY(0.8)
+    50%
+        transform: translateY(-0.3rem) scaleY(1.2)
+    80%
+        transform: translateY(0rem) scaleY( 0.9)
+    100%
+        transform: translateY(0rem) scaleY(1)
+
+@keyframes shake
+    0%
+        transform: translateX(0)
+    33%
+        transform: translateX(-0.2rem)
+    66%
+        transform: translateX(0.2rem)
+    100%
+        transform: translateX(0rem)
