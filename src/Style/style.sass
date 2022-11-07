@@ -70,11 +70,13 @@ svg
     &::backdrop
         background: rgb(0 0 0 / 0.4)
     h1
-        font-family: 'Chango', cursive
+        font-family: 'Chango', sans-serif
         background-image: $wave-pattern
+        background-size: cover
         background-clip: text
+        -webkit-background-clip: text
         color: transparent
-        font-size: 2rem
+        font-size: 4rem
 
 @mixin hex($color)
     .face
