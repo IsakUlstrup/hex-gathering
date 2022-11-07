@@ -113,6 +113,11 @@ resetPlayerPosition transition player =
 -- UPDATE
 
 
+playerReadyToInteract : Player -> Point -> Bool
+playerReadyToInteract player point =
+    Point.distance point player.position == 1 && Player.isIdle player
+
+
 type Msg
     = Tick Int
     | MapTransition String
@@ -130,7 +135,12 @@ update msg model =
                         |> resetPlayerPosition model.mapTransition
                         |> Player.playerMove
                         |> Player.playerCooldown dt
-                , renderConfig = Render.withHexFocus model.player.position model.renderConfig
+                , renderConfig =
+                    if playerReadyToInteract model.player model.selectedPoint then
+                        Render.withHexFocus model.selectedPoint model.renderConfig
+
+                    else
+                        Render.withHexFocus model.player.position model.renderConfig
               }
             , Cmd.none
             )
@@ -178,7 +188,7 @@ maybeViewInteractions : Model -> List (Svg Msg)
 maybeViewInteractions model =
     case Tile.getEntity model.selectedPoint (currentMap model) of
         Just e ->
-            if Point.distance model.selectedPoint model.player.position == 1 && Player.isIdle model.player then
+            if playerReadyToInteract model.player model.selectedPoint then
                 [ View.viewEntityInteractions MapTransition ( model.selectedPoint, e ) ]
 
             else
