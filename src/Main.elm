@@ -201,12 +201,14 @@ maybeViewInteractions model =
 view : Model -> Html Msg
 view model =
     main_ []
-        [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , Render.renderMap model.renderConfig
+        ([ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
+         , Render.renderMap model.renderConfig
             (currentMap model)
             (View.viewTile model.selectedPoint ClickHex)
-            (View.viewPlayer model.player :: maybeViewInteractions model)
-        ]
+            [ View.viewPlayer model.player ]
+         ]
+            ++ maybeViewInteractions model
+        )
 
 
 

@@ -5,6 +5,7 @@ import HexEngine.Render as Render
 import Html
 import Html.Attributes
 import Html.Events
+import HtmlExtra
 import Player exposing (Player)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
@@ -182,9 +183,6 @@ viewHighlight point =
 viewEntityInteractions : (String -> msg) -> ( Point, Entity ) -> Svg msg
 viewEntityInteractions transitionEvent ( point, entity ) =
     let
-        ( width, height ) =
-            ( 40, 30 )
-
         panelContents e =
             case e of
                 Resource _ ->
@@ -198,20 +196,11 @@ viewEntityInteractions transitionEvent ( point, entity ) =
                     , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
                     ]
     in
-    positionNode point
-        []
-        [ Svg.foreignObject
-            [ Svg.Attributes.width <| String.fromInt width
-            , Svg.Attributes.height <| String.fromInt height
-            , Svg.Attributes.x <| String.fromInt -(width // 2)
-            , Svg.Attributes.y <| String.fromInt -(height + height // 3)
-            , Svg.Attributes.pointerEvents "none"
-            ]
-            [ Html.aside [ Html.Attributes.class "interaction-container", Html.Attributes.attribute "xmlns" "http://www.w3.org/1999/xhtml" ]
-                [ Html.div [ Html.Attributes.class "entity-interactions" ] (panelContents entity)
-                ]
-            ]
+    HtmlExtra.dialog
+        [ HtmlExtra.open
+        , Html.Attributes.class "entity-interactions"
         ]
+        (panelContents entity)
 
 
 viewPlayerMoveTarget : Player -> Svg msg
