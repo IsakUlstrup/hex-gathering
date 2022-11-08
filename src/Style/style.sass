@@ -18,6 +18,10 @@ $spacing-small: 0.5rem
 $spacing-medium: 1rem
 $spacing-large: 2rem
 
+// animation timing
+$player-move-duration: var(--player-move-duration)
+$hex-fall-duration: var(--fall-duration)
+
 // pattern by https://www.svgbackgrounds.com/
 $wave-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Crect fill='%23ff9d00' width='1600' height='800'/%3E%3Cg stroke='%23A2A241' stroke-width='53.2' stroke-opacity='0' %3E%3Ccircle fill='%23ff9d00' cx='0' cy='0' r='1800'/%3E%3Ccircle fill='%23f99519' cx='0' cy='0' r='1700'/%3E%3Ccircle fill='%23f48e25' cx='0' cy='0' r='1600'/%3E%3Ccircle fill='%23ee862f' cx='0' cy='0' r='1500'/%3E%3Ccircle fill='%23e87e36' cx='0' cy='0' r='1400'/%3E%3Ccircle fill='%23e2773d' cx='0' cy='0' r='1300'/%3E%3Ccircle fill='%23dc6f42' cx='0' cy='0' r='1200'/%3E%3Ccircle fill='%23d66747' cx='0' cy='0' r='1100'/%3E%3Ccircle fill='%23d05f4c' cx='0' cy='0' r='1000'/%3E%3Ccircle fill='%23ca5750' cx='0' cy='0' r='900'/%3E%3Ccircle fill='%23c44f54' cx='0' cy='0' r='800'/%3E%3Ccircle fill='%23be4758' cx='0' cy='0' r='700'/%3E%3Ccircle fill='%23b83f5c' cx='0' cy='0' r='600'/%3E%3Ccircle fill='%23b1365f' cx='0' cy='0' r='500'/%3E%3Ccircle fill='%23ab2c63' cx='0' cy='0' r='400'/%3E%3Ccircle fill='%23a42266' cx='0' cy='0' r='300'/%3E%3Ccircle fill='%239d1569' cx='0' cy='0' r='200'/%3E%3Ccircle fill='%2396006C' cx='0' cy='0' r='100'/%3E%3C/g%3E%3C/svg%3E")
 // STYLES
@@ -40,20 +44,20 @@ svg
     shape-rendering: geometricPrecision
 
 .camera
-    transition: transform var(--player-move-duration) ease-in-out
+    transition: transform $player-move-duration ease-in-out
 
 .entity
-    transition: transform var(--player-move-duration) ease-in-out
+    transition: transform $player-move-duration ease-in-out
 
     .content
-        filter: drop-shadow( 0rem -0.03rem 0rem #384043) saturate(80%) sepia(30%)
+        filter: saturate(80%) sepia(30%)
         font-size: 0.5rem
         text-anchor: middle
         cursor: pointer
         user-select: none
 
     &.moving .player-animation
-        animation: jump var(--player-move-duration) ease
+        animation: jump $player-move-duration ease
     &.blocked .player-animation
         animation: shake 200ms ease infinite
 
@@ -94,7 +98,7 @@ svg
 
 .hex
     -webkit-tap-highlight-color: transparent
-    animation: fall var(--fall-duration) ease forwards
+    animation: fall $hex-fall-duration ease forwards
     opacity: 0
 
     &.selected
