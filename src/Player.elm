@@ -20,7 +20,7 @@ import Set
 
 type MoveState
     = Moving (List Point) Int
-    | Cooling (List Point) Int
+    | Cooling (List Point)
     | BlockedPath Point Int
     | Idle
 
@@ -43,7 +43,7 @@ moveStateString player =
         Moving _ _ ->
             "moving"
 
-        Cooling _ _ ->
+        Cooling _ ->
             "cooling"
 
         BlockedPath _ _ ->
@@ -59,14 +59,14 @@ setPlayerPath path player =
         Moving _ cd ->
             { player | moveState = Moving path cd }
 
-        Cooling _ cd ->
-            { player | moveState = Cooling path cd }
+        Cooling _ ->
+            { player | moveState = Cooling path }
 
         BlockedPath _ _ ->
-            { player | moveState = Cooling path 0 }
+            { player | moveState = Cooling path }
 
         Idle ->
-            { player | moveState = Cooling path 0 }
+            { player | moveState = Cooling path }
 
 
 playerpath : (Point -> Bool) -> Point -> Player -> Player
@@ -113,8 +113,8 @@ playerCooldown dt player =
         Moving path cd ->
             { player | moveState = Moving path (max 0 (cd - dt)) }
 
-        Cooling path cd ->
-            { player | moveState = Cooling path (max 0 (cd - dt)) }
+        Cooling path ->
+            { player | moveState = Cooling path }
 
         BlockedPath to cd ->
             { player | moveState = BlockedPath to (max 0 (cd - dt)) }
@@ -134,7 +134,7 @@ moveTarget player =
         Moving path _ ->
             path |> List.reverse |> List.head
 
-        Cooling path _ ->
+        Cooling path ->
             path |> List.reverse |> List.head
 
         BlockedPath _ _ ->
@@ -151,29 +151,21 @@ playerMove player =
     case player.moveState of
         Moving path cd ->
             if cd == 0 then
-                { player | moveState = Cooling path 0 }
+                { player | moveState = Cooling path }
 
             else
                 player
 
-        Cooling (p :: path) cd ->
-            if cd <= 0 then
-                { player
-                    | moveState = Moving path (Tuple.second AnimationConstants.playerMoveTime)
-                    , position = p
-                }
+        Cooling (p :: path) ->
+            { player
+                | moveState = Moving path (Tuple.second AnimationConstants.playerMoveTime)
+                , position = p
+            }
 
-            else
-                player
-
-        Cooling [] cd ->
-            if cd <= 0 then
-                { player
-                    | moveState = Idle
-                }
-
-            else
-                player
+        Cooling [] ->
+            { player
+                | moveState = Idle
+            }
 
         BlockedPath _ cd ->
             if cd <= 0 then
@@ -210,7 +202,7 @@ hasPath player =
         Moving _ _ ->
             True
 
-        Cooling _ _ ->
+        Cooling _ ->
             True
 
 
