@@ -58,7 +58,8 @@ svg
         animation: shake 200ms ease infinite
 
 .entity-interactions
-    animation: fall 500ms
+    opacity: 0
+    animation: fall 500ms 300ms forwards
     background: $primary-color
     color: $secondary-color
     border: none
@@ -106,7 +107,7 @@ svg
             filter: drop-shadow( 0rem 0rem 0.03rem #5afcff)
     &.player
         .entity,.terrain
-            animation: push-down 400ms 200ms
+            animation: push-down 300ms 300ms
 
 .terrain
     .face,.column-segment
