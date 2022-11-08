@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg, main)
+module Main exposing (MapTransition, Model, Msg, main)
 
 import AnimationConstants
 import Browser
@@ -11,7 +11,7 @@ import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
 import Svg exposing (Svg)
-import Tile exposing (Entity(..), Terrain(..), Tile(..))
+import Tile exposing (Tile(..))
 import View
 
 
@@ -42,7 +42,7 @@ init _ =
         (Enter transitionTime Content.Maps.testMap.name)
         (Player.new ( 0, 0, 0 ) '🐼')
         ( 0, 0, 0 )
-        Render.initRenderConfig
+        (Render.initRenderConfig |> Render.withZoom 1.2)
     , Cmd.none
     )
 
@@ -75,14 +75,12 @@ currentMap model =
 
 currentMapName : Model -> String
 currentMapName model =
-    (case model.mapTransition of
+    case model.mapTransition of
         Enter _ map ->
-            Just map
+            map
 
         Leave _ from _ ->
-            Just from
-    )
-        |> Maybe.withDefault "Error"
+            from
 
 
 tickMapTransition : Int -> MapTransition -> MapTransition
@@ -150,6 +148,7 @@ update msg model =
 
         ClickHex point ->
             let
+                newPlayer : Player
                 newPlayer =
                     case Dict.get point (currentMap model).grid of
                         Just (Terrain _) ->

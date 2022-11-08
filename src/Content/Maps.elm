@@ -2,7 +2,7 @@ module Content.Maps exposing (errorMap, testMap, testMap3)
 
 import Content.Entities as Entities
 import HexEngine.HexMap as HexMap exposing (HexMap)
-import Tile exposing (Entity(..), Terrain(..), Tile(..))
+import Tile exposing (Terrain(..), Tile(..))
 
 
 testMap : HexMap Tile

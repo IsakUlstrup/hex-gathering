@@ -1,14 +1,13 @@
 module HexEngine.Render exposing
-    ( RenderConfig
+    ( HexCorners
+    , RenderConfig
+    , cornerListToString
     , cornersToString
-    , cornersToString2
-    , fancyHexCorners2
     , hardcodedPoints
     , initRenderConfig
     , pointAdd
     , pointToPixel
     , renderMap
-    , withCameraPosition
     , withHexFocus
     , withZoom
     )
@@ -89,8 +88,8 @@ pointToYpos point =
     pointToPixel point |> Tuple.second
 
 
-cornersToString : List ( Float, Float ) -> String
-cornersToString points =
+cornerListToString : List ( Float, Float ) -> String
+cornerListToString points =
     let
         tupleToString : ( Float, Float ) -> String
         tupleToString ( x, y ) =
@@ -99,8 +98,8 @@ cornersToString points =
     List.map tupleToString points |> List.intersperse " " |> String.concat
 
 
-cornersToString2 : HexCorners -> String
-cornersToString2 points =
+cornersToString : HexCorners -> String
+cornersToString points =
     let
         tupleToString : ( Float, Float ) -> String
         tupleToString ( x, y ) =
@@ -141,30 +140,6 @@ hardcodedPoints =
         ( -2.5, 2.5000000000000004 )
         ( -2.220446049250313e-15, -1.8301270189221919 )
         ( 5, -1.8301270189221928 )
-
-
-{-| Calculate hex corners in screen coordinates
--}
-fancyHexCorners2 : HexCorners
-fancyHexCorners2 =
-    let
-        angleRad : Float -> Float
-        angleRad cornerNumber =
-            degrees (60 * cornerNumber)
-
-        corner : Float -> ( Float, Float )
-        corner cornerNumber =
-            ( (hexSize / 2) + hexSize * cos (angleRad cornerNumber)
-            , (hexSize / 2) + hexSize * sin (angleRad cornerNumber)
-            )
-    in
-    HexCorners
-        (corner 0)
-        (corner 1)
-        (corner 2)
-        (corner 3)
-        (corner 4)
-        (corner 5)
 
 
 

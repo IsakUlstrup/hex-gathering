@@ -1,9 +1,8 @@
 module Player exposing
-    ( Player
+    ( MoveState
+    , Player
     , hasPath
-    , isIdle
     , moveStateString
-    , moveTarget
     , new
     , playerCooldown
     , playerMove
@@ -93,8 +92,7 @@ playerpathAdjacent walkable to player =
     else
         Point.neighbors to
             |> Set.toList
-            |> List.map (Point.pathfind walkable player.position)
-            |> List.filterMap identity
+            |> List.filterMap (Point.pathfind walkable player.position)
             |> List.sortBy List.length
             |> List.head
             |> (\p ->
