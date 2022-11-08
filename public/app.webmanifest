@@ -1,0 +1,10 @@
+{
+    "theme_color": "#384a54",
+    "background_color": "#feffdd",
+    "display": "fullscreen",
+    "scope": "/",
+    "start_url": "/",
+    "name": "Hex Gathering",
+    "short_name": "Gathering",
+    "description": "A game"
+}
