@@ -151,7 +151,7 @@ playerMove player =
     case player.moveState of
         Moving path cd ->
             if cd == 0 then
-                { player | moveState = Cooling path 100 }
+                { player | moveState = Cooling path 0 }
 
             else
                 player

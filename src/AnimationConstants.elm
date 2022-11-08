@@ -5,7 +5,7 @@ import Html exposing (Html)
 
 playerMoveTime : ( String, Int )
 playerMoveTime =
-    ( "player-move-duration", 400 )
+    ( "player-move-duration", 600 )
 
 
 fallDuration : ( String, Int )
