@@ -32,6 +32,7 @@ main
     align-items: center
     font-family: Arial, Helvetica, sans-serif
     color: $primary-color
+    position: relative
 
 svg
     width: 100%
@@ -66,8 +67,7 @@ svg
     flex-direction: column
     gap: $spacing-large
     padding: $spacing-large
-    &::backdrop
-        background: rgb(0 0 0 / 0.4)
+
     h1
         font-family: 'Chango', sans-serif
         background-image: $wave-pattern
@@ -97,16 +97,16 @@ svg
     opacity: 0
 
     &.selected
-        .entity,.terrain
-            animation: push-down 400ms ease
+        // .entity,.terrain
+        //     animation: push-down 400ms ease
         .terrain
             .face
-                fill: color.scale($medium-hex-color, $lightness: 20%)
+                fill: color.scale($medium-hex-color, $lightness: 30%)
         .entity
             filter: drop-shadow( 0rem 0rem 0.03rem #5afcff)
     &.player
         .entity,.terrain
-            animation: push-down 400ms 300ms
+            animation: push-down 400ms 200ms
 
 .terrain
     .face,.column-segment
