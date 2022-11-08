@@ -199,7 +199,7 @@ view model =
         ([ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
          , Render.renderMap model.renderConfig
             (currentMap model)
-            (View.viewTile model.selectedPoint ClickHex)
+            (View.viewTile model.player.position model.selectedPoint ClickHex)
             [ View.viewPlayer model.player ]
          ]
             ++ maybeViewInteractions model

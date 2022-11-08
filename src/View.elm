@@ -36,12 +36,16 @@ svgClassList classes =
 -- VIEW FUNCTIONS
 
 
-viewTile : Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
-viewTile selectedPoint clickEvent ( point, tile ) =
+viewTile : Point -> Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
+viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
     let
         wrapper cs =
             Svg.g
-                [ svgClassList [ ( "hex", True ), ( "selected", point == selectedPoint ) ]
+                [ svgClassList
+                    [ ( "hex", True )
+                    , ( "selected", point == selectedPoint )
+                    , ( "player", point == playerPosition )
+                    ]
                 , Svg.Events.onClick <| clickEvent point
                 , Svg.Attributes.style
                     ("animation-delay: "
