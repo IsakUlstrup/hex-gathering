@@ -9,6 +9,7 @@ module Player exposing
     , playerMove
     , playerpath
     , playerpathAdjacent
+    , readyToInteract
     , stop
     )
 
@@ -211,3 +212,8 @@ hasPath player =
 
         Cooling _ _ ->
             True
+
+
+readyToInteract : Player -> Point -> Bool
+readyToInteract player point =
+    Point.distance point player.position == 1 && isIdle player

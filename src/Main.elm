@@ -6,7 +6,7 @@ import Browser.Events
 import Content.Maps
 import Dict
 import HexEngine.HexMap exposing (HexMap)
-import HexEngine.Point as Point exposing (Point)
+import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
@@ -113,11 +113,6 @@ resetPlayerPosition transition player =
 -- UPDATE
 
 
-playerReadyToInteract : Player -> Point -> Bool
-playerReadyToInteract player point =
-    Point.distance point player.position == 1 && Player.isIdle player
-
-
 type Msg
     = Tick Int
     | MapTransition String
@@ -136,7 +131,7 @@ update msg model =
                         |> Player.playerMove
                         |> Player.playerCooldown dt
                 , renderConfig =
-                    if playerReadyToInteract model.player model.selectedPoint then
+                    if Player.readyToInteract model.player model.selectedPoint then
                         Render.withHexFocus model.selectedPoint model.renderConfig
 
                     else
@@ -188,7 +183,7 @@ maybeViewInteractions : Model -> List (Svg Msg)
 maybeViewInteractions model =
     case Tile.getEntity model.selectedPoint (currentMap model) of
         Just e ->
-            if playerReadyToInteract model.player model.selectedPoint then
+            if Player.readyToInteract model.player model.selectedPoint then
                 [ View.viewEntityInteractions MapTransition ( model.selectedPoint, e ) ]
 
             else
