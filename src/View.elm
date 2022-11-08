@@ -19,7 +19,7 @@ import Tile exposing (Entity(..), Terrain(..), Tile(..))
 
 animationDelayMultiplier : number
 animationDelayMultiplier =
-    150
+    100
 
 
 svgClassList : List ( String, Bool ) -> Attribute msg

@@ -10,7 +10,7 @@ playerMoveTime =
 
 fallDuration : ( String, Int )
 fallDuration =
-    ( "fall-duration", 1200 )
+    ( "fall-duration", 800 )
 
 
 toString : ( String, Int ) -> String

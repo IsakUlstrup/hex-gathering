@@ -188,13 +188,12 @@ keyedViewHex renderTile tile =
     )
 
 
-renderLayer : HexMap tile -> (( Point, tile ) -> Svg msg) -> Svg msg
-renderLayer map renderTile =
+renderLayer : List ( Point, tile ) -> (( Point, tile ) -> Svg msg) -> Svg msg
+renderLayer tiles renderTile =
     Svg.Keyed.node "g"
         [ Svg.Attributes.class "layer" ]
         -- sort by y position and render
-        (map.grid
-            |> Dict.toList
+        (tiles
             |> List.sortBy (Tuple.first >> pointToYpos)
             |> List.map (keyedViewHex renderTile)
         )
@@ -218,34 +217,11 @@ renderMap config map renderTile extras =
                 )
             , Svg.Attributes.class "camera"
             ]
-            [ ( map.name, Svg.Lazy.lazy2 renderLayer map renderTile )
+            [ ( map.name
+              , Svg.Lazy.lazy2 renderLayer
+                    (map.grid |> Dict.toList)
+                    renderTile
+              )
             , ( "extras", Svg.g [] extras )
             ]
         ]
-
-
-
--- renderTileEntityMap : RenderConfig -> HexEntityMap tile entity -> (( Point, tile ) -> Svg msg) -> (( Point, entity ) -> Svg msg) -> List (Svg msg) -> Svg msg
--- renderTileEntityMap config map renderTile renderEntity extras =
---     svg
---         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
---         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
---         ]
---         [ Svg.g
---             [ Svg.Attributes.style
---                 ("transform: translate("
---                     ++ String.fromFloat -(config.cameraX * config.zoom)
---                     ++ "px, "
---                     ++ String.fromFloat -(config.cameraY * config.zoom)
---                     ++ "px) scale("
---                     ++ String.fromFloat config.zoom
---                     ++ ");"
---                 )
---             , Svg.Attributes.class "camera"
---             ]
---             ([ Svg.Lazy.lazy2 renderLayer map.tiles renderTile
---              , Svg.Lazy.lazy2 renderLayer map.entities renderEntity
---              ]
---                 ++ extras
---             )
---         ]
