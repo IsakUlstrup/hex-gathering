@@ -1,8 +1,8 @@
-module View exposing (viewEntityInteractions, viewPlayer, viewTile)
+module View exposing (entityModal, viewEntityInteractions, viewPlayer, viewTile)
 
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
-import Html exposing (Html)
+import Html exposing (Html, aside, div)
 import Html.Attributes
 import Html.Events
 import HtmlExtra
@@ -36,7 +36,17 @@ svgClassList classes =
 -- VIEW FUNCTIONS
 
 
-viewTile : Point -> Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
+meq : Maybe a -> a -> Bool
+meq m a =
+    case m of
+        Just x ->
+            x == a
+
+        Nothing ->
+            False
+
+
+viewTile : Point -> Maybe Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
 viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
     let
         wrapper : List (Html msg) -> Html msg
@@ -44,7 +54,7 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
             Svg.g
                 [ svgClassList
                     [ ( "hex", True )
-                    , ( "selected", point == selectedPoint )
+                    , ( "selected", meq selectedPoint point )
                     , ( "player", point == playerPosition )
                     ]
                 , Svg.Events.onClick <| clickEvent point
@@ -208,3 +218,12 @@ viewEntityInteractions transitionEvent ( _, entity ) =
         , Html.Attributes.class "entity-interactions"
         ]
         (panelContents entity)
+
+
+entityModal : msg -> Entity -> Html msg
+entityModal closeMsg _ =
+    aside [ Html.Attributes.class "modal-container", Html.Events.onClick closeMsg ]
+        [ div [ Html.Attributes.class "modal-content" ]
+            [ Html.p [] [ Html.text "🌲" ]
+            ]
+        ]

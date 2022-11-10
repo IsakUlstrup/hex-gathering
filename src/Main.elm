@@ -10,7 +10,6 @@ import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
-import Svg exposing (Svg)
 import Tile exposing (Tile(..))
 import View
 
@@ -28,7 +27,7 @@ type alias Model =
     { maps : List (HexMap Tile)
     , mapTransition : MapTransition
     , player : Player
-    , selectedPoint : Point
+    , selectedPoint : Maybe Point
     , renderConfig : RenderConfig
     }
 
@@ -41,7 +40,7 @@ init _ =
         ]
         (Enter transitionTime Content.Maps.testMap.name)
         (Player.new ( 0, 0, 0 ) '🐼')
-        ( 0, 0, 0 )
+        Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
     , Cmd.none
     )
@@ -115,6 +114,7 @@ type Msg
     = Tick Int
     | MapTransition String
     | ClickHex Point
+    | CloseModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -129,11 +129,16 @@ update msg model =
                         |> Player.playerMove
                         |> Player.playerCooldown dt
                 , renderConfig =
-                    if Player.readyToInteract model.player model.selectedPoint then
-                        Render.withHexFocus model.selectedPoint model.renderConfig
+                    model.selectedPoint
+                        |> Maybe.map
+                            (\p ->
+                                if Player.readyToInteract model.player p then
+                                    Render.withHexFocus p model.renderConfig
 
-                    else
-                        Render.withHexFocus model.player.position model.renderConfig
+                                else
+                                    Render.withHexFocus model.player.position model.renderConfig
+                            )
+                        |> Maybe.withDefault model.renderConfig
               }
             , Cmd.none
             )
@@ -141,7 +146,7 @@ update msg model =
         MapTransition destination ->
             ( { model
                 | mapTransition = Leave transitionTime (currentMapName model) destination
-                , selectedPoint = ( 0, 0, 0 )
+                , selectedPoint = Nothing
               }
             , Cmd.none
             )
@@ -165,10 +170,18 @@ update msg model =
                     newPlayer
                 , selectedPoint =
                     if Player.hasPath newPlayer then
-                        point
+                        Just point
 
                     else
                         model.selectedPoint
+              }
+            , Cmd.none
+            )
+
+        CloseModal ->
+            ( { model
+                | selectedPoint = Nothing
+                , renderConfig = Render.withHexFocus model.player.position model.renderConfig
               }
             , Cmd.none
             )
@@ -178,18 +191,23 @@ update msg model =
 -- VIEW
 
 
-maybeViewInteractions : Model -> List (Svg Msg)
-maybeViewInteractions model =
-    case Tile.getEntity model.selectedPoint (currentMap model) of
-        Just e ->
-            if Player.readyToInteract model.player model.selectedPoint then
-                [ View.viewEntityInteractions MapTransition ( model.selectedPoint, e ) ]
+viewEntityModal : Model -> List (Html Msg)
+viewEntityModal model =
+    model.selectedPoint
+        |> Maybe.map
+            (\p ->
+                case Tile.getEntity p (currentMap model) of
+                    Just e ->
+                        if Player.readyToInteract model.player p then
+                            [ View.entityModal CloseModal e ]
 
-            else
-                []
+                        else
+                            []
 
-        Nothing ->
-            []
+                    Nothing ->
+                        []
+            )
+        |> Maybe.withDefault []
 
 
 view : Model -> Html Msg
@@ -201,7 +219,7 @@ view model =
             (View.viewTile model.player.position model.selectedPoint ClickHex)
             [ View.viewPlayer model.player ]
          ]
-            ++ maybeViewInteractions model
+            ++ viewEntityModal model
         )
 
 

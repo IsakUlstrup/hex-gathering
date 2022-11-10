@@ -82,6 +82,32 @@ svg
         color: transparent
         font-size: 4rem
 
+.modal-container
+    opacity: 0
+    pointer-events: none
+    animation: fade 300ms $player-move-duration forwards
+    position: absolute
+    left: 0
+    top: 0
+    right: 0
+    bottom: 0
+    background: rgba(0, 0, 0, 0.5)
+    display: flex
+    justify-content: center
+    align-items: center
+    .modal-content
+        text-align: center
+        h1
+            font-family: 'Chango', sans-serif
+            background-image: $wave-pattern
+            background-size: cover
+            background-clip: text
+            -webkit-background-clip: text
+            color: transparent
+            font-size: 4rem
+        p
+            font-size: 6rem
+
 @mixin hex($color)
     .face
         fill: $color
