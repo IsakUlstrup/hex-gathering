@@ -1,4 +1,4 @@
-module View exposing (entityModal, viewEntityInteractions, viewPlayer, viewTile)
+module View exposing (entityModal, meq, viewEntityInteractions, viewPlayer, viewTile)
 
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)

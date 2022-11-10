@@ -173,7 +173,7 @@ update msg model =
                         Just point
 
                     else
-                        model.selectedPoint
+                        Nothing
               }
             , Cmd.none
             )
