@@ -223,7 +223,9 @@ viewEntityInteractions transitionEvent ( _, entity ) =
 entityModal : msg -> Entity -> Html msg
 entityModal closeMsg _ =
     aside [ Html.Attributes.class "modal-container", Html.Events.onClick closeMsg ]
-        [ div [ Html.Attributes.class "modal-content" ]
-            [ Html.p [] [ Html.text "🌲" ]
+        [ Html.p [ Html.Attributes.class "entity-icon" ] [ Html.text "🌲" ]
+        , div [ Html.Attributes.class "modal-content" ]
+            [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+            , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
             ]
         ]

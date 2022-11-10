@@ -93,11 +93,27 @@ svg
     bottom: 0
     background: rgba(0, 0, 0, 0.5)
     display: flex
+    flex-direction: column
     justify-content: center
     align-items: center
     .modal-content
+        max-height: 0rem
+        max-width: 90%
+        overflow: hidden
+        animation: expand 400ms calc($player-move-duration + 200ms) ease-out forwards
         text-align: center
-        h1
+        display: flex
+        flex-direction: column
+        background: $primary-color
+        color: $secondary-color
+        border: none
+        border-radius: 1rem
+        gap: $spacing-medium
+        text-align: justify
+        // padding: $spacing-medium
+        // padding-bottom: calc( $spacing-medium + 2rem )
+        .entity-header
+            text-align: center
             font-family: 'Chango', sans-serif
             background-image: $wave-pattern
             background-size: cover
@@ -105,8 +121,11 @@ svg
             -webkit-background-clip: text
             color: transparent
             font-size: 4rem
-        p
-            font-size: 6rem
+    .entity-icon
+        animation: pop 500ms $player-move-duration
+        font-size: 5rem
+        line-height: 2rem
+        z-index: 2
 
 @mixin hex($color)
     .face
