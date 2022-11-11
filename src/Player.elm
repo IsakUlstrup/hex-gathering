@@ -1,29 +1,21 @@
 module Player exposing
     ( Player
     , PlayerState
+    , findPath
+    , findPathAdjacent
     , hasPath
+    , move
     , new
-    , playerCooldown
-    , playerMove
-    , playerpath
-    , playerpathAdjacent
     , readyToInteract
     , stateString
     , stop
+    , tickCooldown
     , travelTo
     )
 
 import AnimationConstants
 import HexEngine.Point as Point exposing (Point)
 import Set
-
-
-
--- type MoveState
---     = Moving (List Point) Int
---     | Cooling (List Point)
---     | BlockedPath Int
---     | Idle
 
 
 type PlayerState
@@ -70,8 +62,8 @@ stateString player =
             "idle"
 
 
-setPlayerPath : List Point -> Player -> Player
-setPlayerPath path player =
+setPath : List Point -> Player -> Player
+setPath path player =
     case player.state of
         Moving _ cd ->
             { player | state = Moving path cd }
@@ -92,15 +84,15 @@ setPlayerPath path player =
             { player | state = Cooling path }
 
 
-playerpath : (Point -> Bool) -> Point -> Player -> Player
-playerpath walkable to player =
+findPath : (Point -> Bool) -> Point -> Player -> Player
+findPath walkable to player =
     if moveTarget player == to then
         { player | state = Idle }
 
     else
         case Point.pathfind walkable player.position to of
             Just path ->
-                setPlayerPath path player
+                setPath path player
 
             Nothing ->
                 { player | state = BlockedPath 200 }
@@ -108,8 +100,8 @@ playerpath walkable to player =
 
 {-| find shortest path to a tile adjacent to target tile
 -}
-playerpathAdjacent : (Point -> Bool) -> Point -> Player -> Player
-playerpathAdjacent walkable to player =
+findPathAdjacent : (Point -> Bool) -> Point -> Player -> Player
+findPathAdjacent walkable to player =
     if moveTarget player == to then
         { player | state = Idle }
 
@@ -122,15 +114,15 @@ playerpathAdjacent walkable to player =
             |> (\p ->
                     case p of
                         Just path ->
-                            setPlayerPath path player
+                            setPath path player
 
                         Nothing ->
                             { player | state = BlockedPath 200 }
                )
 
 
-playerCooldown : Int -> Player -> Player
-playerCooldown dt player =
+tickCooldown : Int -> Player -> Player
+tickCooldown dt player =
     case player.state of
         Moving path cd ->
             { player | state = Moving path (max 0 (cd - dt)) }
@@ -189,8 +181,8 @@ moveTarget player =
         |> Maybe.withDefault player.position
 
 
-playerMove : Player -> Player
-playerMove player =
+move : Player -> Player
+move player =
     case player.state of
         Moving path cd ->
             if cd == 0 then

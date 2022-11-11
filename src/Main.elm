@@ -69,8 +69,8 @@ update msg model =
             ( { model
                 | player =
                     model.player
-                        |> Player.playerMove
-                        |> Player.playerCooldown dt
+                        |> Player.tickCooldown dt
+                        |> Player.move
                 , renderConfig =
                     model.selectedPoint
                         |> Maybe.map
@@ -100,10 +100,10 @@ update msg model =
                 newPlayer =
                     case Dict.get point (currentMap model).grid of
                         Just (Terrain _) ->
-                            Player.playerpath (Tile.isWalkable <| currentMap model) point model.player
+                            Player.findPath (Tile.isWalkable <| currentMap model) point model.player
 
                         Just (TerrainEntity _ _) ->
-                            Player.playerpathAdjacent (Tile.isWalkable <| currentMap model) point model.player
+                            Player.findPathAdjacent (Tile.isWalkable <| currentMap model) point model.player
 
                         _ ->
                             model.player
