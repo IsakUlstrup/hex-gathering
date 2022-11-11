@@ -20,7 +20,7 @@ import Set
 type MoveState
     = Moving (List Point) Int
     | Cooling (List Point)
-    | BlockedPath Point Int
+    | BlockedPath Int
     | Idle
 
 
@@ -45,7 +45,7 @@ moveStateString player =
         Cooling _ ->
             "cooling"
 
-        BlockedPath _ _ ->
+        BlockedPath _ ->
             "blocked"
 
         Idle ->
@@ -61,7 +61,7 @@ setPlayerPath path player =
         Cooling _ ->
             { player | moveState = Cooling path }
 
-        BlockedPath _ _ ->
+        BlockedPath _ ->
             { player | moveState = Cooling path }
 
         Idle ->
@@ -79,7 +79,7 @@ playerpath walkable to player =
                 setPlayerPath path player
 
             Nothing ->
-                { player | moveState = BlockedPath to 200 }
+                { player | moveState = BlockedPath 200 }
 
 
 {-| find shortest path to a tile adjacent to target tile
@@ -101,7 +101,7 @@ playerpathAdjacent walkable to player =
                             setPlayerPath path player
 
                         Nothing ->
-                            { player | moveState = BlockedPath to 200 }
+                            { player | moveState = BlockedPath 200 }
                )
 
 
@@ -114,8 +114,8 @@ playerCooldown dt player =
         Cooling path ->
             { player | moveState = Cooling path }
 
-        BlockedPath to cd ->
-            { player | moveState = BlockedPath to (max 0 (cd - dt)) }
+        BlockedPath cd ->
+            { player | moveState = BlockedPath (max 0 (cd - dt)) }
 
         Idle ->
             player
@@ -135,7 +135,7 @@ moveTarget player =
         Cooling path ->
             path |> List.reverse |> List.head
 
-        BlockedPath _ _ ->
+        BlockedPath _ ->
             Nothing
 
         Idle ->
@@ -165,7 +165,7 @@ playerMove player =
                 | moveState = Idle
             }
 
-        BlockedPath _ cd ->
+        BlockedPath cd ->
             if cd <= 0 then
                 { player
                     | moveState = Idle
@@ -194,7 +194,7 @@ hasPath player =
         Idle ->
             False
 
-        BlockedPath _ _ ->
+        BlockedPath _ ->
             False
 
         Moving _ _ ->
