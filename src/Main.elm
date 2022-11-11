@@ -7,7 +7,7 @@ import Content.Entities
 import Content.Maps
 import Dict
 import HexEngine.HexMap exposing (HexMap)
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
 import Player exposing (Player)
@@ -133,7 +133,7 @@ update msg model =
                     model.selectedPoint
                         |> Maybe.map
                             (\p ->
-                                if Player.readyToInteract model.player p then
+                                if Point.distance model.player.position p == 1 then
                                     Render.withHexFocus p model.renderConfig
 
                                 else
