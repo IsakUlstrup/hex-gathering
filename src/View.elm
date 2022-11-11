@@ -220,9 +220,13 @@ viewEntityInteractions transitionEvent ( _, entity ) =
         (panelContents entity)
 
 
-entityModal : msg -> Entity -> Html msg
-entityModal closeMsg _ =
-    aside [ Html.Attributes.class "modal-container", Html.Events.onClick closeMsg ]
+entityModal : Bool -> msg -> Entity -> Html msg
+entityModal visible closeMsg _ =
+    aside
+        [ Html.Attributes.class "modal-container"
+        , Html.Attributes.classList [ ( "visible", visible ) ]
+        , Html.Events.onClick closeMsg
+        ]
         [ Html.p [ Html.Attributes.class "entity-icon" ] [ Html.text "🌲" ]
         , div [ Html.Attributes.class "modal-content" ]
             [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]

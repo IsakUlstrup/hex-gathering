@@ -3,6 +3,7 @@ module Main exposing (MapTransition, Model, Msg, main)
 import AnimationConstants
 import Browser
 import Browser.Events
+import Content.Entities
 import Content.Maps
 import Dict
 import HexEngine.HexMap exposing (HexMap)
@@ -181,7 +182,8 @@ update msg model =
         CloseModal ->
             ( { model
                 | selectedPoint = Nothing
-                , renderConfig = Render.withHexFocus model.player.position model.renderConfig
+
+                -- , renderConfig = Render.withHexFocus model.player.position model.renderConfig
               }
             , Cmd.none
             )
@@ -191,7 +193,7 @@ update msg model =
 -- VIEW
 
 
-viewEntityModal : Model -> List (Html Msg)
+viewEntityModal : Model -> Html Msg
 viewEntityModal model =
     model.selectedPoint
         |> Maybe.map
@@ -199,28 +201,27 @@ viewEntityModal model =
                 case Tile.getEntity p (currentMap model) of
                     Just e ->
                         if Player.readyToInteract model.player p then
-                            [ View.entityModal CloseModal e ]
+                            View.entityModal True CloseModal e
 
                         else
-                            []
+                            View.entityModal False CloseModal e
 
                     Nothing ->
-                        []
+                        View.entityModal False CloseModal Content.Entities.awesomesaurus
             )
-        |> Maybe.withDefault []
+        |> Maybe.withDefault (View.entityModal False CloseModal Content.Entities.awesomesaurus)
 
 
 view : Model -> Html Msg
 view model =
     main_ []
-        ([ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-         , Render.renderMap model.renderConfig
+        [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
+        , Render.renderMap model.renderConfig
             (currentMap model)
             (View.viewTile model.player.position model.selectedPoint ClickHex)
             [ View.viewPlayer model.player ]
-         ]
-            ++ viewEntityModal model
-        )
+        , viewEntityModal model
+        ]
 
 
 

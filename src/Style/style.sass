@@ -86,21 +86,29 @@ svg
 .modal-container
     opacity: 0
     pointer-events: none
-    animation: fade 200ms $player-move-duration forwards
     position: absolute
     left: 0
     top: 0
     right: 0
     bottom: 0
-    background: rgba(0, 0, 0, 0.7)
+    background: rgba(0, 0, 0, 0.3)
     display: flex
     flex-direction: column
     justify-content: center
     align-items: center
+    transition: opacity 500ms
+    &.visible
+        opacity: 1
+        pointer-events: all
+        .modal-content
+            height: 25rem
+            opacity: 1
+        .entity-icon
+            animation: pop 300ms ease-out
     .modal-content
+        transition: height 500ms, opacity 500ms
         height: 0rem
         opacity: 0
-        animation: expand 500ms calc($player-move-duration + 200ms) forwards
         max-width: 20rem
         overflow: hidden
         display: flex
@@ -121,7 +129,6 @@ svg
             color: rgba(255, 255, 255, 0.2)
             font-size: 4rem
     .entity-icon
-        animation: pop 300ms $player-move-duration ease-out
         font-size: 7rem
         line-height: 2rem
         filter: saturate(90%) sepia(20%)
