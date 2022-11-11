@@ -184,7 +184,7 @@ positionNode position attributes children =
 viewPlayer : Player -> Svg msg
 viewPlayer player =
     positionNode player.position
-        [ Svg.Attributes.class (Player.moveStateString player), Svg.Attributes.class "entity" ]
+        [ Svg.Attributes.class (Player.stateString player), Svg.Attributes.class "entity" ]
         [ Svg.g [ Svg.Attributes.class "player-animation" ]
             [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (player.icon |> String.fromChar) ]
             ]
@@ -220,8 +220,8 @@ viewEntityInteractions transitionEvent ( _, entity ) =
         (panelContents entity)
 
 
-entityModal : Bool -> msg -> Entity -> Html msg
-entityModal visible closeMsg _ =
+entityModal : Bool -> (String -> msg) -> msg -> Entity -> Html msg
+entityModal visible transitionEvent closeMsg _ =
     aside
         [ Html.Attributes.class "modal-container"
         , Html.Attributes.classList [ ( "visible", visible ) ]
@@ -231,5 +231,6 @@ entityModal visible closeMsg _ =
         , div [ Html.Attributes.class "modal-content" ]
             [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
             , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
+            , Html.button [ Html.Events.onClick <| transitionEvent "Mine" ] [ Html.text "Travel" ]
             ]
         ]

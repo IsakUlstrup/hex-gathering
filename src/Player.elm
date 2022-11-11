@@ -1,15 +1,16 @@
 module Player exposing
-    ( MoveState
-    , Player
+    ( Player
+    , PlayerState
     , hasPath
-    , moveStateString
     , new
     , playerCooldown
     , playerMove
     , playerpath
     , playerpathAdjacent
     , readyToInteract
+    , stateString
     , stop
+    , travelTo
     )
 
 import AnimationConstants
@@ -17,28 +18,39 @@ import HexEngine.Point as Point exposing (Point)
 import Set
 
 
-type MoveState
+
+-- type MoveState
+--     = Moving (List Point) Int
+--     | Cooling (List Point)
+--     | BlockedPath Int
+--     | Idle
+
+
+type PlayerState
     = Moving (List Point) Int
     | Cooling (List Point)
     | BlockedPath Int
+    | MapEnter Int String
+    | MapLeave Int String String
     | Idle
 
 
 type alias Player =
     { position : Point
+    , map : String
     , icon : Char
-    , moveState : MoveState
+    , state : PlayerState
     }
 
 
-new : Point -> Char -> Player
-new position icon =
-    Player position icon Idle
+new : String -> Point -> Char -> Player
+new map position icon =
+    Player position map icon (MapEnter (AnimationConstants.mapTransitionDuration |> Tuple.second) map)
 
 
-moveStateString : Player -> String
-moveStateString player =
-    case player.moveState of
+stateString : Player -> String
+stateString player =
+    case player.state of
         Moving _ _ ->
             "moving"
 
@@ -48,30 +60,42 @@ moveStateString player =
         BlockedPath _ ->
             "blocked"
 
+        MapEnter _ _ ->
+            "map-enter"
+
+        MapLeave _ _ _ ->
+            "map-leave"
+
         Idle ->
             "idle"
 
 
 setPlayerPath : List Point -> Player -> Player
 setPlayerPath path player =
-    case player.moveState of
+    case player.state of
         Moving _ cd ->
-            { player | moveState = Moving path cd }
+            { player | state = Moving path cd }
 
         Cooling _ ->
-            { player | moveState = Cooling path }
+            { player | state = Cooling path }
 
         BlockedPath _ ->
-            { player | moveState = Cooling path }
+            { player | state = Cooling path }
+
+        MapEnter _ _ ->
+            player
+
+        MapLeave _ _ _ ->
+            player
 
         Idle ->
-            { player | moveState = Cooling path }
+            { player | state = Cooling path }
 
 
 playerpath : (Point -> Bool) -> Point -> Player -> Player
 playerpath walkable to player =
     if moveTarget player == to then
-        { player | moveState = Idle }
+        { player | state = Idle }
 
     else
         case Point.pathfind walkable player.position to of
@@ -79,7 +103,7 @@ playerpath walkable to player =
                 setPlayerPath path player
 
             Nothing ->
-                { player | moveState = BlockedPath 200 }
+                { player | state = BlockedPath 200 }
 
 
 {-| find shortest path to a tile adjacent to target tile
@@ -87,7 +111,7 @@ playerpath walkable to player =
 playerpathAdjacent : (Point -> Bool) -> Point -> Player -> Player
 playerpathAdjacent walkable to player =
     if moveTarget player == to then
-        { player | moveState = Idle }
+        { player | state = Idle }
 
     else
         Point.neighbors to
@@ -101,21 +125,36 @@ playerpathAdjacent walkable to player =
                             setPlayerPath path player
 
                         Nothing ->
-                            { player | moveState = BlockedPath 200 }
+                            { player | state = BlockedPath 200 }
                )
 
 
 playerCooldown : Int -> Player -> Player
 playerCooldown dt player =
-    case player.moveState of
+    case player.state of
         Moving path cd ->
-            { player | moveState = Moving path (max 0 (cd - dt)) }
+            { player | state = Moving path (max 0 (cd - dt)) }
 
         Cooling path ->
-            { player | moveState = Cooling path }
+            { player | state = Cooling path }
 
         BlockedPath cd ->
-            { player | moveState = BlockedPath (max 0 (cd - dt)) }
+            { player | state = BlockedPath (max 0 (cd - dt)) }
+
+        MapEnter 0 _ ->
+            { player | state = Idle }
+
+        MapEnter cd mapName ->
+            { player | state = MapEnter (max 0 (cd - dt)) mapName }
+
+        MapLeave 0 _ to ->
+            { player
+                | state = MapEnter (AnimationConstants.mapTransitionDuration |> Tuple.second) to
+                , map = to
+            }
+
+        MapLeave cd from to ->
+            { player | state = MapLeave (max 0 (cd - dt)) from to }
 
         Idle ->
             player
@@ -123,12 +162,12 @@ playerCooldown dt player =
 
 stop : Player -> Player
 stop player =
-    { player | moveState = Idle }
+    { player | state = Idle }
 
 
 moveTarget : Player -> Point
 moveTarget player =
-    (case player.moveState of
+    (case player.state of
         Moving path _ ->
             path |> List.reverse |> List.head
 
@@ -136,6 +175,12 @@ moveTarget player =
             path |> List.reverse |> List.head
 
         BlockedPath _ ->
+            Nothing
+
+        MapEnter _ _ ->
+            Nothing
+
+        MapLeave _ _ _ ->
             Nothing
 
         Idle ->
@@ -146,33 +191,39 @@ moveTarget player =
 
 playerMove : Player -> Player
 playerMove player =
-    case player.moveState of
+    case player.state of
         Moving path cd ->
             if cd == 0 then
-                { player | moveState = Cooling path }
+                { player | state = Cooling path }
 
             else
                 player
 
         Cooling (p :: path) ->
             { player
-                | moveState = Moving path (Tuple.second AnimationConstants.playerMoveTime)
+                | state = Moving path (Tuple.second AnimationConstants.playerMoveTime)
                 , position = p
             }
 
         Cooling [] ->
             { player
-                | moveState = Idle
+                | state = Idle
             }
 
         BlockedPath cd ->
             if cd <= 0 then
                 { player
-                    | moveState = Idle
+                    | state = Idle
                 }
 
             else
                 player
+
+        MapEnter _ _ ->
+            player
+
+        MapLeave _ _ _ ->
+            player
 
         Idle ->
             player
@@ -180,7 +231,7 @@ playerMove player =
 
 isIdle : Player -> Bool
 isIdle player =
-    case player.moveState of
+    case player.state of
         Idle ->
             True
 
@@ -190,7 +241,7 @@ isIdle player =
 
 hasPath : Player -> Bool
 hasPath player =
-    case player.moveState of
+    case player.state of
         Idle ->
             False
 
@@ -203,7 +254,21 @@ hasPath player =
         Cooling _ ->
             True
 
+        MapEnter _ _ ->
+            False
+
+        MapLeave _ _ _ ->
+            False
+
 
 readyToInteract : Player -> Point -> Bool
 readyToInteract player point =
     Point.distance point player.position == 1 && isIdle player
+
+
+travelTo : String -> Player -> Player
+travelTo mapName player =
+    { player
+        | state = MapLeave (AnimationConstants.mapTransitionDuration |> Tuple.second) player.map mapName
+        , position = ( 0, 0, 0 )
+    }

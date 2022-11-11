@@ -1,4 +1,4 @@
-module Main exposing (MapTransition, Model, Msg, main)
+module Main exposing (Model, Msg, main)
 
 import AnimationConstants
 import Browser
@@ -19,14 +19,8 @@ import View
 -- MODEL
 
 
-type MapTransition
-    = Enter Int String
-    | Leave Int String String
-
-
 type alias Model =
     { maps : List (HexMap Tile)
-    , mapTransition : MapTransition
     , player : Player
     , selectedPoint : Maybe Point
     , renderConfig : RenderConfig
@@ -39,72 +33,11 @@ init _ =
         [ Content.Maps.testMap
         , Content.Maps.testMap3
         ]
-        (Enter transitionTime Content.Maps.testMap.name)
-        (Player.new ( 0, 0, 0 ) '🐼')
+        (Player.new Content.Maps.testMap.name ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
     , Cmd.none
     )
-
-
-
--- MAP TRANSITION
-
-
-transitionTime : Int
-transitionTime =
-    50
-
-
-getMap : String -> List (HexMap Tile) -> Maybe (HexMap Tile)
-getMap name maps =
-    maps |> List.filter (\m -> m.name == name) |> List.head
-
-
-currentMap : Model -> HexMap Tile
-currentMap model =
-    (case model.mapTransition of
-        Enter _ map ->
-            getMap map model.maps
-
-        Leave _ from _ ->
-            getMap from model.maps
-    )
-        |> Maybe.withDefault Content.Maps.errorMap
-
-
-currentMapName : Model -> String
-currentMapName model =
-    case model.mapTransition of
-        Enter _ map ->
-            map
-
-        Leave _ from _ ->
-            from
-
-
-tickMapTransition : Int -> MapTransition -> MapTransition
-tickMapTransition dt transition =
-    case transition of
-        Enter dur map ->
-            Enter (max 0 (dur - dt)) map
-
-        Leave dur from to ->
-            if dur <= 0 then
-                Enter transitionTime to
-
-            else
-                Leave (max 0 (dur - dt)) from to
-
-
-resetPlayerPosition : MapTransition -> Player -> Player
-resetPlayerPosition transition player =
-    case transition of
-        Leave 0 _ _ ->
-            { player | position = ( 0, 0, 0 ) } |> Player.stop
-
-        _ ->
-            player
 
 
 
@@ -118,15 +51,24 @@ type Msg
     | CloseModal
 
 
+getMap : String -> List (HexMap Tile) -> Maybe (HexMap Tile)
+getMap name maps =
+    maps |> List.filter (\m -> m.name == name) |> List.head
+
+
+currentMap : Model -> HexMap Tile
+currentMap model =
+    getMap model.player.map model.maps
+        |> Maybe.withDefault Content.Maps.errorMap
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick dt ->
             ( { model
-                | mapTransition = tickMapTransition dt model.mapTransition
-                , player =
+                | player =
                     model.player
-                        |> resetPlayerPosition model.mapTransition
                         |> Player.playerMove
                         |> Player.playerCooldown dt
                 , renderConfig =
@@ -139,14 +81,14 @@ update msg model =
                                 else
                                     Render.withHexFocus model.player.position model.renderConfig
                             )
-                        |> Maybe.withDefault model.renderConfig
+                        |> Maybe.withDefault (Render.withHexFocus model.player.position model.renderConfig)
               }
             , Cmd.none
             )
 
         MapTransition destination ->
             ( { model
-                | mapTransition = Leave transitionTime (currentMapName model) destination
+                | player = Player.travelTo destination model.player
                 , selectedPoint = Nothing
               }
             , Cmd.none
@@ -180,11 +122,7 @@ update msg model =
             )
 
         CloseModal ->
-            ( { model
-                | selectedPoint = Nothing
-
-                -- , renderConfig = Render.withHexFocus model.player.position model.renderConfig
-              }
+            ( { model | selectedPoint = Nothing }
             , Cmd.none
             )
 
@@ -201,15 +139,15 @@ viewEntityModal model =
                 case Tile.getEntity p (currentMap model) of
                     Just e ->
                         if Player.readyToInteract model.player p then
-                            View.entityModal True CloseModal e
+                            View.entityModal True MapTransition CloseModal e
 
                         else
-                            View.entityModal False CloseModal e
+                            View.entityModal False MapTransition CloseModal e
 
                     Nothing ->
-                        View.entityModal False CloseModal Content.Entities.awesomesaurus
+                        View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus
             )
-        |> Maybe.withDefault (View.entityModal False CloseModal Content.Entities.awesomesaurus)
+        |> Maybe.withDefault (View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus)
 
 
 view : Model -> Html Msg
