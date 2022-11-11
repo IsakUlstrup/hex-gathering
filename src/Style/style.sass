@@ -61,6 +61,8 @@ svg
         animation: jump $player-move-duration ease
     &.blocked .player-animation
         animation: shake 200ms ease infinite
+    &.map-leave .player-animation
+        animation: pop $player-move-duration ease
 
 .entity-interactions
     opacity: 0

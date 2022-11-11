@@ -15,7 +15,7 @@ fallDuration =
 
 mapTransitionDuration : ( String, Int )
 mapTransitionDuration =
-    ( "map-transition-duration", 50 )
+    ( "map-transition-duration", 500 )
 
 
 toString : ( String, Int ) -> String
