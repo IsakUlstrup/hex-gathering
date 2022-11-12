@@ -98,18 +98,19 @@ svg
     flex-direction: column
     justify-content: center
     align-items: center
-    transition: opacity 500ms
+    transition: opacity 500ms $player-move-duration
     &.visible
         opacity: 1
         pointer-events: all
         .modal-content
-            height: 25rem
+            max-height: 50rem
             opacity: 1
+            transition-delay: calc($player-move-duration + 200ms)
         .entity-icon
-            animation: pop 300ms ease-out
+            animation: pop 500ms ease-out $player-move-duration
     .modal-content
-        transition: height 500ms, opacity 500ms
-        height: 0rem
+        transition: max-height 500ms, opacity 500ms
+        max-height: 0rem
         opacity: 0
         max-width: 20rem
         overflow: hidden
