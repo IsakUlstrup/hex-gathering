@@ -83,26 +83,21 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
 
         TerrainEntity terrain entity ->
             wrapper
-                (viewTerrain ( point, terrain ) :: marker ++ [ viewEntity ( point, entity ) ]
-                 --     [ viewTerrain ( point, terrain )
-                 --  , viewEntity ( point, entity )
-                 --  ]
-                 --     ++ marker
-                )
+                (viewTerrain ( point, terrain ) :: marker ++ [ viewEntity ( point, entity ) ])
 
 
 viewMarker : Svg msg
 viewMarker =
     Svg.g [ Svg.Attributes.class "marker" ]
         [ Svg.circle
-            [ Svg.Attributes.r "2"
+            [ Svg.Attributes.r "1"
             , Svg.Attributes.cx "2.5"
             , Svg.Attributes.cy "2.5"
             , Svg.Attributes.class "marker-dot"
             ]
             []
         , Svg.circle
-            [ Svg.Attributes.r "2"
+            [ Svg.Attributes.r "1"
             , Svg.Attributes.cx "2.5"
             , Svg.Attributes.cy "2.5"
             , Svg.Attributes.fill "none"
