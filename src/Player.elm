@@ -86,39 +86,31 @@ setPath path player =
 
 findPath : (Point -> Bool) -> Point -> Player -> Player
 findPath walkable to player =
-    if moveTarget player == to then
-        { player | state = Idle }
+    case Point.pathfind walkable player.position to of
+        Just path ->
+            setPath path player
 
-    else
-        case Point.pathfind walkable player.position to of
-            Just path ->
-                setPath path player
-
-            Nothing ->
-                { player | state = BlockedPath 200 }
+        Nothing ->
+            { player | state = BlockedPath 200 }
 
 
 {-| find shortest path to a tile adjacent to target tile
 -}
 findPathAdjacent : (Point -> Bool) -> Point -> Player -> Player
 findPathAdjacent walkable to player =
-    if moveTarget player == to then
-        { player | state = Idle }
+    Point.neighbors to
+        |> Set.toList
+        |> List.filterMap (Point.pathfind walkable player.position)
+        |> List.sortBy List.length
+        |> List.head
+        |> (\p ->
+                case p of
+                    Just path ->
+                        setPath path player
 
-    else
-        Point.neighbors to
-            |> Set.toList
-            |> List.filterMap (Point.pathfind walkable player.position)
-            |> List.sortBy List.length
-            |> List.head
-            |> (\p ->
-                    case p of
-                        Just path ->
-                            setPath path player
-
-                        Nothing ->
-                            { player | state = BlockedPath 200 }
-               )
+                    Nothing ->
+                        { player | state = BlockedPath 200 }
+           )
 
 
 tickCooldown : Int -> Player -> Player
@@ -155,30 +147,6 @@ tickCooldown dt player =
 stop : Player -> Player
 stop player =
     { player | state = Idle }
-
-
-moveTarget : Player -> Point
-moveTarget player =
-    (case player.state of
-        Moving path _ ->
-            path |> List.reverse |> List.head
-
-        Cooling path ->
-            path |> List.reverse |> List.head
-
-        BlockedPath _ ->
-            Nothing
-
-        MapEnter _ _ ->
-            Nothing
-
-        MapLeave _ _ _ ->
-            Nothing
-
-        Idle ->
-            Nothing
-    )
-        |> Maybe.withDefault player.position
 
 
 move : Player -> Player
