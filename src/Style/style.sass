@@ -64,39 +64,12 @@ svg
     &.map-leave .player-animation
         animation: pop $player-move-duration ease
 
-.entity-interactions
-    opacity: 0
-    animation: fall 500ms 300ms forwards
-    background: $primary-color
-    color: $secondary-color
-    border: none
-    border-radius: 1rem
-    display: flex
-    flex-direction: column
-    gap: $spacing-large
-    padding: $spacing-large
-
-    h1
-        font-family: 'Chango', sans-serif
-        background-image: $wave-pattern
-        background-size: cover
-        background-clip: text
-        -webkit-background-clip: text
-        color: transparent
-        font-size: 4rem
-
 .marker
     .marker-dot
-        // transform: scale(0)
-        // opacity: 0
         animation: fade 400ms forwards
-        // transform-origin: 50% 50%
-        // transform-box: fill-box
         fill: $secondary-color
     .marker-circle
         stroke-width: 0.5
-        // transform: scale(0)
-        // opacity: 0
         stroke: $secondary-color
         transform-origin: 50% 50%
         transform-box: fill-box
@@ -115,10 +88,11 @@ svg
     flex-direction: column
     justify-content: center
     align-items: center
-    transition: opacity 500ms $player-move-duration
+    transition: opacity 500ms
     &.visible
         opacity: 1
         pointer-events: all
+        transition-delay: $player-move-duration
         .modal-content
             max-height: 50rem
             opacity: 1
