@@ -85,6 +85,23 @@ svg
         color: transparent
         font-size: 4rem
 
+.marker
+    .marker-dot
+        // transform: scale(0)
+        // opacity: 0
+        animation: fade 400ms forwards
+        // transform-origin: 50% 50%
+        // transform-box: fill-box
+        fill: $secondary-color
+    .marker-circle
+        stroke-width: 0.5
+        // transform: scale(0)
+        // opacity: 0
+        stroke: $secondary-color
+        transform-origin: 50% 50%
+        transform-box: fill-box
+        animation: pop-fade 400ms forwards
+
 .modal-container
     opacity: 0
     pointer-events: none
@@ -159,9 +176,9 @@ svg
     &.selected
         // .entity,.terrain
         //     animation: push-down 400ms ease
-        .terrain
-            .face
-                fill: color.scale($medium-hex-color, $lightness: 30%)
+        // .terrain
+        //     .face
+        //         fill: color.scale($medium-hex-color, $lightness: 30%)
         .entity
             filter: drop-shadow( 0rem 0rem 0.03rem #5afcff)
     &.player

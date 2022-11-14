@@ -68,17 +68,48 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
                     )
                 ]
                 cs
+
+        marker =
+            if meq selectedPoint point then
+                [ viewMarker ]
+
+            else
+                []
     in
     case tile of
         Terrain terrain ->
             wrapper
-                [ viewTerrain ( point, terrain ) ]
+                (viewTerrain ( point, terrain ) :: marker)
 
         TerrainEntity terrain entity ->
             wrapper
-                [ viewTerrain ( point, terrain )
-                , viewEntity ( point, entity )
-                ]
+                (viewTerrain ( point, terrain ) :: marker ++ [ viewEntity ( point, entity ) ]
+                 --     [ viewTerrain ( point, terrain )
+                 --  , viewEntity ( point, entity )
+                 --  ]
+                 --     ++ marker
+                )
+
+
+viewMarker : Svg msg
+viewMarker =
+    Svg.g [ Svg.Attributes.class "marker" ]
+        [ Svg.circle
+            [ Svg.Attributes.r "2"
+            , Svg.Attributes.cx "2.5"
+            , Svg.Attributes.cy "2.5"
+            , Svg.Attributes.class "marker-dot"
+            ]
+            []
+        , Svg.circle
+            [ Svg.Attributes.r "2"
+            , Svg.Attributes.cx "2.5"
+            , Svg.Attributes.cy "2.5"
+            , Svg.Attributes.fill "none"
+            , Svg.Attributes.class "marker-circle"
+            ]
+            []
+        ]
 
 
 viewTerrain : ( Point, Terrain ) -> Svg msg
