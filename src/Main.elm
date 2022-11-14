@@ -81,7 +81,7 @@ update msg model =
                                 else
                                     Render.withHexFocus model.player.position model.renderConfig
                             )
-                        |> Maybe.withDefault model.renderConfig
+                        |> Maybe.withDefault (Render.withHexFocus model.player.position model.renderConfig)
               }
             , Cmd.none
             )
