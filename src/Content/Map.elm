@@ -1,12 +1,15 @@
 module Content.Map exposing (testMap)
 
+import Entities.Counter
+import Entities.Timer
+import Entity exposing (Entity)
 import HexEngine.HexMap as HexMap
 import HexEngine.Point exposing (Point)
 import Island exposing (Island, IslandMap)
 import Tile exposing (Tile(..))
 
 
-testIsland : ( Point, Island Tile )
+testIsland : ( Point, Island Tile Entity )
 testIsland =
     ( ( 0, 0, 0 )
     , Island.new "Home"
@@ -36,10 +39,12 @@ testIsland =
             |> HexMap.insertTile ( 0, -2, 2 ) Medium
             |> HexMap.insertTile ( 0, -3, 3 ) Medium
         )
+        |> Island.addEntity ( 3, -2, -1 ) (Entity.Counter Entities.Counter.init)
+        |> Island.addEntity ( 0, -3, 3 ) (Entity.Timer Entities.Timer.init)
     )
 
 
-testIsland2 : ( Point, Island Tile )
+testIsland2 : ( Point, Island Tile Entity )
 testIsland2 =
     ( ( 0, 1, -1 )
     , Island.new "Mine"
@@ -57,6 +62,6 @@ testIsland2 =
     )
 
 
-testMap : IslandMap Tile
+testMap : IslandMap Tile Entity
 testMap =
     Island.newMap testIsland [ testIsland2 ]

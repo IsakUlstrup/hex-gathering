@@ -4,6 +4,7 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Map
+import Entity exposing (Entity)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
@@ -18,7 +19,7 @@ import View
 
 
 type alias Model =
-    { maps : IslandMap Tile
+    { maps : IslandMap Tile Entity
     , player : Player
     , selectedPoint : Maybe Point
     , renderConfig : RenderConfig

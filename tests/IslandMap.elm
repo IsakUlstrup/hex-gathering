@@ -8,22 +8,22 @@ import Island exposing (Island, IslandMap)
 import Test exposing (Test, test)
 
 
-mapOne : ( Point, Island () )
+mapOne : ( Point, Island () () )
 mapOne =
     ( ( 0, 0, 0 ), Island.new "One" HexEngine.HexMap.empty )
 
 
-mapTwo : ( Point, Island () )
+mapTwo : ( Point, Island () () )
 mapTwo =
     ( ( 1, -1, 0 ), Island.new "Two" HexEngine.HexMap.empty )
 
 
-mapThree : ( Point, Island () )
+mapThree : ( Point, Island () () )
 mapThree =
     ( ( 0, -1, 1 ), Island.new "Three" HexEngine.HexMap.empty )
 
 
-exampleMap : IslandMap ()
+exampleMap : IslandMap () ()
 exampleMap =
     Island.newMap mapOne [ mapTwo, mapThree ]
 
