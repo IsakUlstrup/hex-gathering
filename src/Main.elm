@@ -4,7 +4,7 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Entities
-import Content.Islands
+import Content.Map
 import Dict
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
@@ -30,7 +30,7 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        (Island.newMap Content.Islands.testMap [ Content.Islands.testMap3 ])
+        Content.Map.testMap
         (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)

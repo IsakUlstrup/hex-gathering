@@ -1,14 +1,14 @@
-module Content.Islands exposing (testMap, testMap3)
+module Content.Map exposing (testMap)
 
 import Content.Entities as Entities
 import HexEngine.HexMap as HexMap
 import HexEngine.Point exposing (Point)
-import Island exposing (Island)
+import Island exposing (Island, IslandMap)
 import Tile exposing (Terrain(..), Tile(..))
 
 
-testMap : ( Point, Island Tile )
-testMap =
+testIsland : ( Point, Island Tile )
+testIsland =
     ( ( 0, 0, 0 )
     , Island.new "Home"
         (HexMap.empty
@@ -40,8 +40,8 @@ testMap =
     )
 
 
-testMap3 : ( Point, Island Tile )
-testMap3 =
+testIsland2 : ( Point, Island Tile )
+testIsland2 =
     ( ( 0, 1, -1 )
     , Island.new "Mine"
         (HexMap.empty
@@ -56,3 +56,8 @@ testMap3 =
             |> HexMap.insertTile ( -1, 0, 1 ) (Terrain Low)
         )
     )
+
+
+testMap : IslandMap Tile
+testMap =
+    Island.newMap testIsland [ testIsland2 ]
