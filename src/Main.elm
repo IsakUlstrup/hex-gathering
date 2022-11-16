@@ -170,10 +170,9 @@ entityModal visible _ closeMsg entity =
     Html.aside
         [ Html.Attributes.class "modal-container"
         , Html.Attributes.classList [ ( "visible", visible ) ]
-        , Html.Events.onClick closeMsg
         ]
         [ Html.div [ Html.Attributes.class "modal-content" ]
-            content
+            (Html.button [ Html.Events.onClick closeMsg ] [ Html.text "x" ] :: content)
         ]
 
 
