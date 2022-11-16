@@ -30,7 +30,7 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        (Island.newMap ( ( 0, 0, 0 ), Content.Islands.testMap ) [ ( ( 1, 0, -1 ), Content.Islands.testMap3 ) ])
+        (Island.newMap Content.Islands.testMap [ Content.Islands.testMap3 ])
         (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
@@ -44,7 +44,7 @@ init _ =
 
 type Msg
     = Tick Int
-    | MapTransition String
+    | MapTransition Point
     | ClickHex Point
     | CloseModal
 
@@ -73,9 +73,9 @@ update msg model =
             , Cmd.none
             )
 
-        MapTransition _ ->
+        MapTransition destination ->
             ( { model
-                | maps = Island.selectMap ( 1, 0, -1 ) model.maps
+                | maps = Island.selectMap destination model.maps
                 , player = Player.resetPosition model.player
                 , selectedPoint = Nothing
               }

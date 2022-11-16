@@ -14,7 +14,6 @@ import HexEngine.Point exposing (Point)
 
 type Palette
     = Pastel
-    | Greyscale
 
 
 {-| An island is a hexgrid with some metadata

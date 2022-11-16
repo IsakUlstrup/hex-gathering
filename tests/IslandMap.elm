@@ -1,4 +1,4 @@
-module IslandMap exposing (..)
+module IslandMap exposing (mapInteraction)
 
 import Dict
 import Expect

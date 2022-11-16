@@ -1,4 +1,4 @@
-module AnimationConstants exposing (fallDuration, mapTransitionDuration, playerMoveTime, styleNode)
+module AnimationConstants exposing (fallDuration, playerMoveTime, styleNode)
 
 import Html exposing (Html)
 
@@ -11,11 +11,6 @@ playerMoveTime =
 fallDuration : ( String, Int )
 fallDuration =
     ( "fall-duration", 800 )
-
-
-mapTransitionDuration : ( String, Int )
-mapTransitionDuration =
-    ( "map-transition-duration", 500 )
 
 
 toString : ( String, Int ) -> String

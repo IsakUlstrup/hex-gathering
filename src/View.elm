@@ -1,11 +1,10 @@
-module View exposing (entityModal, meq, viewEntityInteractions, viewPlayer, viewTile)
+module View exposing (entityModal, viewPlayer, viewTile)
 
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
 import Html exposing (Html, aside, div)
 import Html.Attributes
 import Html.Events
-import HtmlExtra
 import Player exposing (Player)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
@@ -69,6 +68,7 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
                 ]
                 cs
 
+        marker : List (Svg msg)
         marker =
             if meq selectedPoint point then
                 [ viewMarker ]
@@ -217,37 +217,28 @@ viewPlayer player =
         ]
 
 
-viewEntityInteractions : (String -> msg) -> ( Point, Entity ) -> Svg msg
-viewEntityInteractions transitionEvent ( _, entity ) =
+entityModal : Bool -> (Point -> msg) -> msg -> Entity -> Html msg
+entityModal visible transitionEvent closeMsg entity =
     let
-        panelContents : Entity -> List (Html msg)
-        panelContents e =
-            case e of
+        content : List (Html msg)
+        content =
+            case entity of
+                MapTransition destination ->
+                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
+                    , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
+                    ]
+
                 Resource _ ->
-                    [ Html.h1 [] [ Html.text "Resource" ]
-                    , Html.p [] [ Html.text "Resource" ]
+                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
                     ]
 
                 NPC _ ->
-                    [ Html.h1 [] [ Html.text "Awesomesaur" ]
-                    , Html.p [] [ Html.text "Awesomesaur" ]
-                    ]
-
-                MapTransition destination ->
-                    [ Html.h1 [] [ Html.text "Taxi" ]
-                    , Html.text ("Taxi to " ++ destination)
-                    , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
+                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
                     ]
     in
-    HtmlExtra.dialog
-        [ HtmlExtra.open
-        , Html.Attributes.class "entity-interactions"
-        ]
-        (panelContents entity)
-
-
-entityModal : Bool -> (String -> msg) -> msg -> Entity -> Html msg
-entityModal visible transitionEvent closeMsg _ =
     aside
         [ Html.Attributes.class "modal-container"
         , Html.Attributes.classList [ ( "visible", visible ) ]
@@ -255,8 +246,5 @@ entityModal visible transitionEvent closeMsg _ =
         ]
         [ Html.p [ Html.Attributes.class "entity-icon" ] [ Html.text "🌲" ]
         , div [ Html.Attributes.class "modal-content" ]
-            [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
-            , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
-            , Html.button [ Html.Events.onClick <| transitionEvent "Mine" ] [ Html.text "Travel" ]
-            ]
+            content
         ]

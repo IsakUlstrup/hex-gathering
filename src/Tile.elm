@@ -20,7 +20,7 @@ type Terrain
 type Entity
     = Resource Char
     | NPC Char
-    | MapTransition String
+    | MapTransition Point
 
 
 type Tile

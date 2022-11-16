@@ -9,7 +9,6 @@ module Player exposing
     , readyToInteract
     , resetPosition
     , stateString
-    , stop
     , tickCooldown
     )
 
@@ -112,11 +111,6 @@ tickCooldown dt player =
 
         Idle ->
             player
-
-
-stop : Player -> Player
-stop player =
-    { player | state = Idle }
 
 
 move : Player -> Player
