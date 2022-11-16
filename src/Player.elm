@@ -7,10 +7,10 @@ module Player exposing
     , move
     , new
     , readyToInteract
+    , resetPosition
     , stateString
     , stop
     , tickCooldown
-    , travelTo
     )
 
 import AnimationConstants
@@ -22,22 +22,19 @@ type PlayerState
     = Moving (List Point) Int
     | Cooling (List Point)
     | BlockedPath Int
-    | MapEnter Int String
-    | MapLeave Int String String
     | Idle
 
 
 type alias Player =
     { position : Point
-    , map : String
     , icon : Char
     , state : PlayerState
     }
 
 
-new : String -> Point -> Char -> Player
-new map position icon =
-    Player position map icon (MapEnter (AnimationConstants.mapTransitionDuration |> Tuple.second) map)
+new : Point -> Char -> Player
+new position icon =
+    Player position icon Idle
 
 
 stateString : Player -> String
@@ -51,12 +48,6 @@ stateString player =
 
         BlockedPath _ ->
             "blocked"
-
-        MapEnter _ _ ->
-            "map-enter"
-
-        MapLeave _ _ _ ->
-            "map-leave"
 
         Idle ->
             "idle"
@@ -73,12 +64,6 @@ setPath path player =
 
         BlockedPath _ ->
             { player | state = Cooling path }
-
-        MapEnter _ _ ->
-            player
-
-        MapLeave _ _ _ ->
-            player
 
         Idle ->
             { player | state = Cooling path }
@@ -125,21 +110,6 @@ tickCooldown dt player =
         BlockedPath cd ->
             { player | state = BlockedPath (max 0 (cd - dt)) }
 
-        MapEnter 0 _ ->
-            { player | state = Idle }
-
-        MapEnter cd mapName ->
-            { player | state = MapEnter (max 0 (cd - dt)) mapName }
-
-        MapLeave 0 _ to ->
-            { player
-                | state = MapEnter (AnimationConstants.mapTransitionDuration |> Tuple.second) to
-                , map = to
-            }
-
-        MapLeave cd from to ->
-            { player | state = MapLeave (max 0 (cd - dt)) from to }
-
         Idle ->
             player
 
@@ -179,12 +149,6 @@ move player =
             else
                 player
 
-        MapEnter _ _ ->
-            player
-
-        MapLeave _ _ _ ->
-            player
-
         Idle ->
             player
 
@@ -214,21 +178,12 @@ hasPath player =
         Cooling _ ->
             True
 
-        MapEnter _ _ ->
-            False
-
-        MapLeave _ _ _ ->
-            False
-
 
 readyToInteract : Player -> Point -> Bool
 readyToInteract player point =
     Point.distance point player.position == 1 && isIdle player
 
 
-travelTo : String -> Player -> Player
-travelTo mapName player =
-    { player
-        | state = MapLeave (AnimationConstants.mapTransitionDuration |> Tuple.second) player.map mapName
-        , position = ( 0, 0, 0 )
-    }
+resetPosition : Player -> Player
+resetPosition player =
+    { player | position = ( 0, 0, 0 ) }

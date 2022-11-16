@@ -30,8 +30,8 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        (Island.newMap ( ( 0, 0, 0 ), Content.Islands.testMap ) [])
-        (Player.new "Home" ( 0, 0, 0 ) '🐼')
+        (Island.newMap ( ( 0, 0, 0 ), Content.Islands.testMap ) [ ( ( 1, 0, -1 ), Content.Islands.testMap3 ) ])
+        (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
     , Cmd.none
@@ -73,9 +73,10 @@ update msg model =
             , Cmd.none
             )
 
-        MapTransition destination ->
+        MapTransition _ ->
             ( { model
-                | player = Player.travelTo destination model.player
+                | maps = Island.selectMap ( 1, 0, -1 ) model.maps
+                , player = Player.resetPosition model.player
                 , selectedPoint = Nothing
               }
             , Cmd.none

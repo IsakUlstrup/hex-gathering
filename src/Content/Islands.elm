@@ -37,18 +37,20 @@ testMap =
         )
 
 
-testMap3 : HexMap Tile
+testMap3 : Island Tile
 testMap3 =
-    HexMap.empty
-        |> HexMap.insertTile ( 0, 0, 0 ) (Terrain Medium)
-        |> HexMap.insertTile ( -1, 1, 0 ) (Terrain Medium)
-        |> HexMap.insertTile ( -2, 1, 1 ) (Terrain Medium)
-        |> HexMap.insertTile ( 0, 1, -1 ) (Terrain Medium)
-        |> HexMap.insertTile ( 0, 2, -2 ) (Terrain Medium)
-        |> HexMap.insertTile ( -1, 3, -2 ) (TerrainEntity Medium (Entities.mapTransition "Home"))
-        |> HexMap.insertTile ( -3, 2, 1 ) (Terrain High)
-        |> HexMap.insertTile ( -2, 2, 0 ) (Terrain High)
-        |> HexMap.insertTile ( -1, 0, 1 ) (Terrain Low)
+    Island.new "Mine"
+        (HexMap.empty
+            |> HexMap.insertTile ( 0, 0, 0 ) (Terrain Medium)
+            |> HexMap.insertTile ( -1, 1, 0 ) (Terrain Medium)
+            |> HexMap.insertTile ( -2, 1, 1 ) (Terrain Medium)
+            |> HexMap.insertTile ( 0, 1, -1 ) (Terrain Medium)
+            |> HexMap.insertTile ( 0, 2, -2 ) (Terrain Medium)
+            |> HexMap.insertTile ( -1, 3, -2 ) (TerrainEntity Medium (Entities.mapTransition "Home"))
+            |> HexMap.insertTile ( -3, 2, 1 ) (Terrain High)
+            |> HexMap.insertTile ( -2, 2, 0 ) (Terrain High)
+            |> HexMap.insertTile ( -1, 0, 1 ) (Terrain Low)
+        )
 
 
 errorMap : HexMap Tile
