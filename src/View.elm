@@ -1,4 +1,4 @@
-module View exposing (entityModal, viewPlayer, viewTile)
+module View exposing (viewPlayer, viewTile)
 
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
@@ -9,7 +9,7 @@ import Player exposing (Player)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
-import Tile exposing (Entity(..), Terrain(..), Tile(..))
+import Tile exposing (Tile(..))
 
 
 
@@ -76,14 +76,18 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
             else
                 []
     in
-    case tile of
-        Terrain terrain ->
-            wrapper
-                (viewTerrain ( point, terrain ) :: marker)
+    wrapper
+        (viewTerrain ( point, tile ) :: marker)
 
-        TerrainEntity terrain entity ->
-            wrapper
-                (viewTerrain ( point, terrain ) :: marker ++ [ viewEntity ( point, entity ) ])
+
+
+-- case tile of
+--     Terrain terrain ->
+--         wrapper
+--             (viewTerrain ( point, terrain ) :: marker)
+--     TerrainEntity terrain entity ->
+--         wrapper
+--             (viewTerrain ( point, terrain ) :: marker ++ [ viewEntity ( point, entity ) ])
 
 
 viewMarker : Svg msg
@@ -107,7 +111,7 @@ viewMarker =
         ]
 
 
-viewTerrain : ( Point, Terrain ) -> Svg msg
+viewTerrain : ( Point, Tile ) -> Svg msg
 viewTerrain ( _, tile ) =
     let
         tileType : String
@@ -184,17 +188,16 @@ viewEntityHelper attrs icon =
         ]
 
 
-viewEntity : ( Point, Entity ) -> Svg msg
-viewEntity ( _, entity ) =
-    case entity of
-        Resource icon ->
-            viewEntityHelper [] icon
 
-        NPC icon ->
-            viewEntityHelper [] icon
-
-        MapTransition _ ->
-            viewEntityHelper [] '🚕'
+-- viewEntity : ( Point, Entity ) -> Svg msg
+-- viewEntity ( _, entity ) =
+--     case entity of
+--         Resource icon ->
+--             viewEntityHelper [] icon
+--         NPC icon ->
+--             viewEntityHelper [] icon
+--         MapTransition _ ->
+--             viewEntityHelper [] '🚕'
 
 
 positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
@@ -217,34 +220,33 @@ viewPlayer player =
         ]
 
 
-entityModal : Bool -> (Point -> msg) -> msg -> Entity -> Html msg
-entityModal visible transitionEvent closeMsg entity =
-    let
-        content : List (Html msg)
-        content =
-            case entity of
-                MapTransition destination ->
-                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
-                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
-                    , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
-                    ]
 
-                Resource _ ->
-                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
-                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
-                    ]
-
-                NPC _ ->
-                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
-                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
-                    ]
-    in
-    aside
-        [ Html.Attributes.class "modal-container"
-        , Html.Attributes.classList [ ( "visible", visible ) ]
-        , Html.Events.onClick closeMsg
-        ]
-        [ Html.p [ Html.Attributes.class "entity-icon" ] [ Html.text "🌲" ]
-        , div [ Html.Attributes.class "modal-content" ]
-            content
-        ]
+-- entityModal : Bool -> (Point -> msg) -> msg -> Entity -> Html msg
+-- entityModal visible transitionEvent closeMsg entity =
+--     let
+--         content : List (Html msg)
+--         content =
+--             case entity of
+--                 MapTransition destination ->
+--                     [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+--                     , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
+--                     , Html.button [ Html.Events.onClick <| transitionEvent destination ] [ Html.text "Travel" ]
+--                     ]
+--                 Resource _ ->
+--                     [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+--                     , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
+--                     ]
+--                 NPC _ ->
+--                     [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+--                     , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
+--                     ]
+--     in
+--     aside
+--         [ Html.Attributes.class "modal-container"
+--         , Html.Attributes.classList [ ( "visible", visible ) ]
+--         , Html.Events.onClick closeMsg
+--         ]
+--         [ Html.p [ Html.Attributes.class "entity-icon" ] [ Html.text "🌲" ]
+--         , div [ Html.Attributes.class "modal-content" ]
+--             content
+--         ]

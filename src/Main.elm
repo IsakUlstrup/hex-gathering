@@ -3,9 +3,7 @@ module Main exposing (Model, Msg, main)
 import AnimationConstants
 import Browser
 import Browser.Events
-import Content.Entities
 import Content.Map
-import Dict
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
@@ -86,15 +84,15 @@ update msg model =
             let
                 newPlayer : Player
                 newPlayer =
-                    case Dict.get point (Tuple.second model.maps.selected).grid of
-                        Just (Terrain _) ->
-                            Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
+                    Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
 
-                        Just (TerrainEntity _ _) ->
-                            Player.findPathAdjacent (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
-
-                        _ ->
-                            model.player
+                -- case Dict.get point (Tuple.second model.maps.selected).grid of
+                --     Just (Terrain _) ->
+                --         Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
+                --     Just (TerrainEntity _ _) ->
+                --         Player.findPathAdjacent (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
+                --     _ ->
+                --         model.player
             in
             ( { model
                 | player =
@@ -117,25 +115,21 @@ update msg model =
 
 
 -- VIEW
-
-
-viewEntityModal : Model -> Html Msg
-viewEntityModal model =
-    model.selectedPoint
-        |> Maybe.map
-            (\p ->
-                case Tile.getEntity p (Tuple.second model.maps.selected).grid of
-                    Just e ->
-                        if Player.readyToInteract model.player p then
-                            View.entityModal True MapTransition CloseModal e
-
-                        else
-                            View.entityModal False MapTransition CloseModal e
-
-                    Nothing ->
-                        View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus
-            )
-        |> Maybe.withDefault (View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus)
+-- viewEntityModal : Model -> Html Msg
+-- viewEntityModal model =
+--     model.selectedPoint
+--         |> Maybe.map
+--             (\p ->
+--                 case Tile.getEntity p (Tuple.second model.maps.selected).grid of
+--                     Just e ->
+--                         if Player.readyToInteract model.player p then
+--                             View.entityModal True MapTransition CloseModal e
+--                         else
+--                             View.entityModal False MapTransition CloseModal e
+--                     Nothing ->
+--                         View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus
+--             )
+--         |> Maybe.withDefault (View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus)
 
 
 view : Model -> Html Msg
@@ -146,7 +140,8 @@ view model =
             (Tuple.second model.maps.selected).grid
             (View.viewTile model.player.position model.selectedPoint ClickHex)
             [ View.viewPlayer model.player ]
-        , viewEntityModal model
+
+        -- , viewEntityModal model
         ]
 
 
