@@ -4,12 +4,12 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Entities
-import Content.Maps
+import Content.Islands
 import Dict
-import HexEngine.HexMap exposing (HexMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
+import Island exposing (IslandMap)
 import Player exposing (Player)
 import Tile exposing (Tile(..))
 import View
@@ -20,7 +20,7 @@ import View
 
 
 type alias Model =
-    { maps : List (HexMap Tile)
+    { maps : IslandMap Tile
     , player : Player
     , selectedPoint : Maybe Point
     , renderConfig : RenderConfig
@@ -30,10 +30,8 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        [ Content.Maps.testMap
-        , Content.Maps.testMap3
-        ]
-        (Player.new Content.Maps.testMap.name ( 0, 0, 0 ) '🐼')
+        (Island.newMap ( ( 0, 0, 0 ), Content.Islands.testMap ) [])
+        (Player.new "Home" ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
     , Cmd.none
@@ -49,17 +47,6 @@ type Msg
     | MapTransition String
     | ClickHex Point
     | CloseModal
-
-
-getMap : String -> List (HexMap Tile) -> Maybe (HexMap Tile)
-getMap name maps =
-    maps |> List.filter (\m -> m.name == name) |> List.head
-
-
-currentMap : Model -> HexMap Tile
-currentMap model =
-    getMap model.player.map model.maps
-        |> Maybe.withDefault Content.Maps.errorMap
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -98,12 +85,12 @@ update msg model =
             let
                 newPlayer : Player
                 newPlayer =
-                    case Dict.get point (currentMap model).grid of
+                    case Dict.get point (Tuple.second model.maps.selected).grid of
                         Just (Terrain _) ->
-                            Player.findPath (Tile.isWalkable <| currentMap model) point model.player
+                            Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
 
                         Just (TerrainEntity _ _) ->
-                            Player.findPathAdjacent (Tile.isWalkable <| currentMap model) point model.player
+                            Player.findPathAdjacent (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
 
                         _ ->
                             model.player
@@ -136,7 +123,7 @@ viewEntityModal model =
     model.selectedPoint
         |> Maybe.map
             (\p ->
-                case Tile.getEntity p (currentMap model) of
+                case Tile.getEntity p (Tuple.second model.maps.selected).grid of
                     Just e ->
                         if Player.readyToInteract model.player p then
                             View.entityModal True MapTransition CloseModal e
@@ -155,7 +142,7 @@ view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , Render.renderMap model.renderConfig
-            (currentMap model)
+            (Tuple.second model.maps.selected).grid
             (View.viewTile model.player.position model.selectedPoint ClickHex)
             [ View.viewPlayer model.player ]
         , viewEntityModal model

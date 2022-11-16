@@ -5,18 +5,16 @@ import HexEngine.Point exposing (Point)
 
 
 type alias HexMap tile =
-    { name : String
-    , grid : Dict Point tile
-    }
+    Dict Point tile
 
 
-empty : String -> HexMap tile
-empty name =
-    HexMap name Dict.empty
+empty : HexMap tile
+empty =
+    Dict.empty
 
 
-{-| Insert hex, replace on collision
+{-| Insert tile, replace on collision
 -}
 insertTile : Point -> tile -> HexMap tile -> HexMap tile
 insertTile point tile map =
-    { map | grid = Dict.insert point tile map.grid }
+    Dict.insert point tile map

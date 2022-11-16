@@ -37,7 +37,7 @@ Entities are not walkable
 -}
 isWalkable : HexMap Tile -> Point -> Bool
 isWalkable map point =
-    case Dict.get point map.grid of
+    case Dict.get point map of
         Just (Terrain t) ->
             case t of
                 Medium ->
@@ -55,7 +55,7 @@ isWalkable map point =
 
 getEntity : Point -> HexMap Tile -> Maybe Entity
 getEntity position map =
-    case Dict.get position map.grid of
+    case Dict.get position map of
         Just (TerrainEntity _ entity) ->
             Just entity
 
