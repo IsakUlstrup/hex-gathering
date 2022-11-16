@@ -20,8 +20,16 @@ init =
 
 
 update : Msg -> Model -> Model
-update _ model =
-    model
+update msg model =
+    case msg of
+        Increment ->
+            model + 1
+
+        Decrement ->
+            model - 1
+
+        Reset ->
+            0
 
 
 view : Model -> Html Msg

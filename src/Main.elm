@@ -51,8 +51,8 @@ type Msg
     | MapTransition Point
     | ClickHex Point
     | CloseModal
-    | CounterMsg Entities.Counter.Msg
-    | TimerMsg Entities.Timer.Msg
+    | CounterMsg Point Entities.Counter.Msg
+    | TimerMsg Point Entities.Timer.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -120,11 +120,11 @@ update msg model =
             , Cmd.none
             )
 
-        CounterMsg counterMsg ->
-            ( model, Cmd.none )
+        CounterMsg position counterMsg ->
+            ( { model | maps = Island.updateSelectedMapEntity position (Entity.counterUpdate counterMsg) model.maps }, Cmd.none )
 
-        TimerMsg timerMsg ->
-            ( model, Cmd.none )
+        TimerMsg position timerMsg ->
+            ( { model | maps = Island.updateSelectedMapEntity position (Entity.timerUpdate timerMsg) model.maps }, Cmd.none )
 
 
 
@@ -139,28 +139,28 @@ viewEntityModal model =
                 case Dict.get p (Tuple.second model.maps.selected).entities of
                     Just e ->
                         if Player.readyToInteract model.player p then
-                            entityModal True MapTransition CloseModal e
+                            entityModal True MapTransition CloseModal p e
 
                         else
-                            entityModal False MapTransition CloseModal e
+                            entityModal False MapTransition CloseModal p e
 
                     Nothing ->
-                        entityModal False MapTransition CloseModal (Entity.Counter Entities.Counter.init)
+                        entityModal False MapTransition CloseModal p (Entity.Counter Entities.Counter.init)
             )
-        |> Maybe.withDefault (entityModal False MapTransition CloseModal (Entity.Counter Entities.Counter.init))
+        |> Maybe.withDefault (entityModal False MapTransition CloseModal ( 0, 0, 0 ) (Entity.Counter Entities.Counter.init))
 
 
-entityModal : Bool -> (Point -> Msg) -> Msg -> Entity -> Html Msg
-entityModal visible _ closeMsg entity =
+entityModal : Bool -> (Point -> Msg) -> Msg -> Point -> Entity -> Html Msg
+entityModal visible _ closeMsg position entity =
     let
         content : List (Html Msg)
         content =
             case entity of
                 Entity.Counter model ->
-                    [ Html.map CounterMsg (Entities.Counter.view model) ]
+                    [ Html.map (CounterMsg position) (Entities.Counter.view model) ]
 
                 Entity.Timer model ->
-                    [ Html.map TimerMsg (Entities.Timer.view model) ]
+                    [ Html.map (TimerMsg position) (Entities.Timer.view model) ]
 
                 Entity.Player _ ->
                     [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]

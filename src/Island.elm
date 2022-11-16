@@ -7,6 +7,9 @@ module Island exposing
     , new
     , newMap
     , selectMap
+    , updateEntities
+    , updateEntity
+    , updateSelectedMapEntity
     )
 
 import Dict exposing (Dict)
@@ -41,6 +44,42 @@ addEntity position model island =
 getPoint : Point -> Island t e -> ( Maybe e, Maybe t )
 getPoint position island =
     ( Dict.get position island.entities, Dict.get position island.grid )
+
+
+updateEntity : Point -> (e -> e) -> Island t e -> Island t e
+updateEntity position f island =
+    { island
+        | entities =
+            Dict.update position
+                (\m ->
+                    case m of
+                        Just e ->
+                            Just <| f e
+
+                        Nothing ->
+                            m
+                )
+                island.entities
+    }
+
+
+mapEntities : (e -> e) -> Island t e -> Island t e
+mapEntities f island =
+    { island | entities = Dict.map (\_ v -> f v) island.entities }
+
+
+updateSelectedMapEntity : Point -> (e -> e) -> IslandMap t e -> IslandMap t e
+updateSelectedMapEntity position f map =
+    { map | selected = Tuple.mapSecond (updateEntity position f) map.selected }
+
+
+updateEntities : (e -> e) -> IslandMap t e -> IslandMap t e
+updateEntities f map =
+    { map
+        | selected =
+            map.selected
+                |> Tuple.mapSecond (mapEntities f)
+    }
 
 
 {-| A hex grid containing islands
