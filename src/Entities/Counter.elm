@@ -1,6 +1,7 @@
 module Entities.Counter exposing (Model, Msg(..), init, update, view)
 
 import Html exposing (Html)
+import Html.Events
 
 
 type alias Model =
@@ -24,5 +25,11 @@ update _ model =
 
 
 view : Model -> Html Msg
-view _ =
-    Html.div [] [ Html.text "Counter" ]
+view model =
+    Html.div []
+        [ Html.h1 [] [ Html.text "Counter" ]
+        , Html.p [] [ Html.text <| "Value: " ++ String.fromInt model ]
+        , Html.button [ Html.Events.onClick Increment ] [ Html.text "Increment" ]
+        , Html.button [ Html.Events.onClick Decrement ] [ Html.text "Decrement" ]
+        , Html.button [ Html.Events.onClick Reset ] [ Html.text "Reset" ]
+        ]
