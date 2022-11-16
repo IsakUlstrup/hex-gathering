@@ -4,10 +4,15 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Map
+import Dict
+import Entities.Counter
+import Entities.Timer
 import Entity exposing (Entity)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import Html exposing (Html, main_)
+import Html.Attributes
+import Html.Events
 import Island exposing (IslandMap)
 import Player exposing (Player)
 import Tile exposing (Tile(..))
@@ -46,6 +51,8 @@ type Msg
     | MapTransition Point
     | ClickHex Point
     | CloseModal
+    | CounterMsg Entities.Counter.Msg
+    | TimerMsg Entities.Timer.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -85,15 +92,15 @@ update msg model =
             let
                 newPlayer : Player
                 newPlayer =
-                    Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
+                    case Island.getPoint point (Tuple.second model.maps.selected) of
+                        ( Just _, Just _ ) ->
+                            Player.findPathAdjacent (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
 
-                -- case Dict.get point (Tuple.second model.maps.selected).grid of
-                --     Just (Terrain _) ->
-                --         Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
-                --     Just (TerrainEntity _ _) ->
-                --         Player.findPathAdjacent (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
-                --     _ ->
-                --         model.player
+                        ( Nothing, Just _ ) ->
+                            Player.findPath (Tile.isWalkable <| (Tuple.second model.maps.selected).grid) point model.player
+
+                        _ ->
+                            model.player
             in
             ( { model
                 | player =
@@ -113,36 +120,73 @@ update msg model =
             , Cmd.none
             )
 
+        CounterMsg counterMsg ->
+            ( model, Cmd.none )
+
+        TimerMsg timerMsg ->
+            ( model, Cmd.none )
+
 
 
 -- VIEW
--- viewEntityModal : Model -> Html Msg
--- viewEntityModal model =
---     model.selectedPoint
---         |> Maybe.map
---             (\p ->
---                 case Tile.getEntity p (Tuple.second model.maps.selected).grid of
---                     Just e ->
---                         if Player.readyToInteract model.player p then
---                             View.entityModal True MapTransition CloseModal e
---                         else
---                             View.entityModal False MapTransition CloseModal e
---                     Nothing ->
---                         View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus
---             )
---         |> Maybe.withDefault (View.entityModal False MapTransition CloseModal Content.Entities.awesomesaurus)
+
+
+viewEntityModal : Model -> Html Msg
+viewEntityModal model =
+    model.selectedPoint
+        |> Maybe.map
+            (\p ->
+                case Dict.get p (Tuple.second model.maps.selected).entities of
+                    Just e ->
+                        if Player.readyToInteract model.player p then
+                            entityModal True MapTransition CloseModal e
+
+                        else
+                            entityModal False MapTransition CloseModal e
+
+                    Nothing ->
+                        entityModal False MapTransition CloseModal (Entity.Counter Entities.Counter.init)
+            )
+        |> Maybe.withDefault (entityModal False MapTransition CloseModal (Entity.Counter Entities.Counter.init))
+
+
+entityModal : Bool -> (Point -> Msg) -> Msg -> Entity -> Html Msg
+entityModal visible _ closeMsg entity =
+    let
+        content : List (Html Msg)
+        content =
+            case entity of
+                Entity.Counter model ->
+                    [ Html.map CounterMsg (Entities.Counter.view model) ]
+
+                Entity.Timer model ->
+                    [ Html.map TimerMsg (Entities.Timer.view model) ]
+
+                Entity.Player _ ->
+                    [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
+                    , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
+                    ]
+    in
+    Html.aside
+        [ Html.Attributes.class "modal-container"
+        , Html.Attributes.classList [ ( "visible", visible ) ]
+        , Html.Events.onClick closeMsg
+        ]
+        [ Html.div [ Html.Attributes.class "modal-content" ]
+            content
+        ]
 
 
 view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , Render.renderMap model.renderConfig
+        , Render.entityMap model.renderConfig
             (Tuple.second model.maps.selected).grid
             (View.viewTile model.player.position model.selectedPoint ClickHex)
-            [ View.viewPlayer model.player ]
-
-        -- , viewEntityModal model
+            (( model.player.position, Entity.Player model.player ) :: ((Tuple.second model.maps.selected).entities |> Dict.toList))
+            View.viewEntity
+        , viewEntityModal model
         ]
 
 

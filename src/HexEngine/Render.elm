@@ -3,6 +3,7 @@ module HexEngine.Render exposing
     , RenderConfig
     , cornerListToString
     , cornersToString
+    , entityMap
     , hardcodedPoints
     , initRenderConfig
     , pointAdd
@@ -196,5 +197,39 @@ renderMap config map renderTile extras =
                 (map |> Dict.toList)
                 renderTile
             , Svg.g [] extras
+            ]
+        ]
+
+
+entityMap :
+    RenderConfig
+    -> HexMap tile
+    -> (( Point, tile ) -> Svg msg)
+    -> List ( Point, e )
+    -> (( Point, e ) -> Svg msg)
+    -> Svg msg
+entityMap config grid renderTile entities renderEntity =
+    svg
+        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+        ]
+        [ Svg.g
+            [ Svg.Attributes.style
+                ("transform: translate("
+                    ++ String.fromFloat -(config.cameraX * config.zoom)
+                    ++ "px, "
+                    ++ String.fromFloat -(config.cameraY * config.zoom)
+                    ++ "px) scale("
+                    ++ String.fromFloat config.zoom
+                    ++ ");"
+                )
+            , Svg.Attributes.class "camera"
+            ]
+            [ Svg.Lazy.lazy2 renderLayer
+                (grid |> Dict.toList)
+                renderTile
+            , Svg.Lazy.lazy2 renderLayer
+                entities
+                renderEntity
             ]
         ]

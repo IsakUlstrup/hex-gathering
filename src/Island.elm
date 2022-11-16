@@ -3,6 +3,7 @@ module Island exposing
     , IslandMap
     , Palette(..)
     , addEntity
+    , getPoint
     , new
     , newMap
     , selectMap
@@ -17,30 +18,29 @@ type Palette
     = Pastel
 
 
-type alias Entity e =
-    { position : Point
-    , model : e
-    }
-
-
 {-| An island is a hexgrid with some metadata
 -}
 type alias Island t e =
     { name : String
     , grid : HexMap t
     , palette : Palette
-    , entities : List (Entity e)
+    , entities : Dict Point e
     }
 
 
 new : String -> HexMap t -> Island t e
 new name grid =
-    Island name grid Pastel []
+    Island name grid Pastel Dict.empty
 
 
 addEntity : Point -> e -> Island t e -> Island t e
 addEntity position model island =
-    { island | entities = Entity position model :: island.entities }
+    { island | entities = Dict.insert position model island.entities }
+
+
+getPoint : Point -> Island t e -> ( Maybe e, Maybe t )
+getPoint position island =
+    ( Dict.get position island.entities, Dict.get position island.grid )
 
 
 {-| A hex grid containing islands

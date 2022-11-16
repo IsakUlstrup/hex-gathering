@@ -1,4 +1,4 @@
-module Entities.Timer exposing (..)
+module Entities.Timer exposing (Model, Msg(..), init, update, view)
 
 import Html exposing (Html)
 
