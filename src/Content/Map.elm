@@ -3,14 +3,12 @@ module Content.Map exposing (testIsland, testIsland2)
 import Entity exposing (Entity)
 import HexEngine.EntityMap exposing (EntityMap)
 import HexEngine.HexGrid as HexGrid
-import HexEngine.Point exposing (Point)
 import Tile exposing (Tile(..))
 
 
-testIsland : ( Point, EntityMap Tile Entity )
+testIsland : EntityMap Tile Entity
 testIsland =
-    ( ( 0, 0, 0 )
-    , HexEngine.EntityMap.new "Home"
+    HexEngine.EntityMap.new "Home"
         (HexGrid.empty
             |> HexGrid.insertTile ( 0, 0, 0 ) Medium
             |> HexGrid.insertTile ( 0, 1, -1 ) Medium
@@ -37,15 +35,14 @@ testIsland =
             |> HexGrid.insertTile ( 0, -2, 2 ) Medium
             |> HexGrid.insertTile ( 0, -3, 3 ) Medium
         )
+        ( 0, 0, 0 )
         |> HexEngine.EntityMap.addEntity ( 3, -2, -1 ) '🌴'
         |> HexEngine.EntityMap.addEntity ( 0, -3, 3 ) '🌺'
-    )
 
 
-testIsland2 : ( Point, EntityMap Tile Entity )
+testIsland2 : EntityMap Tile Entity
 testIsland2 =
-    ( ( 0, 1, -1 )
-    , HexEngine.EntityMap.new "Mine"
+    HexEngine.EntityMap.new "Mine"
         (HexGrid.empty
             |> HexGrid.insertTile ( 0, 0, 0 ) Medium
             |> HexGrid.insertTile ( -1, 1, 0 ) Medium
@@ -57,4 +54,4 @@ testIsland2 =
             |> HexGrid.insertTile ( -2, 2, 0 ) High
             |> HexGrid.insertTile ( -1, 0, 1 ) Low
         )
-    )
+        ( 0, 1, -1 )

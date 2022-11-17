@@ -20,7 +20,7 @@ import View
 
 
 type alias Model =
-    { selectedIsland : ( Point, EntityMap Tile Entity )
+    { selectedIsland : EntityMap Tile Entity
     , allIslands : Dict Point (EntityMap Tile Entity)
     , player : Player
     , selectedPoint : Maybe Point
@@ -32,7 +32,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         Content.Map.testIsland
-        (Dict.fromList [ Content.Map.testIsland2 ])
+        (Dict.fromList [ ( HexEngine.EntityMap.getOffset Content.Map.testIsland2, Content.Map.testIsland2 ) ])
         (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
@@ -63,15 +63,15 @@ setSelected coordinate island model =
     { model
         | allIslands =
             model.allIslands
-                |> Dict.insert (Tuple.first model.selectedIsland) (Tuple.second model.selectedIsland)
+                |> Dict.insert (HexEngine.EntityMap.getOffset model.selectedIsland) model.selectedIsland
                 |> Dict.remove coordinate
-        , selectedIsland = ( coordinate, island )
+        , selectedIsland = island
     }
 
 
 selectMap : Point -> Model -> Model
 selectMap coordinate model =
-    if Tuple.first model.selectedIsland == coordinate then
+    if HexEngine.EntityMap.getOffset model.selectedIsland == coordinate then
         model
 
     else
@@ -144,12 +144,12 @@ update msg model =
             let
                 newPlayer : Player
                 newPlayer =
-                    case HexEngine.EntityMap.getPoint point (Tuple.second model.selectedIsland) of
+                    case HexEngine.EntityMap.getPoint point model.selectedIsland of
                         ( Just _, Just _ ) ->
-                            Player.findPathAdjacent (isWalkable <| Tuple.second model.selectedIsland) point model.player
+                            Player.findPathAdjacent (isWalkable <| model.selectedIsland) point model.player
 
                         ( Nothing, Just _ ) ->
-                            Player.findPath (isWalkable <| Tuple.second model.selectedIsland) point model.player
+                            Player.findPath (isWalkable <| model.selectedIsland) point model.player
 
                         _ ->
                             model.player
@@ -220,7 +220,7 @@ view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , Render.entityMap2 model.renderConfig
-            (Tuple.second model.selectedIsland)
+            (model.selectedIsland |> HexEngine.EntityMap.addEntity model.player.position model.player.icon)
             (View.viewTile model.player.position model.selectedPoint ClickHex)
             View.viewEntity
 

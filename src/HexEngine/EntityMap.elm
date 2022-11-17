@@ -2,6 +2,7 @@ module HexEngine.EntityMap exposing
     ( EntityMap
     , addEntity
     , entityList
+    , getOffset
     , getPoint
     , gridList
     , new
@@ -18,6 +19,7 @@ type EntityMap tile entity
         , grid : HexGrid tile
         , entities : List (Entity entity)
         , idCounter : Int
+        , offset : Point
         }
 
 
@@ -28,14 +30,20 @@ type alias Entity entity =
     }
 
 
-new : String -> HexGrid tile -> EntityMap tile entity
-new name grid =
+new : String -> HexGrid tile -> Point -> EntityMap tile entity
+new name grid offset =
     EntityMap
         { name = name
         , grid = grid
         , entities = []
         , idCounter = 0
+        , offset = offset
         }
+
+
+getOffset : EntityMap tile entity -> Point
+getOffset (EntityMap map) =
+    map.offset
 
 
 entityList : EntityMap tile entity -> List ( Point, entity )
