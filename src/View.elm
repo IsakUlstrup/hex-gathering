@@ -193,14 +193,14 @@ viewEntityHelper attrs icon =
 viewEntity : ( Point, Entity ) -> Svg msg
 viewEntity ( _, entity ) =
     case entity of
-        Counter model ->
-            viewEntityHelper [] 'x'
+        Counter _ ->
+            viewEntityHelper [] '🧮'
 
-        Timer model ->
-            viewEntityHelper [] 'y'
+        Timer _ ->
+            viewEntityHelper [] '⏲'
 
-        Entity.Player p ->
-            viewEntityHelper [] 'p'
+        Entity.Player _ ->
+            viewEntityHelper [] '🐼'
 
 
 positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
