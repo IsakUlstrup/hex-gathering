@@ -104,6 +104,23 @@ selectMap coordinate model =
                 model
 
 
+{-| determine if a given point is walkable
+
+Only tiles that exist and are of variant Medium are walkable
+
+Entities are not walkable
+
+-}
+isWalkable : Island Tile Entity -> Point -> Bool
+isWalkable island point =
+    case Island.getPoint point island of
+        ( Nothing, Just Medium ) ->
+            True
+
+        _ ->
+            False
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -143,10 +160,10 @@ update msg model =
                 newPlayer =
                     case Island.getPoint point (Tuple.second model.selectedIsland) of
                         ( Just _, Just _ ) ->
-                            Player.findPathAdjacent (Tile.isWalkable <| (Tuple.second model.selectedIsland).grid) point model.player
+                            Player.findPathAdjacent (isWalkable <| Tuple.second model.selectedIsland) point model.player
 
                         ( Nothing, Just _ ) ->
-                            Player.findPath (Tile.isWalkable <| (Tuple.second model.selectedIsland).grid) point model.player
+                            Player.findPath (isWalkable <| Tuple.second model.selectedIsland) point model.player
 
                         _ ->
                             model.player
