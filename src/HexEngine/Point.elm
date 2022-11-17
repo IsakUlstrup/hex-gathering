@@ -6,6 +6,7 @@ module HexEngine.Point exposing
     , pathfind
     , toAxial
     , toString
+    , valid
     )
 
 import AStar.Generalised as Astar

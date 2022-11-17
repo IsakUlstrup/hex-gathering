@@ -1,62 +1,60 @@
 module Content.Map exposing (testIsland, testIsland2)
 
-import Entities.Counter
-import Entities.Timer
 import Entity exposing (Entity)
-import HexEngine.HexMap as HexMap
+import HexEngine.EntityMap exposing (EntityMap)
+import HexEngine.HexGrid as HexGrid
 import HexEngine.Point exposing (Point)
-import Island exposing (Island)
 import Tile exposing (Tile(..))
 
 
-testIsland : ( Point, Island Tile Entity )
+testIsland : ( Point, EntityMap Tile Entity )
 testIsland =
     ( ( 0, 0, 0 )
-    , Island.new "Home"
-        (HexMap.empty
-            |> HexMap.insertTile ( 0, 0, 0 ) Medium
-            |> HexMap.insertTile ( 0, 1, -1 ) Medium
-            |> HexMap.insertTile ( 1, 0, -1 ) Medium
-            |> HexMap.insertTile ( 1, 1, -2 ) High
-            |> HexMap.insertTile ( -1, 1, 0 ) Low
-            |> HexMap.insertTile ( -1, 2, -1 ) Medium
-            |> HexMap.insertTile ( -1, 3, -2 ) Medium
-            |> HexMap.insertTile ( 0, 3, -3 ) Low
-            |> HexMap.insertTile ( 1, 2, -3 ) Low
-            |> HexMap.insertTile ( 1, 3, -4 ) Low
-            |> HexMap.insertTile ( 2, -1, -1 ) Medium
-            |> HexMap.insertTile ( 3, -2, -1 ) Medium
-            |> HexMap.insertTile ( 4, -2, -2 ) Medium
-            |> HexMap.insertTile ( 6, -3, -3 ) High
-            |> HexMap.insertTile ( 5, -2, -3 ) Medium
-            |> HexMap.insertTile ( -4, 2, 2 ) Medium
-            |> HexMap.insertTile ( -5, 3, 2 ) Medium
-            |> HexMap.insertTile ( -5, 2, 3 ) Medium
-            |> HexMap.insertTile ( -4, 3, 1 ) High
-            |> HexMap.insertTile ( 0, -1, 1 ) Low
-            |> HexMap.insertTile ( 1, -2, 1 ) Medium
-            |> HexMap.insertTile ( 1, -1, 0 ) Medium
-            |> HexMap.insertTile ( 0, -2, 2 ) Medium
-            |> HexMap.insertTile ( 0, -3, 3 ) Medium
+    , HexEngine.EntityMap.new "Home"
+        (HexGrid.empty
+            |> HexGrid.insertTile ( 0, 0, 0 ) Medium
+            |> HexGrid.insertTile ( 0, 1, -1 ) Medium
+            |> HexGrid.insertTile ( 1, 0, -1 ) Medium
+            |> HexGrid.insertTile ( 1, 1, -2 ) High
+            |> HexGrid.insertTile ( -1, 1, 0 ) Low
+            |> HexGrid.insertTile ( -1, 2, -1 ) Medium
+            |> HexGrid.insertTile ( -1, 3, -2 ) Medium
+            |> HexGrid.insertTile ( 0, 3, -3 ) Low
+            |> HexGrid.insertTile ( 1, 2, -3 ) Low
+            |> HexGrid.insertTile ( 1, 3, -4 ) Low
+            |> HexGrid.insertTile ( 2, -1, -1 ) Medium
+            |> HexGrid.insertTile ( 3, -2, -1 ) Medium
+            |> HexGrid.insertTile ( 4, -2, -2 ) Medium
+            |> HexGrid.insertTile ( 6, -3, -3 ) High
+            |> HexGrid.insertTile ( 5, -2, -3 ) Medium
+            |> HexGrid.insertTile ( -4, 2, 2 ) Medium
+            |> HexGrid.insertTile ( -5, 3, 2 ) Medium
+            |> HexGrid.insertTile ( -5, 2, 3 ) Medium
+            |> HexGrid.insertTile ( -4, 3, 1 ) High
+            |> HexGrid.insertTile ( 0, -1, 1 ) Low
+            |> HexGrid.insertTile ( 1, -2, 1 ) Medium
+            |> HexGrid.insertTile ( 1, -1, 0 ) Medium
+            |> HexGrid.insertTile ( 0, -2, 2 ) Medium
+            |> HexGrid.insertTile ( 0, -3, 3 ) Medium
         )
-        |> Island.addEntity ( 3, -2, -1 ) (Entity.Counter Entities.Counter.init)
-        |> Island.addEntity ( 0, -3, 3 ) (Entity.Timer Entities.Timer.init)
+        |> HexEngine.EntityMap.addEntity ( 3, -2, -1 ) '🌴'
+        |> HexEngine.EntityMap.addEntity ( 0, -3, 3 ) '🌺'
     )
 
 
-testIsland2 : ( Point, Island Tile Entity )
+testIsland2 : ( Point, EntityMap Tile Entity )
 testIsland2 =
     ( ( 0, 1, -1 )
-    , Island.new "Mine"
-        (HexMap.empty
-            |> HexMap.insertTile ( 0, 0, 0 ) Medium
-            |> HexMap.insertTile ( -1, 1, 0 ) Medium
-            |> HexMap.insertTile ( -2, 1, 1 ) Medium
-            |> HexMap.insertTile ( 0, 1, -1 ) Medium
-            |> HexMap.insertTile ( 0, 2, -2 ) Medium
-            |> HexMap.insertTile ( -1, 3, -2 ) Medium
-            |> HexMap.insertTile ( -3, 2, 1 ) High
-            |> HexMap.insertTile ( -2, 2, 0 ) High
-            |> HexMap.insertTile ( -1, 0, 1 ) Low
+    , HexEngine.EntityMap.new "Mine"
+        (HexGrid.empty
+            |> HexGrid.insertTile ( 0, 0, 0 ) Medium
+            |> HexGrid.insertTile ( -1, 1, 0 ) Medium
+            |> HexGrid.insertTile ( -2, 1, 1 ) Medium
+            |> HexGrid.insertTile ( 0, 1, -1 ) Medium
+            |> HexGrid.insertTile ( 0, 2, -2 ) Medium
+            |> HexGrid.insertTile ( -1, 3, -2 ) Medium
+            |> HexGrid.insertTile ( -3, 2, 1 ) High
+            |> HexGrid.insertTile ( -2, 2, 0 ) High
+            |> HexGrid.insertTile ( -1, 0, 1 ) Low
         )
     )

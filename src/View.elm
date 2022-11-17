@@ -1,7 +1,6 @@
 module View exposing (viewEntity, viewPlayer, viewTile)
 
-import Entities.Counter
-import Entity exposing (Entity(..))
+import Entity exposing (Entity)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
 import Html exposing (Html, aside, div)
@@ -192,15 +191,14 @@ viewEntityHelper attrs icon =
 
 viewEntity : ( Point, Entity ) -> Svg msg
 viewEntity ( _, entity ) =
-    case entity of
-        Counter _ ->
-            viewEntityHelper [] '🧮'
-
-        Timer _ ->
-            viewEntityHelper [] '⏲'
-
-        Entity.Player _ ->
-            viewEntityHelper [] '🐼'
+    -- case entity of
+    --     Counter _ ->
+    --         viewEntityHelper [] '🧮'
+    --     Timer _ ->
+    --         viewEntityHelper [] '⏲'
+    --     Entity.Player _ ->
+    --         viewEntityHelper [] '🐼'
+    viewEntityHelper [] entity
 
 
 positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
