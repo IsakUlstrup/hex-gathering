@@ -1,15 +1,11 @@
 module Island exposing
     ( Island
-    , IslandMap
     , Palette(..)
     , addEntity
     , getPoint
+    , mapEntities
     , new
-    , newMap
-    , selectMap
-    , updateEntities
     , updateEntity
-    , updateSelectedMapEntity
     )
 
 import Dict exposing (Dict)
@@ -66,55 +62,3 @@ updateEntity position f island =
 mapEntities : (e -> e) -> Island t e -> Island t e
 mapEntities f island =
     { island | entities = Dict.map (\_ v -> f v) island.entities }
-
-
-updateSelectedMapEntity : Point -> (e -> e) -> IslandMap t e -> IslandMap t e
-updateSelectedMapEntity position f map =
-    { map | selected = Tuple.mapSecond (updateEntity position f) map.selected }
-
-
-updateEntities : (e -> e) -> IslandMap t e -> IslandMap t e
-updateEntities f map =
-    { map
-        | selected =
-            map.selected
-                |> Tuple.mapSecond (mapEntities f)
-    }
-
-
-{-| A hex grid containing islands
--}
-type alias IslandMap t e =
-    { selected : ( Point, Island t e )
-    , all : Dict Point (Island t e)
-    }
-
-
-newMap : ( Point, Island t e ) -> List ( Point, Island t e ) -> IslandMap t e
-newMap selected all =
-    IslandMap selected (Dict.fromList all)
-
-
-setSelected : Point -> Island t e -> IslandMap t e -> IslandMap t e
-setSelected coordinate island map =
-    { map
-        | all =
-            map.all
-                |> Dict.insert (Tuple.first map.selected) (Tuple.second map.selected)
-                |> Dict.remove coordinate
-        , selected = ( coordinate, island )
-    }
-
-
-selectMap : Point -> IslandMap t e -> IslandMap t e
-selectMap coordinate map =
-    if Tuple.first map.selected == coordinate then
-        map
-
-    else
-        case Dict.get coordinate map.all of
-            Just i ->
-                setSelected coordinate i map
-
-            Nothing ->
-                map

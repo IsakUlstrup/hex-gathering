@@ -1,11 +1,11 @@
-module Content.Map exposing (testMap)
+module Content.Map exposing (testIsland, testIsland2)
 
 import Entities.Counter
 import Entities.Timer
 import Entity exposing (Entity)
 import HexEngine.HexMap as HexMap
 import HexEngine.Point exposing (Point)
-import Island exposing (Island, IslandMap)
+import Island exposing (Island)
 import Tile exposing (Tile(..))
 
 
@@ -60,8 +60,3 @@ testIsland2 =
             |> HexMap.insertTile ( -1, 0, 1 ) Low
         )
     )
-
-
-testMap : IslandMap Tile Entity
-testMap =
-    Island.newMap testIsland [ testIsland2 ]
