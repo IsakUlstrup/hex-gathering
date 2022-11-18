@@ -1,6 +1,5 @@
 module HexEngine.Point exposing
     ( Point
-    , distance
     , distanceFloat
     , neighbors
     , pathfind
@@ -106,11 +105,12 @@ neighbors p =
         |> Set.fromList
 
 
-{-| get distance between two points
--}
-distance : Point -> Point -> Int
-distance p1 p2 =
-    distanceFloat p1 p2 |> round
+
+-- {-| get distance between two points
+-- -}
+-- distance : Point -> Point -> Int
+-- distance p1 p2 =
+--     distanceFloat p1 p2 |> round
 
 
 distanceFloat : Point -> Point -> Float

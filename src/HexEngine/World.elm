@@ -1,8 +1,9 @@
-module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, getPlayer, getPoint, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, stateString, tickCooldown, updateEntities, updatePlayer)
+module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, findPathAdjacent, getPlayer, getPoint, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, stateString, tickCooldown, updateEntities, updatePlayer)
 
 import Dict exposing (Dict)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
 import HexEngine.Point as Point exposing (Point)
+import Set
 
 
 
@@ -197,23 +198,23 @@ findPath walkable to player =
             { player | state = BlockedPath 200 }
 
 
+{-| find shortest path to a tile adjacent to target tile
+-}
+findPathAdjacent : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
+findPathAdjacent walkable to player =
+    Point.neighbors to
+        |> Set.toList
+        |> List.filterMap (Point.pathfind walkable player.position.local)
+        |> List.sortBy List.length
+        |> List.head
+        |> (\p ->
+                case p of
+                    Just path ->
+                        setPath path player
 
--- {-| find shortest path to a tile adjacent to target tile
--- -}
--- findPathAdjacent : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
--- findPathAdjacent walkable to player =
---     Point.neighbors to
---         |> Set.toList
---         |> List.filterMap (Point.pathfind walkable player.position.local)
---         |> List.sortBy List.length
---         |> List.head
---         |> (\p ->
---                 case p of
---                     Just path ->
---                         setPath path player
---                     Nothing ->
---                         { player | state = BlockedPath 200 }
---            )
+                    Nothing ->
+                        { player | state = BlockedPath 200 }
+           )
 
 
 tickCooldown : Int -> Entity entityData -> Entity entityData

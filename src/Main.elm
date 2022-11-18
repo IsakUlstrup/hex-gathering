@@ -98,9 +98,13 @@ isWalkable island point =
 
 type Msg
     = Tick Int
-    | MapTransition Point
+      -- | MapTransition Point
     | ClickHex Point
-    | CloseModal
+    | ClickEntity Point
+
+
+
+-- | CloseModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -137,46 +141,42 @@ update msg model =
             , Cmd.none
             )
 
-        MapTransition _ ->
-            -- ( { model
-            --     | player = Player.resetPosition model.player
-            --     , selectedPoint = Nothing
-            --   }
-            --     |> selectMap destination
-            -- , Cmd.none
-            -- )
-            ( model, Cmd.none )
-
+        -- MapTransition _ ->
+        --     -- ( { model
+        --     --     | player = Player.resetPosition model.player
+        --     --     , selectedPoint = Nothing
+        --     --   }
+        --     --     |> selectMap destination
+        --     -- , Cmd.none
+        --     -- )
+        --     ( model, Cmd.none )
         ClickHex point ->
-            let
-                newWorld : World Tile Entity
-                newWorld =
-                    -- case World.getPoint point model.world of
-                    --     ( Just _, Just _ ) ->
-                    --         Player.findPathAdjacent (isWalkable <| model.selectedIsland) point model.player
-                    --     ( Nothing, Just _ ) ->
-                    --         Player.findPath (isWalkable <| model.selectedIsland) point model.player
-                    --     _ ->
-                    --         model.player
-                    World.updatePlayer (World.findPath (isWalkable model.world) point) model.world
-            in
             ( { model
                 | world =
-                    newWorld
+                    World.updatePlayer (World.findPath (isWalkable model.world) point) model.world
                 , selectedPoint =
                     Just point
               }
             , Cmd.none
             )
 
-        -- ( { model | selectedPoint = Just point }, Cmd.none )
-        CloseModal ->
-            ( { model | selectedPoint = Nothing }
+        ClickEntity point ->
+            ( { model
+                | world =
+                    World.updatePlayer (World.findPathAdjacent (isWalkable model.world) point) model.world
+                , selectedPoint =
+                    Just point
+              }
             , Cmd.none
             )
 
 
 
+-- ( { model | selectedPoint = Just point }, Cmd.none )
+-- CloseModal ->
+--     ( { model | selectedPoint = Nothing }
+--     , Cmd.none
+--     )
 -- VIEW
 -- viewEntityModal : Model -> Html Msg
 -- viewEntityModal model =
@@ -231,7 +231,7 @@ view model =
             model.renderConfig
             model.world
             (View.viewTile (World.getPlayer model.world).position.local model.selectedPoint ClickHex)
-            View.viewEntity
+            (View.viewEntity ClickEntity)
 
         -- , viewEntityModal model
         ]

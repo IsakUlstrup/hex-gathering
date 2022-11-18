@@ -214,9 +214,12 @@ viewTerrain clickEvent ( position, tile ) =
 --         ]
 
 
-viewEntity : ( Point, HexEngine.World.Entity Entity ) -> Svg msg
-viewEntity ( position, entity ) =
-    Svg.g [ Svg.Attributes.class (HexEngine.World.stateString entity) ]
+viewEntity : (Point -> msg) -> ( Point, HexEngine.World.Entity Entity ) -> Svg msg
+viewEntity clickEvent ( position, entity ) =
+    Svg.g
+        [ Svg.Attributes.class (HexEngine.World.stateString entity)
+        , Svg.Events.onClick <| clickEvent position
+        ]
         [ Svg.g
             [ Svg.Attributes.class "animation"
             , Svg.Attributes.style
