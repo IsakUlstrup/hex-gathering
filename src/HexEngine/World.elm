@@ -1,4 +1,4 @@
-module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, getPlayer, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, playerMap, stateString, tickCooldown, updateEntities, updatePlayer)
+module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, getPlayer, getPoint, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, playerMap, stateString, tickCooldown, updateEntities, updatePlayer)
 
 import Dict exposing (Dict)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
@@ -55,6 +55,20 @@ addEntity mapOffset position entity (World world) =
 playerMap : World tileData entityData -> Maybe (Map tileData)
 playerMap (World world) =
     Dict.get world.player.position.mapOffset world.maps
+
+
+getPoint : Point -> World tileData entityData -> ( Maybe tileData, Maybe (Entity entityData) )
+getPoint target (World world) =
+    ( case playerMap (World world) of
+        Just map ->
+            Grid.get target map.grid
+
+        Nothing ->
+            Nothing
+    , world.entities
+        |> List.filter (\e -> e.position.local == target)
+        |> List.head
+    )
 
 
 updatePlayer : (Entity entityData -> Entity entityData) -> World tileData entityData -> World tileData entityData

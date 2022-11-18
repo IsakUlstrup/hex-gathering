@@ -91,12 +91,12 @@ Entities are not walkable
 -}
 isWalkable : World Tile Entity -> Point -> Bool
 isWalkable island point =
-    -- case World.getPoint point island of
-    --     ( Nothing, Just Medium ) ->
-    --         True
-    --     _ ->
-    --         False
-    True
+    case World.getPoint point island of
+        ( Just Medium, Nothing ) ->
+            True
+
+        _ ->
+            False
 
 
 type Msg
