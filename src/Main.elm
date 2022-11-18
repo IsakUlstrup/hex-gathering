@@ -219,7 +219,7 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , Render.entityMap2 model.renderConfig
+        , Render.entityMap model.renderConfig
             (model.selectedIsland |> HexEngine.EntityMap.addEntity model.player.position model.player.icon)
             (View.viewTile model.player.position model.selectedPoint ClickHex)
             View.viewEntity2
