@@ -196,8 +196,8 @@ renderHex renderTile ( point, t ) =
 -- EXPERIMENTAL
 
 
-layer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
-layer attributes keyFunc renderTile tiles =
+sortedLayer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
+sortedLayer attributes keyFunc renderTile tiles =
     let
         keyedViewTile : ( Point, a ) -> ( String, Svg msg )
         keyedViewTile entity =
@@ -212,6 +212,20 @@ layer attributes keyFunc renderTile tiles =
             |> List.sortBy (Tuple.first >> pointToYpos)
             |> List.map keyedViewTile
         )
+
+
+layer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
+layer attributes keyFunc renderTile tiles =
+    let
+        keyedViewTile : ( Point, a ) -> ( String, Svg msg )
+        keyedViewTile entity =
+            ( keyFunc entity
+            , Svg.Lazy.lazy (renderHex renderTile) entity
+            )
+    in
+    Svg.Keyed.node "g"
+        (Svg.Attributes.class "layer" :: attributes)
+        (List.map keyedViewTile tiles)
 
 
 viewWorld :
@@ -238,7 +252,7 @@ viewWorld config world tileRenderFunc entityRenderFunc =
             , Svg.Attributes.class "camera"
             ]
             [ World.mapCurrentGrid world
-                (layer [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) tileRenderFunc)
+                (sortedLayer [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) tileRenderFunc)
             , World.mapCurrentEntities world
                 (layer [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
             ]
