@@ -161,7 +161,7 @@ update msg model =
             --   }
             -- , Cmd.none
             -- )
-            ( model, Cmd.none )
+            ( { model | selectedPoint = Just point }, Cmd.none )
 
         CloseModal ->
             ( { model | selectedPoint = Nothing }

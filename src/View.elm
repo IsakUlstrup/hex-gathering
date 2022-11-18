@@ -59,7 +59,6 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
                     , ( "selected", meq selectedPoint point )
                     , ( "player", point == playerPosition )
                     ]
-                , Svg.Events.onClick <| clickEvent point
                 , Svg.Attributes.style
                     ("animation-delay: "
                         ++ (Point.distanceFloat ( 0, 0, 0 ) point
@@ -80,7 +79,7 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
                 []
     in
     wrapper
-        (viewTerrain ( point, tile ) :: marker)
+        (viewTerrain clickEvent ( point, tile ) :: marker)
 
 
 
@@ -114,8 +113,8 @@ viewMarker =
         ]
 
 
-viewTerrain : ( Point, Tile ) -> Svg msg
-viewTerrain ( _, tile ) =
+viewTerrain : (Point -> msg) -> ( Point, Tile ) -> Svg msg
+viewTerrain clickEvent ( position, tile ) =
     let
         tileType : String
         tileType =
@@ -170,6 +169,7 @@ viewTerrain ( _, tile ) =
         , Svg.polygon
             [ Svg.Attributes.class "face"
             , Svg.Attributes.points (points |> Render.cornersToString)
+            , Svg.Events.onClick <| clickEvent position
             ]
             []
         ]
@@ -225,4 +225,4 @@ viewPlayer player =
 
 viewEntity2 : ( Point, HexEngine.World.Entity Entity ) -> Svg msg
 viewEntity2 ( position, entity ) =
-    Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (entity.data |> String.fromChar) ]
+    Svg.g [ Svg.Attributes.class "animation" ] [ Svg.text_ [ Svg.Attributes.class "content", Svg.Attributes.x "2.5", Svg.Attributes.y "2.5" ] [ Svg.text (entity.data |> String.fromChar) ] ]

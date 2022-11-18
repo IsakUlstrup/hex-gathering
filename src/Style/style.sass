@@ -47,24 +47,30 @@ svg
 .camera
     transition: transform $player-move-duration ease-in-out
 
-.entity
-    transition: transform $player-move-duration ease-in-out
+.entities
+    .point
+        // transform-box: fill-box
+        transition: transform $player-move-duration ease-in-out
 
-    .content
-        filter: saturate(80%) sepia(30%)
-        font-size: 0.5rem
-        text-anchor: middle
-        cursor: pointer
-        user-select: none
+        .animation
+            animation: fall $hex-fall-duration ease forwards
+            opacity: 0
+        .content
+            filter: saturate(80%) sepia(30%)
+            font-size: 0.5rem
+            text-anchor: middle
+            cursor: pointer
+            user-select: none
 
-    &.moving .animation
-        animation: jump $player-move-duration ease
-    &.blocked .animation
-        animation: shake 200ms ease infinite
-    &.map-leave .animation
-        animation: pop $player-move-duration ease
+        &.moving .animation
+            animation: jump $player-move-duration ease
+        &.blocked .animation
+            animation: shake 200ms ease infinite
+        &.map-leave .animation
+            animation: pop $player-move-duration ease
 
 .marker
+    pointer-events: none
     .marker-dot
         animation: fade 400ms forwards
         fill: $secondary-color
@@ -176,7 +182,8 @@ svg
 
     &.medium
         @include hex($medium-hex-color)
-        cursor: pointer
+        .face
+            cursor: pointer
 
     &.low
         @include hex($low-hex-color)
