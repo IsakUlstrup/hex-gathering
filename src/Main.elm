@@ -89,14 +89,14 @@ Only tiles that exist and are of variant Medium are walkable
 Entities are not walkable
 
 -}
-isWalkable : EntityMap Tile Entity -> Point -> Bool
+isWalkable : World Tile Entity -> Point -> Bool
 isWalkable island point =
-    case HexEngine.EntityMap.getPoint point island of
-        ( Nothing, Just Medium ) ->
-            True
-
-        _ ->
-            False
+    -- case World.getPoint point island of
+    --     ( Nothing, Just Medium ) ->
+    --         True
+    --     _ ->
+    --         False
+    True
 
 
 type Msg
@@ -128,7 +128,17 @@ update msg model =
             --   }
             -- , Cmd.none
             -- )
-            ( model, Cmd.none )
+            ( { model
+                | world =
+                    model.world
+                        |> World.updateEntities
+                            (World.tickCooldown dt
+                                >> World.move (Tuple.second AnimationConstants.playerMoveTime)
+                            )
+                , renderConfig = Render.withHexFocus (World.getPlayer model.world).position.local model.renderConfig
+              }
+            , Cmd.none
+            )
 
         MapTransition destination ->
             -- ( { model
@@ -141,30 +151,28 @@ update msg model =
             ( model, Cmd.none )
 
         ClickHex point ->
-            -- let
-            --     newPlayer : Player
-            --     newPlayer =
-            --         case World.getPoint point model.world of
-            --             ( Just _, Just _ ) ->
-            --                 Player.findPathAdjacent (isWalkable <| model.selectedIsland) point model.player
-            --             ( Nothing, Just _ ) ->
-            --                 Player.findPath (isWalkable <| model.selectedIsland) point model.player
-            --             _ ->
-            --                 model.player
-            -- in
-            -- ( { model
-            --     | player =
-            --         newPlayer
-            --     , selectedPoint =
-            --         if Player.hasPath newPlayer then
-            --             Just point
-            --         else
-            --             Nothing
-            --   }
-            -- , Cmd.none
-            -- )
-            ( { model | selectedPoint = Just point }, Cmd.none )
+            let
+                newWorld : World Tile Entity
+                newWorld =
+                    -- case World.getPoint point model.world of
+                    --     ( Just _, Just _ ) ->
+                    --         Player.findPathAdjacent (isWalkable <| model.selectedIsland) point model.player
+                    --     ( Nothing, Just _ ) ->
+                    --         Player.findPath (isWalkable <| model.selectedIsland) point model.player
+                    --     _ ->
+                    --         model.player
+                    World.updatePlayer (World.findPath (isWalkable model.world) point) model.world
+            in
+            ( { model
+                | world =
+                    newWorld
+                , selectedPoint =
+                    Just point
+              }
+            , Cmd.none
+            )
 
+        -- ( { model | selectedPoint = Just point }, Cmd.none )
         CloseModal ->
             ( { model | selectedPoint = Nothing }
             , Cmd.none

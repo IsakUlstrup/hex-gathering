@@ -62,11 +62,11 @@ svg
             cursor: pointer
             user-select: none
 
-        &.moving .animation
+        .moving
             animation: jump $player-move-duration ease
-        &.blocked .animation
+        .blocked
             animation: shake 200ms ease infinite
-        &.map-leave .animation
+        .map-leave
             animation: pop $player-move-duration ease
 
 .marker

@@ -225,4 +225,9 @@ viewPlayer player =
 
 viewEntity2 : ( Point, HexEngine.World.Entity Entity ) -> Svg msg
 viewEntity2 ( position, entity ) =
-    Svg.g [ Svg.Attributes.class "animation" ] [ Svg.text_ [ Svg.Attributes.class "content", Svg.Attributes.x "2.5", Svg.Attributes.y "2.5" ] [ Svg.text (entity.data |> String.fromChar) ] ]
+    Svg.g [ Svg.Attributes.class (HexEngine.World.stateString entity) ]
+        [ Svg.g
+            [ Svg.Attributes.class "animation"
+            ]
+            [ Svg.text_ [ Svg.Attributes.class "content", Svg.Attributes.x "2.5", Svg.Attributes.y "2.5" ] [ Svg.text (entity.data |> String.fromChar) ] ]
+        ]
