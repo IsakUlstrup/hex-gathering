@@ -1,14 +1,10 @@
-module View exposing (viewEntity, viewEntity2, viewPlayer, viewTile)
+module View exposing (viewEntity, viewTile)
 
 import Entity exposing (Entity)
-import HexEngine.EntityMap
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
 import HexEngine.World
-import Html exposing (Html, aside, div)
-import Html.Attributes
-import Html.Events
-import Player exposing (Player)
+import Html exposing (Html)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
@@ -175,56 +171,51 @@ viewTerrain clickEvent ( position, tile ) =
         ]
 
 
-viewEntityHelper : List (Attribute msg) -> Char -> Svg msg
-viewEntityHelper attrs icon =
-    Svg.g
-        [ Svg.Attributes.class "entity"
-        ]
-        [ Svg.text_
-            ([ Svg.Attributes.class "content"
-             , Svg.Attributes.x "2.5"
-             , Svg.Attributes.y "2.5"
-             ]
-                ++ attrs
-            )
-            [ Svg.text (String.fromChar icon) ]
-        ]
+
+-- viewEntityHelper : List (Attribute msg) -> Char -> Svg msg
+-- viewEntityHelper attrs icon =
+--     Svg.g
+--         [ Svg.Attributes.class "entity"
+--         ]
+--         [ Svg.text_
+--             ([ Svg.Attributes.class "content"
+--              , Svg.Attributes.x "2.5"
+--              , Svg.Attributes.y "2.5"
+--              ]
+--                 ++ attrs
+--             )
+--             [ Svg.text (String.fromChar icon) ]
+--         ]
+-- viewEntity : ( Point, Entity ) -> Svg msg
+-- viewEntity ( _, entity ) =
+--     -- case entity of
+--     --     Counter _ ->
+--     --         viewEntityHelper [] '🧮'
+--     --     Timer _ ->
+--     --         viewEntityHelper [] '⏲'
+--     --     Entity.Player _ ->
+--     --         viewEntityHelper [] '🐼'
+--     viewEntityHelper [] entity
+-- positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
+-- positionNode position attributes children =
+--     let
+--         ( x, y ) =
+--             Render.pointToPixel position
+--     in
+--     Svg.g (Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") :: attributes)
+--         children
+-- viewPlayer : Player -> Svg msg
+-- viewPlayer player =
+--     positionNode player.position
+--         [ Svg.Attributes.class (Player.stateString player), Svg.Attributes.class "entity" ]
+--         [ Svg.g [ Svg.Attributes.class "player-animation" ]
+--             [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (player.icon |> String.fromChar) ]
+--             ]
+--         ]
 
 
-viewEntity : ( Point, Entity ) -> Svg msg
-viewEntity ( _, entity ) =
-    -- case entity of
-    --     Counter _ ->
-    --         viewEntityHelper [] '🧮'
-    --     Timer _ ->
-    --         viewEntityHelper [] '⏲'
-    --     Entity.Player _ ->
-    --         viewEntityHelper [] '🐼'
-    viewEntityHelper [] entity
-
-
-positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
-positionNode position attributes children =
-    let
-        ( x, y ) =
-            Render.pointToPixel position
-    in
-    Svg.g (Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") :: attributes)
-        children
-
-
-viewPlayer : Player -> Svg msg
-viewPlayer player =
-    positionNode player.position
-        [ Svg.Attributes.class (Player.stateString player), Svg.Attributes.class "entity" ]
-        [ Svg.g [ Svg.Attributes.class "player-animation" ]
-            [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (player.icon |> String.fromChar) ]
-            ]
-        ]
-
-
-viewEntity2 : ( Point, HexEngine.World.Entity Entity ) -> Svg msg
-viewEntity2 ( position, entity ) =
+viewEntity : ( Point, HexEngine.World.Entity Entity ) -> Svg msg
+viewEntity ( position, entity ) =
     Svg.g [ Svg.Attributes.class (HexEngine.World.stateString entity) ]
         [ Svg.g
             [ Svg.Attributes.class "animation"

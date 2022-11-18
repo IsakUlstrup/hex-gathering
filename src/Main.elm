@@ -4,14 +4,11 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Content.Map
-import Dict exposing (Dict)
 import Entity exposing (Entity)
-import HexEngine.EntityMap exposing (EntityMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
-import Player exposing (Player)
 import Tile exposing (Tile(..))
 import View
 
@@ -140,7 +137,7 @@ update msg model =
             , Cmd.none
             )
 
-        MapTransition destination ->
+        MapTransition _ ->
             -- ( { model
             --     | player = Player.resetPosition model.player
             --     , selectedPoint = Nothing
@@ -234,7 +231,7 @@ view model =
             model.renderConfig
             model.world
             (View.viewTile (World.getPlayer model.world).position.local model.selectedPoint ClickHex)
-            View.viewEntity2
+            View.viewEntity
 
         -- , viewEntityModal model
         ]

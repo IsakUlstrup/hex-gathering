@@ -1,9 +1,8 @@
-module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, getPlayer, getPoint, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, playerMap, stateString, tickCooldown, updateEntities, updatePlayer)
+module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, getPlayer, getPoint, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, stateString, tickCooldown, updateEntities, updatePlayer)
 
 import Dict exposing (Dict)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
 import HexEngine.Point as Point exposing (Point)
-import Set
 
 
 
@@ -59,12 +58,8 @@ playerMap (World world) =
 
 getPoint : Point -> World tileData entityData -> ( Maybe tileData, Maybe (Entity entityData) )
 getPoint target (World world) =
-    ( case playerMap (World world) of
-        Just map ->
-            Grid.get target map.grid
-
-        Nothing ->
-            Nothing
+    ( playerMap (World world)
+        |> Maybe.andThen (\m -> Grid.get target m.grid)
     , world.entities
         |> List.filter (\e -> e.position.local == target)
         |> List.head
@@ -202,23 +197,23 @@ findPath walkable to player =
             { player | state = BlockedPath 200 }
 
 
-{-| find shortest path to a tile adjacent to target tile
--}
-findPathAdjacent : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
-findPathAdjacent walkable to player =
-    Point.neighbors to
-        |> Set.toList
-        |> List.filterMap (Point.pathfind walkable player.position.local)
-        |> List.sortBy List.length
-        |> List.head
-        |> (\p ->
-                case p of
-                    Just path ->
-                        setPath path player
 
-                    Nothing ->
-                        { player | state = BlockedPath 200 }
-           )
+-- {-| find shortest path to a tile adjacent to target tile
+-- -}
+-- findPathAdjacent : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
+-- findPathAdjacent walkable to player =
+--     Point.neighbors to
+--         |> Set.toList
+--         |> List.filterMap (Point.pathfind walkable player.position.local)
+--         |> List.sortBy List.length
+--         |> List.head
+--         |> (\p ->
+--                 case p of
+--                     Just path ->
+--                         setPath path player
+--                     Nothing ->
+--                         { player | state = BlockedPath 200 }
+--            )
 
 
 tickCooldown : Int -> Entity entityData -> Entity entityData
@@ -271,37 +266,28 @@ move moveTime player =
             player
 
 
-isIdle : Entity entityData -> Bool
-isIdle player =
-    case player.state of
-        Idle ->
-            True
 
-        _ ->
-            False
-
-
-hasPath : Entity entityData -> Bool
-hasPath player =
-    case player.state of
-        Idle ->
-            False
-
-        BlockedPath _ ->
-            False
-
-        Moving _ _ ->
-            True
-
-        Cooling _ ->
-            True
-
-
-readyToInteract : Entity entityData -> Point -> Bool
-readyToInteract player point =
-    Point.distance point player.position.local == 1 && isIdle player
-
-
-resetPosition : Entity entityData -> Entity entityData
-resetPosition player =
-    { player | position = { mapOffset = player.position.mapOffset, local = ( 0, 0, 0 ) } }
+-- isIdle : Entity entityData -> Bool
+-- isIdle player =
+--     case player.state of
+--         Idle ->
+--             True
+--         _ ->
+--             False
+-- hasPath : Entity entityData -> Bool
+-- hasPath player =
+--     case player.state of
+--         Idle ->
+--             False
+--         BlockedPath _ ->
+--             False
+--         Moving _ _ ->
+--             True
+--         Cooling _ ->
+--             True
+-- readyToInteract : Entity entityData -> Point -> Bool
+-- readyToInteract player point =
+--     Point.distance point player.position.local == 1 && isIdle player
+-- resetPosition : Entity entityData -> Entity entityData
+-- resetPosition player =
+--     { player | position = { mapOffset = player.position.mapOffset, local = ( 0, 0, 0 ) } }

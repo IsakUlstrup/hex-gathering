@@ -3,19 +3,14 @@ module HexEngine.Render exposing
     , RenderConfig
     , cornerListToString
     , cornersToString
-    , entityMap
     , hardcodedPoints
     , initRenderConfig
     , pointAdd
-    , pointToPixel
-    , renderMap
     , viewWorld
     , withHexFocus
     , withZoom
     )
 
-import HexEngine.EntityMap as EntityMap exposing (EntityMap)
-import HexEngine.HexGrid as HexGrid exposing (HexGrid)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, g, svg)
@@ -159,116 +154,45 @@ renderHex renderTile ( point, t ) =
         [ renderTile ( point, t ) ]
 
 
-keyedViewHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> ( String, Svg msg )
-keyedViewHex renderTile tile =
-    ( Point.toString (Tuple.first tile)
-    , Svg.Lazy.lazy (renderHex renderTile) tile
-    )
 
-
-renderLayer : List ( Point, tile ) -> (( Point, tile ) -> Svg msg) -> Svg msg
-renderLayer tiles renderTile =
-    Svg.Keyed.node "g"
-        [ Svg.Attributes.class "layer" ]
-        -- sort by y position and render
-        (tiles
-            |> List.sortBy (Tuple.first >> pointToYpos)
-            |> List.map (keyedViewHex renderTile)
-        )
-
-
-renderMap : RenderConfig -> HexGrid tile -> (( Point, tile ) -> Svg msg) -> List (Svg msg) -> Svg msg
-renderMap config map renderTile extras =
-    svg
-        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
-        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
-        ]
-        [ Svg.g
-            [ Svg.Attributes.style
-                ("transform: translate("
-                    ++ String.fromFloat -(config.cameraX * config.zoom)
-                    ++ "px, "
-                    ++ String.fromFloat -(config.cameraY * config.zoom)
-                    ++ "px) scale("
-                    ++ String.fromFloat config.zoom
-                    ++ ");"
-                )
-            , Svg.Attributes.class "camera"
-            ]
-            [ Svg.Lazy.lazy2 renderLayer
-                (map |> HexGrid.toList)
-                renderTile
-            , Svg.g [] extras
-            ]
-        ]
-
-
-renderEntityHex : (entity -> Svg msg) -> ( Point, EntityMap.Entity entity ) -> Svg msg
-renderEntityHex renderTile ( point, entity ) =
-    let
-        ( x, y ) =
-            pointToPixel point
-    in
-    g
-        [ Svg.Attributes.class "entity"
-        , Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);")
-        , Svg.Attributes.class (EntityMap.stateString entity)
-        ]
-        [ renderTile entity.data ]
-
-
-keyedViewEntity : (entity -> Svg msg) -> ( Point, EntityMap.Entity entity ) -> ( String, Svg msg )
-keyedViewEntity renderTile entity =
-    ( String.fromInt (Tuple.second entity).id
-    , Svg.Lazy.lazy (renderEntityHex renderTile) entity
-    )
-
-
-renderEntityLayer : List ( Point, EntityMap.Entity entity ) -> (entity -> Svg msg) -> Svg msg
-renderEntityLayer entities renderTile =
-    Svg.Keyed.node "g"
-        [ Svg.Attributes.class "layer entities" ]
-        -- sort by y position and render
-        (entities
-            |> List.sortBy (Tuple.first >> pointToYpos)
-            |> List.map (keyedViewEntity renderTile)
-        )
-
-
-entityMap :
-    RenderConfig
-    -> EntityMap tile entity
-    -> (( Point, tile ) -> Svg msg)
-    -> (entity -> Svg msg)
-    -> Svg msg
-entityMap config map renderTile renderEntity =
-    svg
-        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
-        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
-        ]
-        [ Svg.g
-            [ Svg.Attributes.style
-                ("transform: translate("
-                    ++ String.fromFloat -(config.cameraX * config.zoom)
-                    ++ "px, "
-                    ++ String.fromFloat -(config.cameraY * config.zoom)
-                    ++ "px) scale("
-                    ++ String.fromFloat config.zoom
-                    ++ ");"
-                )
-            , Svg.Attributes.class "camera"
-            ]
-            [ Svg.Lazy.lazy2 renderLayer
-                (EntityMap.gridList map)
-                renderTile
-            , Svg.Lazy.lazy2 renderEntityLayer
-                (EntityMap.entityList map)
-                renderEntity
-            ]
-        ]
-
-
-
+-- keyedViewHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> ( String, Svg msg )
+-- keyedViewHex renderTile tile =
+--     ( Point.toString (Tuple.first tile)
+--     , Svg.Lazy.lazy (renderHex renderTile) tile
+--     )
+-- renderLayer : List ( Point, tile ) -> (( Point, tile ) -> Svg msg) -> Svg msg
+-- renderLayer tiles renderTile =
+--     Svg.Keyed.node "g"
+--         [ Svg.Attributes.class "layer" ]
+--         -- sort by y position and render
+--         (tiles
+--             |> List.sortBy (Tuple.first >> pointToYpos)
+--             |> List.map (keyedViewHex renderTile)
+--         )
+-- renderMap : RenderConfig -> HexGrid tile -> (( Point, tile ) -> Svg msg) -> List (Svg msg) -> Svg msg
+-- renderMap config map renderTile extras =
+--     svg
+--         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+--         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+--         ]
+--         [ Svg.g
+--             [ Svg.Attributes.style
+--                 ("transform: translate("
+--                     ++ String.fromFloat -(config.cameraX * config.zoom)
+--                     ++ "px, "
+--                     ++ String.fromFloat -(config.cameraY * config.zoom)
+--                     ++ "px) scale("
+--                     ++ String.fromFloat config.zoom
+--                     ++ ");"
+--                 )
+--             , Svg.Attributes.class "camera"
+--             ]
+--             [ Svg.Lazy.lazy2 renderLayer
+--                 (map |> HexGrid.toList)
+--                 renderTile
+--             , Svg.g [] extras
+--             ]
+--         ]
 -- EXPERIMENTAL
 
 
