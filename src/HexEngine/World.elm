@@ -1,4 +1,4 @@
-module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, getPlayer, mapCurrentEntities, mapCurrentGrid, newMap, newWorld)
+module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, getPlayer, mapCurrentEntities, mapCurrentGrid, newMap, newWorld)
 
 import Dict exposing (Dict)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
@@ -32,6 +32,20 @@ newWorld initMap playerData =
         , maps = Dict.fromList [ ( ( 0, 0, 0 ), initMap ) ]
         , player = Entity 0 (EntityPosition ( 0, 0, 0 ) ( 0, 0, 0 )) Idle playerData
         , idCounter = 1
+        }
+
+
+{-| Add entity to world with generated id
+
+TODO: make sure target map exists
+
+-}
+addEntity : Point -> Point -> entityData -> World tileData entityData -> World tileData entityData
+addEntity mapOffset position entity (World world) =
+    World
+        { world
+            | entities = Entity world.idCounter (EntityPosition position mapOffset) Idle entity :: world.entities
+            , idCounter = world.idCounter + 1
         }
 
 
