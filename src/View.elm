@@ -4,6 +4,7 @@ import Entity exposing (Entity)
 import HexEngine.EntityMap
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
+import HexEngine.World
 import Html exposing (Html, aside, div)
 import Html.Attributes
 import Html.Events
@@ -222,8 +223,6 @@ viewPlayer player =
         ]
 
 
-viewEntity2 : Entity -> Svg msg
-viewEntity2 entity =
-    Svg.g [ Svg.Attributes.class "animation" ]
-        [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (entity |> String.fromChar) ]
-        ]
+viewEntity2 : ( Point, HexEngine.World.Entity Entity ) -> Svg msg
+viewEntity2 ( position, entity ) =
+    Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (entity.data |> String.fromChar) ]

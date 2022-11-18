@@ -1,4 +1,4 @@
-module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, mapCurrentEntities, mapCurrentGrid, newWorld)
+module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, getPlayer, mapCurrentEntities, mapCurrentGrid, newMap, newWorld)
 
 import Dict exposing (Dict)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
@@ -35,6 +35,8 @@ newWorld initMap playerData =
         }
 
 
+{-| Map the grid player is located in
+-}
 mapCurrentGrid : World tileData entityData -> (List ( Point, tileData ) -> a) -> a
 mapCurrentGrid (World world) f =
     case Dict.get world.player.position.mapOffset world.maps of
@@ -45,12 +47,19 @@ mapCurrentGrid (World world) f =
             f []
 
 
+{-| Map Entities that are on the same map as player, including player
+-}
 mapCurrentEntities : World tileData entityData -> (List ( Point, Entity entityData ) -> a) -> a
 mapCurrentEntities (World world) f =
-    world.entities
+    (world.player :: world.entities)
         |> List.filter (\e -> e.position.mapOffset == world.player.position.mapOffset)
         |> List.map (\e -> ( e.position.local, e ))
         |> f
+
+
+getPlayer : World tileData entityData -> Entity entityData
+getPlayer (World world) =
+    world.player
 
 
 
@@ -63,6 +72,11 @@ type alias Map tileData =
     { name : String
     , grid : HexGrid tileData
     }
+
+
+newMap : String -> HexGrid tileData -> Map tileData
+newMap name grid =
+    Map name grid
 
 
 

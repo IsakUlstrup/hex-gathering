@@ -9,6 +9,7 @@ import Entity exposing (Entity)
 import HexEngine.EntityMap exposing (EntityMap)
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
+import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
 import Player exposing (Player)
 import Tile exposing (Tile(..))
@@ -20,22 +21,24 @@ import View
 
 
 type alias Model =
-    { selectedIsland : EntityMap Tile Entity
-    , allIslands : Dict Point (EntityMap Tile Entity)
-    , player : Player
-    , selectedPoint : Maybe Point
+    { --      selectedIsland : EntityMap Tile Entity
+      -- , allIslands : Dict Point (EntityMap Tile Entity)
+      -- , player : Player
+      selectedPoint : Maybe Point
     , renderConfig : RenderConfig
+    , world : World Tile Entity
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        Content.Map.testIsland
-        (Dict.fromList [ ( HexEngine.EntityMap.getOffset Content.Map.testIsland2, Content.Map.testIsland2 ) ])
-        (Player.new ( 0, 0, 0 ) '🐼')
+        -- Content.Map.testIsland
+        -- (Dict.fromList [ ( HexEngine.EntityMap.getOffset Content.Map.testIsland2, Content.Map.testIsland2 ) ])
+        -- (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
+        (World.newWorld (World.newMap "Test" Content.Map.testGrid) '🐼')
     , Cmd.none
     )
 
@@ -56,31 +59,25 @@ init _ =
 --             model.allIslands
 --                 |> Dict.map (\_ v -> Island.mapEntities f v)
 --     }
-
-
-setSelected : Point -> EntityMap Tile Entity -> Model -> Model
-setSelected coordinate island model =
-    { model
-        | allIslands =
-            model.allIslands
-                |> Dict.insert (HexEngine.EntityMap.getOffset model.selectedIsland) model.selectedIsland
-                |> Dict.remove coordinate
-        , selectedIsland = island
-    }
-
-
-selectMap : Point -> Model -> Model
-selectMap coordinate model =
-    if HexEngine.EntityMap.getOffset model.selectedIsland == coordinate then
-        model
-
-    else
-        case Dict.get coordinate model.allIslands of
-            Just i ->
-                setSelected coordinate i model
-
-            Nothing ->
-                model
+-- setSelected : Point -> EntityMap Tile Entity -> Model -> Model
+-- setSelected coordinate island model =
+--     { model
+--         | allIslands =
+--             model.allIslands
+--                 |> Dict.insert (HexEngine.EntityMap.getOffset model.selectedIsland) model.selectedIsland
+--                 |> Dict.remove coordinate
+--         , selectedIsland = island
+--     }
+-- selectMap : Point -> Model -> Model
+-- selectMap coordinate model =
+--     if HexEngine.EntityMap.getOffset model.selectedIsland == coordinate then
+--         model
+--     else
+--         case Dict.get coordinate model.allIslands of
+--             Just i ->
+--                 setSelected coordinate i model
+--             Nothing ->
+--                 model
 
 
 {-| determine if a given point is walkable
@@ -111,61 +108,60 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick dt ->
-            ( { model
-                | player =
-                    model.player
-                        |> Player.tickCooldown dt
-                        |> Player.move
-                , renderConfig =
-                    model.selectedPoint
-                        |> Maybe.map
-                            (\p ->
-                                if Player.readyToInteract model.player p then
-                                    Render.withHexFocus p model.renderConfig
-
-                                else
-                                    Render.withHexFocus model.player.position model.renderConfig
-                            )
-                        |> Maybe.withDefault (Render.withHexFocus model.player.position model.renderConfig)
-              }
-            , Cmd.none
-            )
+            -- ( { model
+            --     | player =
+            --         model.player
+            --             |> Player.tickCooldown dt
+            --             |> Player.move
+            --     , renderConfig =
+            --         model.selectedPoint
+            --             |> Maybe.map
+            --                 (\p ->
+            --                     if Player.readyToInteract model.player p then
+            --                         Render.withHexFocus p model.renderConfig
+            --                     else
+            --                         Render.withHexFocus (World.getPlayer model.world).position.local model.renderConfig
+            --                 )
+            --             |> Maybe.withDefault (Render.withHexFocus (World.getPlayer model.world).position.local model.renderConfig)
+            --   }
+            -- , Cmd.none
+            -- )
+            ( model, Cmd.none )
 
         MapTransition destination ->
-            ( { model
-                | player = Player.resetPosition model.player
-                , selectedPoint = Nothing
-              }
-                |> selectMap destination
-            , Cmd.none
-            )
+            -- ( { model
+            --     | player = Player.resetPosition model.player
+            --     , selectedPoint = Nothing
+            --   }
+            --     |> selectMap destination
+            -- , Cmd.none
+            -- )
+            ( model, Cmd.none )
 
         ClickHex point ->
-            let
-                newPlayer : Player
-                newPlayer =
-                    case HexEngine.EntityMap.getPoint point model.selectedIsland of
-                        ( Just _, Just _ ) ->
-                            Player.findPathAdjacent (isWalkable <| model.selectedIsland) point model.player
-
-                        ( Nothing, Just _ ) ->
-                            Player.findPath (isWalkable <| model.selectedIsland) point model.player
-
-                        _ ->
-                            model.player
-            in
-            ( { model
-                | player =
-                    newPlayer
-                , selectedPoint =
-                    if Player.hasPath newPlayer then
-                        Just point
-
-                    else
-                        Nothing
-              }
-            , Cmd.none
-            )
+            -- let
+            --     newPlayer : Player
+            --     newPlayer =
+            --         case World.getPoint point model.world of
+            --             ( Just _, Just _ ) ->
+            --                 Player.findPathAdjacent (isWalkable <| model.selectedIsland) point model.player
+            --             ( Nothing, Just _ ) ->
+            --                 Player.findPath (isWalkable <| model.selectedIsland) point model.player
+            --             _ ->
+            --                 model.player
+            -- in
+            -- ( { model
+            --     | player =
+            --         newPlayer
+            --     , selectedPoint =
+            --         if Player.hasPath newPlayer then
+            --             Just point
+            --         else
+            --             Nothing
+            --   }
+            -- , Cmd.none
+            -- )
+            ( model, Cmd.none )
 
         CloseModal ->
             ( { model | selectedPoint = Nothing }
@@ -219,9 +215,15 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , Render.entityMap model.renderConfig
-            (model.selectedIsland |> HexEngine.EntityMap.addEntity model.player.position model.player.icon)
-            (View.viewTile model.player.position model.selectedPoint ClickHex)
+
+        -- , Render.entityMap model.renderConfig
+        --     (model.selectedIsland |> HexEngine.EntityMap.addEntity model.player.position model.player.icon)
+        --     (View.viewTile model.player.position model.selectedPoint ClickHex)
+        --     View.viewEntity2
+        , Render.viewWorld
+            model.renderConfig
+            model.world
+            (View.viewTile (World.getPlayer model.world).position.local model.selectedPoint ClickHex)
             View.viewEntity2
 
         -- , viewEntityModal model
