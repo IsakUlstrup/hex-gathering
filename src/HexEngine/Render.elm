@@ -9,6 +9,7 @@ module HexEngine.Render exposing
     , pointAdd
     , pointToPixel
     , renderMap
+    , viewWorld
     , withHexFocus
     , withZoom
     )
@@ -16,7 +17,8 @@ module HexEngine.Render exposing
 import HexEngine.EntityMap as EntityMap exposing (EntityMap)
 import HexEngine.HexGrid as HexGrid exposing (HexGrid)
 import HexEngine.Point as Point exposing (Point)
-import Svg exposing (Svg, g, svg)
+import HexEngine.World as World exposing (World)
+import Svg exposing (Attribute, Svg, g, svg)
 import Svg.Attributes
 import Svg.Keyed
 import Svg.Lazy
@@ -262,5 +264,58 @@ entityMap config map renderTile renderEntity =
             , Svg.Lazy.lazy2 renderEntityLayer
                 (EntityMap.entityList map)
                 renderEntity
+            ]
+        ]
+
+
+
+-- EXPERIMENTAL
+
+
+layer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
+layer attributes keyFunc renderTile tiles =
+    let
+        keyedViewTile : ( Point, a ) -> ( String, Svg msg )
+        keyedViewTile entity =
+            ( keyFunc entity
+            , Svg.Lazy.lazy (renderHex renderTile) entity
+            )
+    in
+    Svg.Keyed.node "g"
+        (Svg.Attributes.class "layer" :: attributes)
+        -- sort by y position and render
+        (tiles
+            |> List.sortBy (Tuple.first >> pointToYpos)
+            |> List.map keyedViewTile
+        )
+
+
+viewWorld :
+    RenderConfig
+    -> World tileData entityData
+    -> (( Point, tileData ) -> Svg msg)
+    -> (( Point, World.Entity entityData ) -> Svg msg)
+    -> Svg msg
+viewWorld config world tileRenderFunc entityRenderFunc =
+    svg
+        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+        , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+        ]
+        [ Svg.g
+            [ Svg.Attributes.style
+                ("transform: translate("
+                    ++ String.fromFloat -(config.cameraX * config.zoom)
+                    ++ "px, "
+                    ++ String.fromFloat -(config.cameraY * config.zoom)
+                    ++ "px) scale("
+                    ++ String.fromFloat config.zoom
+                    ++ ");"
+                )
+            , Svg.Attributes.class "camera"
+            ]
+            [ World.mapCurrentGrid world
+                (layer [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) tileRenderFunc)
+            , World.mapCurrentEntities world
+                (layer [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
             ]
         ]
