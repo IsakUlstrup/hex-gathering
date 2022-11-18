@@ -228,6 +228,14 @@ viewEntity2 ( position, entity ) =
     Svg.g [ Svg.Attributes.class (HexEngine.World.stateString entity) ]
         [ Svg.g
             [ Svg.Attributes.class "animation"
+            , Svg.Attributes.style
+                ("animation-delay: "
+                    ++ (Point.distanceFloat ( 0, 0, 0 ) position
+                            |> (*) animationDelayMultiplier
+                            |> String.fromFloat
+                       )
+                    ++ "ms"
+                )
             ]
             [ Svg.text_ [ Svg.Attributes.class "content", Svg.Attributes.x "2.5", Svg.Attributes.y "2.5" ] [ Svg.text (entity.data |> String.fromChar) ] ]
         ]
