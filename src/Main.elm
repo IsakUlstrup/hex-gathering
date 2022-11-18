@@ -222,7 +222,7 @@ view model =
         , Render.entityMap2 model.renderConfig
             (model.selectedIsland |> HexEngine.EntityMap.addEntity model.player.position model.player.icon)
             (View.viewTile model.player.position model.selectedPoint ClickHex)
-            View.viewEntity
+            View.viewEntity2
 
         -- , viewEntityModal model
         ]

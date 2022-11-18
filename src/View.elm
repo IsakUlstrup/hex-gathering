@@ -1,6 +1,7 @@
-module View exposing (viewEntity, viewPlayer, viewTile)
+module View exposing (viewEntity, viewEntity2, viewPlayer, viewTile)
 
 import Entity exposing (Entity)
+import HexEngine.EntityMap
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
 import Html exposing (Html, aside, div)
@@ -218,4 +219,11 @@ viewPlayer player =
         [ Svg.g [ Svg.Attributes.class "player-animation" ]
             [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (player.icon |> String.fromChar) ]
             ]
+        ]
+
+
+viewEntity2 : Entity -> Svg msg
+viewEntity2 entity =
+    Svg.g [ Svg.Attributes.class "animation" ]
+        [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (entity |> String.fromChar) ]
         ]

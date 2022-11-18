@@ -1,11 +1,13 @@
 module HexEngine.EntityMap exposing
-    ( EntityMap
+    ( Entity
+    , EntityMap
     , addEntity
     , entityList
     , getOffset
     , getPoint
     , gridList
     , new
+    , stateString
     , updateEntity
     )
 
@@ -40,10 +42,10 @@ getOffset (EntityMap map) =
     map.offset
 
 
-entityList : EntityMap tile entity -> List ( Point, entity )
+entityList : EntityMap tile entity -> List ( Point, Entity entity )
 entityList (EntityMap map) =
     map.entities
-        |> List.map (\e -> ( e.position, e.data ))
+        |> List.map (\e -> ( e.position, e ))
 
 
 gridList : EntityMap tile entity -> List ( Point, tile )

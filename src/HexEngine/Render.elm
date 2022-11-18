@@ -236,11 +236,43 @@ entityMap config grid renderTile entities renderEntity =
         ]
 
 
+renderEntityHex : (entity -> Svg msg) -> ( Point, EntityMap.Entity entity ) -> Svg msg
+renderEntityHex renderTile ( point, entity ) =
+    let
+        ( x, y ) =
+            pointToPixel point
+    in
+    g
+        [ Svg.Attributes.class "entity"
+        , Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);")
+        , Svg.Attributes.class (EntityMap.stateString entity)
+        ]
+        [ renderTile entity.data ]
+
+
+keyedViewEntity : (entity -> Svg msg) -> ( Point, EntityMap.Entity entity ) -> ( String, Svg msg )
+keyedViewEntity renderTile entity =
+    ( String.fromInt (Tuple.second entity).id
+    , Svg.Lazy.lazy (renderEntityHex renderTile) entity
+    )
+
+
+renderEntityLayer : List ( Point, EntityMap.Entity entity ) -> (entity -> Svg msg) -> Svg msg
+renderEntityLayer entities renderTile =
+    Svg.Keyed.node "g"
+        [ Svg.Attributes.class "layer entities" ]
+        -- sort by y position and render
+        (entities
+            |> List.sortBy (Tuple.first >> pointToYpos)
+            |> List.map (keyedViewEntity renderTile)
+        )
+
+
 entityMap2 :
     RenderConfig
     -> EntityMap tile entity
     -> (( Point, tile ) -> Svg msg)
-    -> (( Point, entity ) -> Svg msg)
+    -> (entity -> Svg msg)
     -> Svg msg
 entityMap2 config map renderTile renderEntity =
     svg
@@ -262,7 +294,7 @@ entityMap2 config map renderTile renderEntity =
             [ Svg.Lazy.lazy2 renderLayer
                 (EntityMap.gridList map)
                 renderTile
-            , Svg.Lazy.lazy2 renderLayer
+            , Svg.Lazy.lazy2 renderEntityLayer
                 (EntityMap.entityList map)
                 renderEntity
             ]
