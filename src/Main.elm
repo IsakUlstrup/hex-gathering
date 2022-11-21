@@ -147,7 +147,12 @@ update msg model =
             --     |> selectMap destination
             -- , Cmd.none
             -- )
-            ( { model | world = World.playerMoveMap map position model.world }, Cmd.none )
+            ( { model
+                | world = World.playerMoveMap map position model.world
+                , selectedPoint = Nothing
+              }
+            , Cmd.none
+            )
 
         ClickHex point ->
             ( { model
