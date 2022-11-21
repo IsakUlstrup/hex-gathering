@@ -35,9 +35,9 @@ init _ =
         -- (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
-        (World.newWorld (World.newMap "Test" Content.Map.testGrid) '🐼'
-            |> World.addEntity ( 0, 0, 0 ) ( 0, -3, 3 ) '🌺'
-            |> World.addEntity ( 0, 0, 0 ) ( 3, -2, -1 ) '🌺'
+        (World.newWorld ( 2, -1, -1 ) (World.newMap "Test" Content.Map.testGrid) '🐼'
+            |> World.addEntity ( 2, -1, -1 ) ( 0, -3, 3 ) '🌺'
+            |> World.addEntity ( 2, -1, -1 ) ( 3, -2, -1 ) '🌺'
         )
     , Cmd.none
     )

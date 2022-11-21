@@ -46,12 +46,12 @@ type World tileData entityData
 
 {-| Create a new world with provided map and player. Both will be placed at (0, 0, 0)
 -}
-newWorld : Map tileData -> entityData -> World tileData entityData
-newWorld initMap playerData =
+newWorld : Point -> Map tileData -> entityData -> World tileData entityData
+newWorld mapPosition initMap playerData =
     World
         { entities = []
-        , maps = Dict.fromList [ ( ( 4, 0, -4 ), initMap ) ]
-        , player = Entity 0 (EntityPosition ( 4, 0, -4 ) ( 0, 0, 0 )) Idle playerData
+        , maps = Dict.fromList [ ( mapPosition, initMap ) ]
+        , player = Entity 0 (EntityPosition mapPosition ( 0, 0, 0 )) Idle playerData
         , idCounter = 1
         }
 
@@ -64,7 +64,7 @@ addEntity mapOffset position entity (World world) =
         Just _ ->
             World
                 { world
-                    | entities = Entity world.idCounter (EntityPosition position mapOffset) Idle entity :: world.entities
+                    | entities = Entity world.idCounter (EntityPosition mapOffset position) Idle entity :: world.entities
                     , idCounter = world.idCounter + 1
                 }
 
