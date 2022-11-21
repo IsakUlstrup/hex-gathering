@@ -50,6 +50,10 @@ init _ =
                 ( 5, 5, -10 )
                 (World.newMap "Test2" Content.Map.testGrid2)
                 [ ( ( 1, 0, -1 ), '🌵' ) ]
+            |> World.addMap
+                ( -10, 5, 5 )
+                (World.newMap "Test3" Content.Map.testGrid3)
+                []
         )
     , Cmd.none
     )
