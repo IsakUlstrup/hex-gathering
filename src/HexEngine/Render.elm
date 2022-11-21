@@ -199,6 +199,19 @@ renderWorldHex renderTile ( worldPos, t ) =
 --         )
 
 
+{-| Render a keyed layer
+
+sort: If true sort tiles by y value to prevent tiles from rendering on top of each other
+
+attributes: a list of svg attributes that are set on the Svg.g element
+
+keyFunc: a function that returns tile element key (should be unique)
+
+renderTile: tile render function
+
+tiles: a list of tiles
+
+-}
 layer : Bool -> List (Attribute msg) -> (( WorldPosition, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( WorldPosition, a ) -> Svg msg
 layer sort attributes keyFunc renderTile tiles =
     let
