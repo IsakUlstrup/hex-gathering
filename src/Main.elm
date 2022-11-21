@@ -39,9 +39,10 @@ init _ =
             ( 2, -1, -1 )
             (World.newMap "Test" Content.Map.testGrid)
             '🐼'
-            |> World.addEntity ( 2, -1, -1 ) ( 0, -3, 3 ) '🌺'
-            |> World.addEntity ( 2, -1, -1 ) ( 3, -2, -1 ) '🌺'
-            |> World.addMap ( 5, 5, -10 ) (World.newMap "Test2" Content.Map.testGrid2)
+            [ ( ( 0, -3, 3 ), '🌺' )
+            , ( ( 3, -2, -1 ), '🌺' )
+            ]
+            |> World.addMap ( 5, 5, -10 ) (World.newMap "Test2" Content.Map.testGrid2) []
         )
     , Cmd.none
     )

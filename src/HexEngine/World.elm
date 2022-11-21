@@ -1,7 +1,6 @@
 module HexEngine.World exposing
     ( Map
     , World
-    , addEntity
     , addMap
     , getPlayer
     , getPoint
@@ -40,14 +39,15 @@ type World tileData entityData
 
 {-| Create a new world with provided map and player. Both will be placed at (0, 0, 0)
 -}
-newWorld : Point -> Map tileData -> entityData -> World tileData entityData
-newWorld mapPosition initMap playerData =
+newWorld : Point -> Map tileData -> entityData -> List ( Point, entityData ) -> World tileData entityData
+newWorld mapPosition initMap playerData entities =
     World
         { entities = []
         , maps = Dict.fromList [ ( mapPosition, initMap ) ]
         , player = Entity.new 0 mapPosition ( 0, 0, 0 ) playerData
         , idCounter = 1
         }
+        |> addEntities mapPosition entities
 
 
 {-| Add entity to world with generated id
@@ -66,16 +66,22 @@ addEntity mapOffset position entity (World world) =
             World world
 
 
+addEntities : Point -> List ( Point, entityData ) -> World tileData entityData -> World tileData entityData
+addEntities mapPosition entities world =
+    List.foldl (\( p, e ) -> addEntity mapPosition p e) world entities
+
+
 {-| add new map to world, does nothing if a map exists at target position
 -}
-addMap : Point -> Map tileData -> World tileData entityData -> World tileData entityData
-addMap position map (World world) =
+addMap : Point -> Map tileData -> List ( Point, entityData ) -> World tileData entityData -> World tileData entityData
+addMap position map entities (World world) =
     case Dict.get position world.maps of
         Just _ ->
             World world
 
         Nothing ->
             World { world | maps = Dict.insert position map world.maps }
+                |> addEntities position entities
 
 
 {-| Get map where player is located
