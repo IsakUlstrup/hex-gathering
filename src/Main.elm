@@ -31,8 +31,14 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         Nothing
-        (Render.initRenderConfig |> Render.withZoom 1.2)
-        (World.newWorld ( 2, -1, -1 ) (World.newMap "Test" Content.Map.testGrid) '🐼'
+        (Render.initRenderConfig
+            |> Render.withEntityFocus (Entity.WorldPosition ( 2, -1, -1 ) ( 0, 0, 0 ))
+            |> Render.withZoom 1.2
+        )
+        (World.newWorld
+            ( 2, -1, -1 )
+            (World.newMap "Test" Content.Map.testGrid)
+            '🐼'
             |> World.addEntity ( 2, -1, -1 ) ( 0, -3, 3 ) '🌺'
             |> World.addEntity ( 2, -1, -1 ) ( 3, -2, -1 ) '🌺'
             |> World.addMap ( 5, 5, -10 ) (World.newMap "Test2" Content.Map.testGrid2)
