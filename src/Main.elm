@@ -141,10 +141,8 @@ update msg model =
             ( { model
                 | world =
                     model.world
-                        |> World.updateEntities
-                            (Entity.tickCooldown dt
-                                >> Entity.move (Tuple.second AnimationConstants.playerMoveTime)
-                            )
+                        |> World.updateEntities (Entity.tickCooldown dt)
+                        |> World.updateEntities (Entity.move AnimationConstants.playerMoveTime.value)
                 , renderConfig = Render.withEntityFocus (World.getPlayer model.world).position model.renderConfig
               }
             , Cmd.none

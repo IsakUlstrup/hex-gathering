@@ -1,25 +1,31 @@
-module AnimationConstants exposing (fallDuration, playerMoveTime, styleNode)
+module AnimationConstants exposing (Constant, fallDuration, playerMoveTime, styleNode)
 
 import Html exposing (Html)
 
 
-playerMoveTime : ( String, Int )
+type alias Constant =
+    { label : String
+    , value : Int
+    }
+
+
+playerMoveTime : Constant
 playerMoveTime =
-    ( "player-move-duration", 500 )
+    Constant "player-move-duration" 500
 
 
-fallDuration : ( String, Int )
+fallDuration : Constant
 fallDuration =
-    ( "fall-duration", 800 )
+    Constant "fall-duration" 800
 
 
-toString : ( String, Int ) -> String
-toString ( varName, duration ) =
-    "--" ++ varName ++ ": " ++ String.fromInt duration ++ "ms;"
+toCssVar : Constant -> String
+toCssVar constant =
+    "--" ++ constant.label ++ ": " ++ String.fromInt constant.value ++ "ms;"
 
 
-styleNode : List ( String, Int ) -> Html msg
-styleNode variables =
+styleNode : List Constant -> Html msg
+styleNode constants =
     Html.node "style"
         []
-        [ Html.text <| ":root { " ++ (variables |> List.map toString |> List.intersperse " " |> String.concat) ++ " }" ]
+        [ Html.text <| ":root { " ++ (constants |> List.map toCssVar |> List.intersperse " " |> String.concat) ++ " }" ]
