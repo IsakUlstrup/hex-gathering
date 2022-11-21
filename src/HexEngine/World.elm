@@ -83,8 +83,8 @@ updateEntities f (World world) =
 
 {-| Map the grid player is located in
 -}
-mapCurrentGrid : World tileData entityData -> (List ( Point, tileData ) -> a) -> a
-mapCurrentGrid (World world) f =
+mapCurrentGrid : (List ( Point, tileData ) -> a) -> World tileData entityData -> a
+mapCurrentGrid f (World world) =
     case Dict.get world.player.position.mapOffset world.maps of
         Just map ->
             f (Grid.toList map.grid)
@@ -95,8 +95,8 @@ mapCurrentGrid (World world) f =
 
 {-| Map Entities that are on the same map as player, including player
 -}
-mapCurrentEntities : World tileData entityData -> (List ( Point, Entity entityData ) -> a) -> a
-mapCurrentEntities (World world) f =
+mapCurrentEntities : (List ( Point, Entity entityData ) -> a) -> World tileData entityData -> a
+mapCurrentEntities f (World world) =
     (world.player :: world.entities)
         |> List.filter (\e -> e.position.mapOffset == world.player.position.mapOffset)
         |> List.map (\e -> ( e.position.local, e ))

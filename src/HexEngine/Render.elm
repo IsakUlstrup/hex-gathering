@@ -251,9 +251,11 @@ viewWorld config world tileRenderFunc entityRenderFunc =
                 )
             , Svg.Attributes.class "camera"
             ]
-            [ World.mapCurrentGrid world
-                (sortedLayer [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) tileRenderFunc)
-            , World.mapCurrentEntities world
-                (layer [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+            [ world
+                |> World.mapCurrentGrid
+                    (sortedLayer [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) tileRenderFunc)
+            , world
+                |> World.mapCurrentEntities
+                    (layer [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
             ]
         ]
