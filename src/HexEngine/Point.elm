@@ -1,5 +1,6 @@
 module HexEngine.Point exposing
     ( Point
+    , add
     , distanceFloat
     , neighbors
     , pathfind

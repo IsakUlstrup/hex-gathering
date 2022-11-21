@@ -1,4 +1,24 @@
-module HexEngine.World exposing (Entity, EntityPosition, EntityState, Map, World, addEntity, findPath, findPathAdjacent, getPlayer, getPoint, mapCurrentEntities, mapCurrentGrid, move, newMap, newWorld, stateString, tickCooldown, updateEntities, updatePlayer)
+module HexEngine.World exposing
+    ( Entity
+    , EntityPosition
+    , EntityState
+    , Map
+    , World
+    , addEntity
+    , findPath
+    , findPathAdjacent
+    , getPlayer
+    , getPoint
+    , mapCurrentEntities
+    , mapCurrentGrid
+    , move
+    , newMap
+    , newWorld
+    , stateString
+    , tickCooldown
+    , updateEntities
+    , updatePlayer
+    )
 
 import Dict exposing (Dict)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
@@ -87,7 +107,7 @@ mapCurrentGrid : (List ( Point, tileData ) -> a) -> World tileData entityData ->
 mapCurrentGrid f (World world) =
     case Dict.get world.player.position.mapOffset world.maps of
         Just map ->
-            f (Grid.toList map.grid)
+            f (Grid.toList map.grid |> List.map (Tuple.mapFirst (Point.add world.player.position.mapOffset)))
 
         Nothing ->
             f []
@@ -99,7 +119,7 @@ mapCurrentEntities : (List ( Point, Entity entityData ) -> a) -> World tileData 
 mapCurrentEntities f (World world) =
     (world.player :: world.entities)
         |> List.filter (\e -> e.position.mapOffset == world.player.position.mapOffset)
-        |> List.map (\e -> ( e.position.local, e ))
+        |> List.map (\e -> ( Point.add e.position.mapOffset e.position.local, e ))
         |> f
 
 
