@@ -18,7 +18,7 @@ import Tile exposing (Tile(..))
 
 animationDelayMultiplier : number
 animationDelayMultiplier =
-    150
+    100
 
 
 animationDelay : Point -> Attribute msg
@@ -31,7 +31,7 @@ animationDelay position =
             else
                 d
                     |> (*) animationDelayMultiplier
-                    |> (+) (toFloat <| AnimationConstants.playerMoveTime.value)
+                    |> (+) (toFloat <| AnimationConstants.playerMoveTime.value // 2)
                     |> String.fromFloat
     in
     Svg.Attributes.style
