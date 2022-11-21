@@ -26,10 +26,7 @@ animationDelay position =
     let
         delay d =
             if d == 0 then
-                d
-                    |> (*) animationDelayMultiplier
-                    -- |> (+) (toFloat <| AnimationConstants.playerMoveTime.value // 2)
-                    |> String.fromFloat
+                "0"
 
             else
                 d
