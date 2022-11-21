@@ -9,6 +9,8 @@ import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
+import Html.Attributes
+import Html.Events
 import Tile exposing (Tile(..))
 import View
 
@@ -94,7 +96,7 @@ isWalkable island point =
 
 type Msg
     = Tick Int
-      -- | MapTransition Point
+    | MapTransition Point Point
     | ClickHex Point
     | ClickEntity Point
 
@@ -137,15 +139,16 @@ update msg model =
             , Cmd.none
             )
 
-        -- MapTransition _ ->
-        --     -- ( { model
-        --     --     | player = Player.resetPosition model.player
-        --     --     , selectedPoint = Nothing
-        --     --   }
-        --     --     |> selectMap destination
-        --     -- , Cmd.none
-        --     -- )
-        --     ( model, Cmd.none )
+        MapTransition map position ->
+            -- ( { model
+            --     | player = Player.resetPosition model.player
+            --     , selectedPoint = Nothing
+            --   }
+            --     |> selectMap destination
+            -- , Cmd.none
+            -- )
+            ( { model | world = World.playerMoveMap map position model.world }, Cmd.none )
+
         ClickHex point ->
             ( { model
                 | world =
@@ -214,15 +217,19 @@ update msg model =
 --         ]
 
 
+viewDebug : Html Msg
+viewDebug =
+    Html.div [ Html.Attributes.class "debug" ]
+        [ Html.button [ Html.Events.onClick <| MapTransition ( 2, -1, -1 ) ( 0, 0, 0 ) ] [ Html.text "Travel to ( 2, -1, -1 )" ]
+        , Html.button [ Html.Events.onClick <| MapTransition ( 5, 5, -10 ) ( 0, 0, 0 ) ] [ Html.text "Travel to ( 5, 5, -10 )" ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-
-        -- , Render.entityMap model.renderConfig
-        --     (model.selectedIsland |> HexEngine.EntityMap.addEntity model.player.position model.player.icon)
-        --     (View.viewTile model.player.position model.selectedPoint ClickHex)
-        --     View.viewEntity2
+        , viewDebug
         , Render.viewWorld
             model.renderConfig
             model.world

@@ -15,6 +15,7 @@ module HexEngine.World exposing
     , move
     , newMap
     , newWorld
+    , playerMoveMap
     , stateString
     , tickCooldown
     , updateEntities
@@ -148,6 +149,18 @@ getPlayer (World world) =
     world.player
 
 
+{-| Move player to another map, does nothing if map doesn't exist
+-}
+playerMoveMap : Point -> Point -> World tileData entityData -> World tileData entityData
+playerMoveMap mapPosition localPosition (World world) =
+    case Dict.get mapPosition world.maps of
+        Just _ ->
+            World { world | player = setPosition (WorldPosition mapPosition localPosition) world.player }
+
+        Nothing ->
+            World world
+
+
 
 -- MAP
 
@@ -226,6 +239,11 @@ setPath path player =
 
         Idle ->
             { player | state = Cooling path }
+
+
+setPosition : WorldPosition -> Entity entityData -> Entity entityData
+setPosition position entity =
+    { entity | position = position }
 
 
 findPath : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
