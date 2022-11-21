@@ -79,6 +79,8 @@ playerMap (World world) =
     Dict.get world.player.position.mapOffset world.maps
 
 
+{-| Get tile and entity at given position in active map
+-}
 getPoint : Point -> World tileData entityData -> ( Maybe tileData, Maybe (Entity entityData) )
 getPoint target (World world) =
     ( playerMap (World world)
