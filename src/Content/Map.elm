@@ -39,3 +39,7 @@ testGrid2 =
         |> HexGrid.insertTile ( 0, 0, 0 ) Medium
         |> HexGrid.insertTile ( 0, 1, -1 ) Medium
         |> HexGrid.insertTile ( 1, 0, -1 ) Medium
+        |> HexGrid.insertTile ( -1, 0, 1 ) High
+        |> HexGrid.insertTile ( -1, 1, 0 ) High
+        |> HexGrid.insertTile ( 0, -1, 1 ) Low
+        |> HexGrid.insertTile ( 1, -1, 0 ) Low
