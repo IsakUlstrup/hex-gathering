@@ -18,10 +18,7 @@ import View
 
 
 type alias Model =
-    { --      selectedIsland : EntityMap Tile Entity
-      -- , allIslands : Dict Point (EntityMap Tile Entity)
-      -- , player : Player
-      selectedPoint : Maybe Point
+    { selectedPoint : Maybe Point
     , renderConfig : RenderConfig
     , world : World Tile Entity
     }
@@ -30,14 +27,12 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        -- Content.Map.testIsland
-        -- (Dict.fromList [ ( HexEngine.EntityMap.getOffset Content.Map.testIsland2, Content.Map.testIsland2 ) ])
-        -- (Player.new ( 0, 0, 0 ) '🐼')
         Nothing
         (Render.initRenderConfig |> Render.withZoom 1.2)
         (World.newWorld ( 2, -1, -1 ) (World.newMap "Test" Content.Map.testGrid) '🐼'
             |> World.addEntity ( 2, -1, -1 ) ( 0, -3, 3 ) '🌺'
             |> World.addEntity ( 2, -1, -1 ) ( 3, -2, -1 ) '🌺'
+            |> World.addMap ( 5, 5, -10 ) (World.newMap "Test2" Content.Map.testGrid2)
         )
     , Cmd.none
     )

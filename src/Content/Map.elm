@@ -1,4 +1,4 @@
-module Content.Map exposing (testGrid)
+module Content.Map exposing (testGrid, testGrid2)
 
 import HexEngine.HexGrid as HexGrid exposing (HexGrid)
 import Tile exposing (Tile(..))
@@ -31,3 +31,11 @@ testGrid =
         |> HexGrid.insertTile ( 1, -1, 0 ) Medium
         |> HexGrid.insertTile ( 0, -2, 2 ) Medium
         |> HexGrid.insertTile ( 0, -3, 3 ) Medium
+
+
+testGrid2 : HexGrid Tile
+testGrid2 =
+    HexGrid.empty
+        |> HexGrid.insertTile ( 0, 0, 0 ) Medium
+        |> HexGrid.insertTile ( 0, 1, -1 ) Medium
+        |> HexGrid.insertTile ( 1, 0, -1 ) Medium

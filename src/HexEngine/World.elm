@@ -5,6 +5,7 @@ module HexEngine.World exposing
     , World
     , WorldPosition
     , addEntity
+    , addMap
     , findPath
     , findPathAdjacent
     , getPlayer
@@ -70,6 +71,18 @@ addEntity mapOffset position entity (World world) =
 
         Nothing ->
             World world
+
+
+{-| add new map to world, does nothing if a map exists at target position
+-}
+addMap : Point -> Map tileData -> World tileData entityData -> World tileData entityData
+addMap position map (World world) =
+    case Dict.get position world.maps of
+        Just _ ->
+            World world
+
+        Nothing ->
+            World { world | maps = Dict.insert position map world.maps }
 
 
 {-| Get map where player is located
