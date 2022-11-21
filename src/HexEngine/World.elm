@@ -57,17 +57,19 @@ newWorld initMap playerData =
 
 
 {-| Add entity to world with generated id
-
-TODO: make sure target map exists
-
 -}
 addEntity : Point -> Point -> entityData -> World tileData entityData -> World tileData entityData
 addEntity mapOffset position entity (World world) =
-    World
-        { world
-            | entities = Entity world.idCounter (EntityPosition position mapOffset) Idle entity :: world.entities
-            , idCounter = world.idCounter + 1
-        }
+    case Dict.get mapOffset world.maps of
+        Just _ ->
+            World
+                { world
+                    | entities = Entity world.idCounter (EntityPosition position mapOffset) Idle entity :: world.entities
+                    , idCounter = world.idCounter + 1
+                }
+
+        Nothing ->
+            World world
 
 
 {-| Get map where player is located
