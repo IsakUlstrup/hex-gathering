@@ -54,16 +54,11 @@ newWorld mapPosition initMap playerData entities =
 -}
 addEntity : Point -> Point -> entityData -> World tileData entityData -> World tileData entityData
 addEntity mapOffset position entity (World world) =
-    case Dict.get mapOffset world.maps of
-        Just _ ->
-            World
-                { world
-                    | entities = Entity.new world.idCounter mapOffset position entity :: world.entities
-                    , idCounter = world.idCounter + 1
-                }
-
-        Nothing ->
-            World world
+    World
+        { world
+            | entities = Entity.new world.idCounter mapOffset position entity :: world.entities
+            , idCounter = world.idCounter + 1
+        }
 
 
 addEntities : Point -> List ( Point, entityData ) -> World tileData entityData -> World tileData entityData
