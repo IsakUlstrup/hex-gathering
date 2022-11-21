@@ -23,13 +23,23 @@ animationDelayMultiplier =
 
 animationDelay : Point -> Attribute msg
 animationDelay position =
+    let
+        delay d =
+            if d == 0 then
+                d
+                    |> (*) animationDelayMultiplier
+                    -- |> (+) (toFloat <| AnimationConstants.playerMoveTime.value // 2)
+                    |> String.fromFloat
+
+            else
+                d
+                    |> (*) animationDelayMultiplier
+                    |> (+) (toFloat <| AnimationConstants.playerMoveTime.value)
+                    |> String.fromFloat
+    in
     Svg.Attributes.style
         ("animation-delay: "
-            ++ (Point.distanceFloat ( 0, 0, 0 ) position
-                    |> (*) animationDelayMultiplier
-                    |> (+) (toFloat <| AnimationConstants.playerMoveTime.value // 2)
-                    |> String.fromFloat
-               )
+            ++ (delay <| Point.distanceFloat ( 0, 0, 0 ) position)
             ++ "ms"
         )
 
