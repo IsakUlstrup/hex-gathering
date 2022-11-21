@@ -5,6 +5,7 @@ import Browser
 import Browser.Events
 import Content.Map
 import Entity exposing (Entity)
+import HexEngine.Entity as Entity
 import HexEngine.Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import HexEngine.World as World exposing (World)
@@ -131,8 +132,8 @@ update msg model =
                 | world =
                     model.world
                         |> World.updateEntities
-                            (World.tickCooldown dt
-                                >> World.move (Tuple.second AnimationConstants.playerMoveTime)
+                            (Entity.tickCooldown dt
+                                >> Entity.move (Tuple.second AnimationConstants.playerMoveTime)
                             )
                 , renderConfig = Render.withEntityFocus (World.getPlayer model.world).position model.renderConfig
               }
@@ -157,7 +158,7 @@ update msg model =
         ClickHex point ->
             ( { model
                 | world =
-                    World.updatePlayer (World.findPath (isWalkable model.world) point) model.world
+                    World.updatePlayer (Entity.findPath (isWalkable model.world) point) model.world
                 , selectedPoint =
                     Just point
               }
@@ -167,7 +168,7 @@ update msg model =
         ClickEntity point ->
             ( { model
                 | world =
-                    World.updatePlayer (World.findPathAdjacent (isWalkable model.world) point) model.world
+                    World.updatePlayer (Entity.findPathAdjacent (isWalkable model.world) point) model.world
                 , selectedPoint =
                     Just point
               }

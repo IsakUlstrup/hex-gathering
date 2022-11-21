@@ -1,9 +1,9 @@
 module View exposing (viewEntity, viewTile)
 
 import Entity exposing (Entity)
+import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
-import HexEngine.World
 import Html exposing (Html)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
@@ -214,10 +214,10 @@ viewTerrain clickEvent ( position, tile ) =
 --         ]
 
 
-viewEntity : (Point -> msg) -> ( Point, HexEngine.World.Entity Entity ) -> Svg msg
+viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg msg
 viewEntity clickEvent ( position, entity ) =
     Svg.g
-        [ Svg.Attributes.class (HexEngine.World.stateString entity)
+        [ Svg.Attributes.class (HexEngine.Entity.stateString entity)
         , Svg.Events.onClick <| clickEvent position
         ]
         [ Svg.g

@@ -12,8 +12,9 @@ module HexEngine.Render exposing
     , withZoom
     )
 
+import HexEngine.Entity exposing (Entity, WorldPosition)
 import HexEngine.Point as Point exposing (Point)
-import HexEngine.World as World exposing (World, WorldPosition)
+import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, g, svg)
 import Svg.Attributes
 import Svg.Keyed
@@ -238,7 +239,7 @@ viewWorld :
     RenderConfig
     -> World tileData entityData
     -> (( Point, tileData ) -> Svg msg)
-    -> (( Point, World.Entity entityData ) -> Svg msg)
+    -> (( Point, Entity entityData ) -> Svg msg)
     -> Svg msg
 viewWorld config world tileRenderFunc entityRenderFunc =
     svg
