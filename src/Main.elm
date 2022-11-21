@@ -245,7 +245,7 @@ viewDebug world =
         button ( coordinate, _ ) =
             Html.button
                 [ Html.Events.onClick <| MapTransition coordinate ( 0, 0, 0 ) ]
-                [ Html.text <| "Travel to" ++ Point.toString coordinate ]
+                [ Html.text <| "Travel to " ++ Point.toString coordinate ]
     in
     Html.div [ Html.Attributes.class "debug" ]
         (World.mapMaps button world)
