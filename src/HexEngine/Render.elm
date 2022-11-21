@@ -13,7 +13,7 @@ module HexEngine.Render exposing
     )
 
 import HexEngine.Point as Point exposing (Point)
-import HexEngine.World as World exposing (EntityPosition, World)
+import HexEngine.World as World exposing (World, WorldPosition)
 import Svg exposing (Attribute, Svg, g, svg)
 import Svg.Attributes
 import Svg.Keyed
@@ -53,12 +53,12 @@ withHexFocus point config =
     config |> withCameraPosition pos
 
 
-withEntityFocus : EntityPosition -> RenderConfig -> RenderConfig
+withEntityFocus : WorldPosition -> RenderConfig -> RenderConfig
 withEntityFocus position config =
     let
         pos : ( Float, Float )
         pos =
-            Point.add position.mapOffset position.local |> pointToPixel
+            Point.add position.map position.local |> pointToPixel
     in
     config |> withCameraPosition pos
 
@@ -92,9 +92,15 @@ pointToPixel point =
     )
 
 
-pointToYpos : Point -> Float
-pointToYpos point =
-    pointToPixel point |> Tuple.second
+
+-- pointToYpos : Point -> Float
+-- pointToYpos point =
+--     pointToPixel point |> Tuple.second
+
+
+yPixelPosition : WorldPosition -> Float
+yPixelPosition position =
+    pointToPixel position.local |> Tuple.second
 
 
 cornerListToString : List ( Float, Float ) -> String
@@ -153,90 +159,66 @@ hardcodedPoints =
 
 
 -- RENDER
+-- renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
+-- renderHex renderTile ( point, t ) =
+--     let
+--         ( x, y ) =
+--             pointToPixel point
+--     in
+--     g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
+--         [ renderTile ( point, t ) ]
 
 
-renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
-renderHex renderTile ( point, t ) =
+renderWorldHex : (( Point, tile ) -> Svg msg) -> ( WorldPosition, tile ) -> Svg msg
+renderWorldHex renderTile ( worldPos, t ) =
     let
         ( x, y ) =
-            pointToPixel point
+            pointToPixel (Point.add worldPos.map worldPos.local)
     in
     g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
-        [ renderTile ( point, t ) ]
+        [ renderTile ( worldPos.local, t ) ]
 
 
 
--- keyedViewHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> ( String, Svg msg )
--- keyedViewHex renderTile tile =
---     ( Point.toString (Tuple.first tile)
---     , Svg.Lazy.lazy (renderHex renderTile) tile
---     )
--- renderLayer : List ( Point, tile ) -> (( Point, tile ) -> Svg msg) -> Svg msg
--- renderLayer tiles renderTile =
+-- EXPERIMENTAL
+-- sortedLayer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
+-- sortedLayer attributes keyFunc renderTile tiles =
+--     let
+--         keyedViewTile : ( Point, a ) -> ( String, Svg msg )
+--         keyedViewTile entity =
+--             ( keyFunc entity
+--             , Svg.Lazy.lazy (renderHex renderTile) entity
+--             )
+--     in
 --     Svg.Keyed.node "g"
---         [ Svg.Attributes.class "layer" ]
+--         (Svg.Attributes.class "layer" :: attributes)
 --         -- sort by y position and render
 --         (tiles
 --             |> List.sortBy (Tuple.first >> pointToYpos)
---             |> List.map (keyedViewHex renderTile)
+--             |> List.map keyedViewTile
 --         )
--- renderMap : RenderConfig -> HexGrid tile -> (( Point, tile ) -> Svg msg) -> List (Svg msg) -> Svg msg
--- renderMap config map renderTile extras =
---     svg
---         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
---         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
---         ]
---         [ Svg.g
---             [ Svg.Attributes.style
---                 ("transform: translate("
---                     ++ String.fromFloat -(config.cameraX * config.zoom)
---                     ++ "px, "
---                     ++ String.fromFloat -(config.cameraY * config.zoom)
---                     ++ "px) scale("
---                     ++ String.fromFloat config.zoom
---                     ++ ");"
---                 )
---             , Svg.Attributes.class "camera"
---             ]
---             [ Svg.Lazy.lazy2 renderLayer
---                 (map |> HexGrid.toList)
---                 renderTile
---             , Svg.g [] extras
---             ]
---         ]
--- EXPERIMENTAL
 
 
-sortedLayer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
-sortedLayer attributes keyFunc renderTile tiles =
+layer : Bool -> List (Attribute msg) -> (( WorldPosition, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( WorldPosition, a ) -> Svg msg
+layer sort attributes keyFunc renderTile tiles =
     let
-        keyedViewTile : ( Point, a ) -> ( String, Svg msg )
+        keyedViewTile : ( WorldPosition, a ) -> ( String, Svg msg )
         keyedViewTile entity =
             ( keyFunc entity
-            , Svg.Lazy.lazy (renderHex renderTile) entity
+            , Svg.Lazy.lazy (renderWorldHex renderTile) entity
             )
     in
     Svg.Keyed.node "g"
         (Svg.Attributes.class "layer" :: attributes)
-        -- sort by y position and render
         (tiles
-            |> List.sortBy (Tuple.first >> pointToYpos)
+            |> (if sort then
+                    List.sortBy (Tuple.first >> yPixelPosition)
+
+                else
+                    identity
+               )
             |> List.map keyedViewTile
         )
-
-
-layer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
-layer attributes keyFunc renderTile tiles =
-    let
-        keyedViewTile : ( Point, a ) -> ( String, Svg msg )
-        keyedViewTile entity =
-            ( keyFunc entity
-            , Svg.Lazy.lazy (renderHex renderTile) entity
-            )
-    in
-    Svg.Keyed.node "g"
-        (Svg.Attributes.class "layer" :: attributes)
-        (List.map keyedViewTile tiles)
 
 
 viewWorld :
@@ -264,9 +246,9 @@ viewWorld config world tileRenderFunc entityRenderFunc =
             ]
             [ world
                 |> World.mapCurrentGrid
-                    (sortedLayer [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) tileRenderFunc)
+                    (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> .local >> Point.toString) tileRenderFunc)
             , world
                 |> World.mapCurrentEntities
-                    (layer [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                    (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
             ]
         ]

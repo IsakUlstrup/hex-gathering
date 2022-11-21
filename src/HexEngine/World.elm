@@ -1,9 +1,9 @@
 module HexEngine.World exposing
     ( Entity
-    , EntityPosition
     , EntityState
     , Map
     , World
+    , WorldPosition
     , addEntity
     , findPath
     , findPathAdjacent
@@ -51,7 +51,7 @@ newWorld mapPosition initMap playerData =
     World
         { entities = []
         , maps = Dict.fromList [ ( mapPosition, initMap ) ]
-        , player = Entity 0 (EntityPosition mapPosition ( 0, 0, 0 )) Idle playerData
+        , player = Entity 0 (WorldPosition mapPosition ( 0, 0, 0 )) Idle playerData
         , idCounter = 1
         }
 
@@ -64,7 +64,7 @@ addEntity mapOffset position entity (World world) =
         Just _ ->
             World
                 { world
-                    | entities = Entity world.idCounter (EntityPosition mapOffset position) Idle entity :: world.entities
+                    | entities = Entity world.idCounter (WorldPosition mapOffset position) Idle entity :: world.entities
                     , idCounter = world.idCounter + 1
                 }
 
@@ -76,7 +76,7 @@ addEntity mapOffset position entity (World world) =
 -}
 playerMap : World tileData entityData -> Maybe (Map tileData)
 playerMap (World world) =
-    Dict.get world.player.position.mapOffset world.maps
+    Dict.get world.player.position.map world.maps
 
 
 {-| Get tile and entity at given position in active map
@@ -107,11 +107,14 @@ updateEntities f (World world) =
 
 {-| Map the grid player is located in
 -}
-mapCurrentGrid : (List ( Point, tileData ) -> a) -> World tileData entityData -> a
+mapCurrentGrid : (List ( WorldPosition, tileData ) -> a) -> World tileData entityData -> a
 mapCurrentGrid f (World world) =
-    case Dict.get world.player.position.mapOffset world.maps of
+    case Dict.get world.player.position.map world.maps of
         Just map ->
-            f (Grid.toList map.grid |> List.map (Tuple.mapFirst (Point.add world.player.position.mapOffset)))
+            map.grid
+                |> Grid.toList
+                |> List.map (\( p, t ) -> ( WorldPosition world.player.position.map p, t ))
+                |> f
 
         Nothing ->
             f []
@@ -119,11 +122,11 @@ mapCurrentGrid f (World world) =
 
 {-| Map Entities that are on the same map as player, including player
 -}
-mapCurrentEntities : (List ( Point, Entity entityData ) -> a) -> World tileData entityData -> a
+mapCurrentEntities : (List ( WorldPosition, Entity entityData ) -> a) -> World tileData entityData -> a
 mapCurrentEntities f (World world) =
     (world.player :: world.entities)
-        |> List.filter (\e -> e.position.mapOffset == world.player.position.mapOffset)
-        |> List.map (\e -> ( Point.add e.position.mapOffset e.position.local, e ))
+        |> List.filter (\e -> e.position.map == world.player.position.map)
+        |> List.map (\e -> ( e.position, e ))
         |> f
 
 
@@ -153,10 +156,10 @@ newMap name grid =
 -- ENTITY
 
 
-{-| Entity position, local represents position relative to current map, mapOffset represents current map position
+{-| World position, local represents position relative to current map, mapPosition represents map position
 -}
-type alias EntityPosition =
-    { mapOffset : Point
+type alias WorldPosition =
+    { map : Point
     , local : Point
     }
 
@@ -174,7 +177,7 @@ type EntityState
 -}
 type alias Entity entityData =
     { id : Int
-    , position : EntityPosition
+    , position : WorldPosition
     , state : EntityState
     , data : entityData
     }
@@ -270,7 +273,7 @@ move moveTime player =
         Cooling (p :: path) ->
             { player
                 | state = Moving path moveTime
-                , position = { mapOffset = player.position.mapOffset, local = p }
+                , position = { map = player.position.map, local = p }
             }
 
         Cooling [] ->
