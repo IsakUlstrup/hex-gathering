@@ -7,12 +7,13 @@ module HexEngine.Render exposing
     , initRenderConfig
     , pointAdd
     , viewWorld
+    , withEntityFocus
     , withHexFocus
     , withZoom
     )
 
 import HexEngine.Point as Point exposing (Point)
-import HexEngine.World as World exposing (World)
+import HexEngine.World as World exposing (EntityPosition, World)
 import Svg exposing (Attribute, Svg, g, svg)
 import Svg.Attributes
 import Svg.Keyed
@@ -48,6 +49,16 @@ withHexFocus point config =
         pos : ( Float, Float )
         pos =
             point |> pointToPixel
+    in
+    config |> withCameraPosition pos
+
+
+withEntityFocus : EntityPosition -> RenderConfig -> RenderConfig
+withEntityFocus position config =
+    let
+        pos : ( Float, Float )
+        pos =
+            Point.add position.mapOffset position.local |> pointToPixel
     in
     config |> withCameraPosition pos
 

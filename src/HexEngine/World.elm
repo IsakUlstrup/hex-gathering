@@ -50,8 +50,8 @@ newWorld : Map tileData -> entityData -> World tileData entityData
 newWorld initMap playerData =
     World
         { entities = []
-        , maps = Dict.fromList [ ( ( 0, 0, 0 ), initMap ) ]
-        , player = Entity 0 (EntityPosition ( 0, 0, 0 ) ( 0, 0, 0 )) Idle playerData
+        , maps = Dict.fromList [ ( ( 4, 0, -4 ), initMap ) ]
+        , player = Entity 0 (EntityPosition ( 4, 0, -4 ) ( 0, 0, 0 )) Idle playerData
         , idCounter = 1
         }
 
@@ -152,8 +152,8 @@ newMap name grid =
 {-| Entity position, local represents position relative to current map, mapOffset represents current map position
 -}
 type alias EntityPosition =
-    { local : Point
-    , mapOffset : Point
+    { mapOffset : Point
+    , local : Point
     }
 
 

@@ -137,7 +137,7 @@ update msg model =
                             (World.tickCooldown dt
                                 >> World.move (Tuple.second AnimationConstants.playerMoveTime)
                             )
-                , renderConfig = Render.withHexFocus (World.getPlayer model.world).position.local model.renderConfig
+                , renderConfig = Render.withEntityFocus (World.getPlayer model.world).position model.renderConfig
               }
             , Cmd.none
             )
