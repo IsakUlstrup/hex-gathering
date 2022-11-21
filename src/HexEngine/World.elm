@@ -93,7 +93,7 @@ getPoint target (World world) =
     ( playerMap (World world)
         |> Maybe.andThen (\m -> Grid.get target m.grid)
     , world.entities
-        |> List.filter (\e -> e.position.local == target)
+        |> List.filter (\e -> e.position.local == target && e.position.map == world.player.position.map)
         |> List.head
     )
 
