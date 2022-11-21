@@ -29,16 +29,20 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
+    let
+        ( mapPosition, playerPosition ) =
+            ( ( 2, -1, -1 ), ( 0, 0, 0 ) )
+    in
     ( Model
         Nothing
         (Render.initRenderConfig
-            |> Render.withEntityFocus (Entity.WorldPosition ( 2, -1, -1 ) ( 0, 0, 0 ))
+            |> Render.withEntityFocus (Entity.WorldPosition mapPosition playerPosition)
             |> Render.withZoom 1.2
         )
         (World.newWorld
-            ( 2, -1, -1 )
+            mapPosition
             (World.newMap "Test" Content.Map.testGrid)
-            '🐼'
+            ( playerPosition, '🐼' )
             [ ( ( 0, -3, 3 ), '🌺' )
             , ( ( 3, -2, -1 ), '🌻' )
             ]

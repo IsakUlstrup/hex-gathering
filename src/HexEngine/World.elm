@@ -39,12 +39,12 @@ type World tileData entityData
 
 {-| Create a new world with provided map and player. Both will be placed at (0, 0, 0)
 -}
-newWorld : Point -> Map tileData -> entityData -> List ( Point, entityData ) -> World tileData entityData
-newWorld mapPosition initMap playerData entities =
+newWorld : Point -> Map tileData -> ( Point, entityData ) -> List ( Point, entityData ) -> World tileData entityData
+newWorld mapPosition initMap ( playerPosition, playerData ) entities =
     World
         { entities = []
         , maps = Dict.fromList [ ( mapPosition, initMap ) ]
-        , player = Entity.new 0 mapPosition ( 0, 0, 0 ) playerData
+        , player = Entity.new 0 mapPosition playerPosition playerData
         , idCounter = 1
         }
         |> addEntities mapPosition entities
