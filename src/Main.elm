@@ -6,7 +6,7 @@ import Browser.Events
 import Content.Map
 import Entity exposing (Entity)
 import HexEngine.Entity as Entity
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
@@ -239,19 +239,23 @@ update msg model =
 --         ]
 
 
-viewDebug : Html Msg
-viewDebug =
+viewDebug : World Tile Entity -> Html Msg
+viewDebug world =
+    let
+        button ( coordinate, _ ) =
+            Html.button
+                [ Html.Events.onClick <| MapTransition coordinate ( 0, 0, 0 ) ]
+                [ Html.text <| "Travel to" ++ Point.toString coordinate ]
+    in
     Html.div [ Html.Attributes.class "debug" ]
-        [ Html.button [ Html.Events.onClick <| MapTransition ( 2, -1, -1 ) ( 0, 0, 0 ) ] [ Html.text "Travel to ( 2, -1, -1 )" ]
-        , Html.button [ Html.Events.onClick <| MapTransition ( 5, 5, -10 ) ( 0, 0, 0 ) ] [ Html.text "Travel to ( 5, 5, -10 )" ]
-        ]
+        (World.mapMaps button world)
 
 
 view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , viewDebug
+        , viewDebug model.world
         , Render.viewWorld
             model.renderConfig
             model.world

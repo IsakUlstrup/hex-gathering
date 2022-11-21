@@ -6,6 +6,7 @@ module HexEngine.World exposing
     , getPoint
     , mapCurrentEntities
     , mapCurrentGrid
+    , mapMaps
     , newMap
     , newWorld
     , playerMoveMap
@@ -135,6 +136,13 @@ mapCurrentEntities f (World world) =
         |> List.filter (\e -> e.position.map == world.player.position.map)
         |> List.map (\e -> ( e.position, e ))
         |> f
+
+
+mapMaps : (( Point, Map tileData ) -> b) -> World tileData entityData -> List b
+mapMaps f (World world) =
+    world.maps
+        |> Dict.toList
+        |> List.map f
 
 
 getPlayer : World tileData entityData -> Entity entityData
