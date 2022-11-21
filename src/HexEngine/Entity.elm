@@ -1,4 +1,4 @@
-module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, move, new, setPosition, stateString, tickCooldown)
+module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, move, new, setPosition, stateString, tickCooldown, worldPositionToString)
 
 import HexEngine.Point as Point exposing (Point)
 import Set
@@ -54,6 +54,11 @@ stateString player =
 
         Idle ->
             "idle"
+
+
+worldPositionToString : WorldPosition -> String
+worldPositionToString position =
+    Point.toString position.map ++ "," ++ Point.toString position.local
 
 
 setPath : List Point -> Entity entityData -> Entity entityData

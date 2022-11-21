@@ -12,7 +12,7 @@ module HexEngine.Render exposing
     , withZoom
     )
 
-import HexEngine.Entity exposing (Entity, WorldPosition)
+import HexEngine.Entity as Entity exposing (Entity, WorldPosition)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, g, svg)
@@ -260,7 +260,7 @@ viewWorld config world tileRenderFunc entityRenderFunc =
             ]
             [ world
                 |> World.mapCurrentGrid
-                    (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> .local >> Point.toString) tileRenderFunc)
+                    (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
             , world
                 |> World.mapCurrentEntities
                     (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)

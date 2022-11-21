@@ -1,5 +1,6 @@
 module View exposing (viewEntity, viewTile)
 
+import AnimationConstants
 import Entity exposing (Entity)
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
@@ -17,7 +18,20 @@ import Tile exposing (Tile(..))
 
 animationDelayMultiplier : number
 animationDelayMultiplier =
-    100
+    150
+
+
+animationDelay : Point -> Attribute msg
+animationDelay position =
+    Svg.Attributes.style
+        ("animation-delay: "
+            ++ (Point.distanceFloat ( 0, 0, 0 ) position
+                    |> (*) animationDelayMultiplier
+                    |> (+) (toFloat <| AnimationConstants.playerMoveTime.value // 2)
+                    |> String.fromFloat
+               )
+            ++ "ms"
+        )
 
 
 svgClassList : List ( String, Bool ) -> Attribute msg
@@ -55,14 +69,7 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
                     , ( "selected", meq selectedPoint point )
                     , ( "player", point == playerPosition )
                     ]
-                , Svg.Attributes.style
-                    ("animation-delay: "
-                        ++ (Point.distanceFloat ( 0, 0, 0 ) point
-                                |> (*) animationDelayMultiplier
-                                |> String.fromFloat
-                           )
-                        ++ "ms"
-                    )
+                , animationDelay point
                 ]
                 cs
 
@@ -222,14 +229,7 @@ viewEntity clickEvent ( position, entity ) =
         ]
         [ Svg.g
             [ Svg.Attributes.class "animation"
-            , Svg.Attributes.style
-                ("animation-delay: "
-                    ++ (Point.distanceFloat ( 0, 0, 0 ) position
-                            |> (*) animationDelayMultiplier
-                            |> String.fromFloat
-                       )
-                    ++ "ms"
-                )
+            , animationDelay position
             ]
             [ Svg.text_ [ Svg.Attributes.class "content", Svg.Attributes.x "2.5", Svg.Attributes.y "2.5" ] [ Svg.text (entity.data |> String.fromChar) ] ]
         ]
