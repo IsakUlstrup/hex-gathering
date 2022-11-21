@@ -244,6 +244,7 @@ setPath path player =
 setPosition : WorldPosition -> Entity entityData -> Entity entityData
 setPosition position entity =
     { entity | position = position }
+        |> setPath [ position.local ]
 
 
 findPath : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
