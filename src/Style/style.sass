@@ -65,7 +65,7 @@ svg
         transition: transform $player-move-duration ease-in-out
 
         .animation
-            animation: fall $hex-fall-duration ease forwards
+            animation: fall $hex-fall-duration ease-out
             // opacity: 0
         .content
             filter: saturate(80%) sepia(30%)
@@ -162,7 +162,7 @@ svg
 
 .hex
     -webkit-tap-highlight-color: transparent
-    animation: fall $hex-fall-duration ease forwards
+    animation: fall $hex-fall-duration ease-out
     // opacity: 0
 
     // &.selected

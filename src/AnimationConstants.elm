@@ -16,7 +16,7 @@ playerMoveTime =
 
 fallDuration : Constant
 fallDuration =
-    Constant "fall-duration" 400
+    Constant "fall-duration" 800
 
 
 toCssVar : Constant -> String
