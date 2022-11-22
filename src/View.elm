@@ -16,23 +16,15 @@ import Tile exposing (Tile(..))
 -- CONSTANTS
 
 
-animationDelayMultiplier : number
-animationDelayMultiplier =
-    100
-
-
 animationDelay : Point -> Attribute msg
 animationDelay position =
     let
-        delay d =
-            if d == 0 then
-                "0"
-
-            else
-                d
-                    |> (*) animationDelayMultiplier
-                    |> (+) (toFloat <| AnimationConstants.playerMoveTime.value // 2)
-                    |> String.fromFloat
+        delay duration =
+            duration
+                |> round
+                |> (*) AnimationConstants.delayMultiplier.value
+                |> (+) AnimationConstants.playerMoveTime.value
+                |> String.fromInt
     in
     Svg.Attributes.style
         ("animation-delay: "

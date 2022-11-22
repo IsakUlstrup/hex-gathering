@@ -1,4 +1,4 @@
-module AnimationConstants exposing (Constant, fallDuration, playerMoveTime, styleNode)
+module AnimationConstants exposing (Constant, delayMultiplier, fallDuration, playerMoveTime, styleNode)
 
 import Html exposing (Html)
 
@@ -16,7 +16,12 @@ playerMoveTime =
 
 fallDuration : Constant
 fallDuration =
-    Constant "fall-duration" 800
+    Constant "fall-duration" 500
+
+
+delayMultiplier : Constant
+delayMultiplier =
+    Constant "delay-multiplier" 100
 
 
 toCssVar : Constant -> String
