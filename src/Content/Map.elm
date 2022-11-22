@@ -43,6 +43,12 @@ testGrid2 =
         |> HexGrid.insertTile ( -1, 1, 0 ) High
         |> HexGrid.insertTile ( 0, -1, 1 ) Low
         |> HexGrid.insertTile ( 1, -1, 0 ) Low
+        |> HexGrid.insertTile ( -1, 2, -1 ) Medium
+        |> HexGrid.insertTile ( 1, 1, -2 ) Medium
+        |> HexGrid.insertTile ( 1, 1, -2 ) Medium
+        |> HexGrid.insertTile ( 2, -2, 0 ) High
+        |> HexGrid.insertTile ( 3, -2, -1 ) Low
+        |> HexGrid.insertTile ( 2, -1, -1 ) Low
 
 
 testGrid3 : HexGrid Tile
@@ -51,3 +57,14 @@ testGrid3 =
         |> HexGrid.insertTile ( 0, 0, 0 ) Medium
         |> HexGrid.insertTile ( 0, 1, -1 ) Medium
         |> HexGrid.insertTile ( 1, 0, -1 ) Medium
+        |> HexGrid.insertTile ( 2, -1, -1 ) Medium
+        |> HexGrid.insertTile ( -2, 3, -1 ) Low
+        |> HexGrid.insertTile ( 1, 0, -1 ) Medium
+        |> HexGrid.insertTile ( 4, -3, -1 ) High
+        |> HexGrid.insertTile ( 1, 0, -1 ) Medium
+        |> HexGrid.insertTile ( -1, 2, -1 ) Medium
+        |> HexGrid.insertTile ( 1, 1, -2 ) Medium
+        |> HexGrid.insertTile ( 1, 1, -2 ) Medium
+        |> HexGrid.insertTile ( 2, -2, 0 ) High
+        |> HexGrid.insertTile ( 2, 3, -5 ) High
+        |> HexGrid.insertTile ( 1, 2, -3 ) Low
