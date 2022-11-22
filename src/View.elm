@@ -224,6 +224,7 @@ viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg 
 viewEntity clickEvent ( position, entity ) =
     Svg.g
         [ Svg.Attributes.class (HexEngine.Entity.stateString entity)
+        , Svg.Attributes.class "entity"
         , Svg.Events.onClick <| clickEvent position
         ]
         [ Svg.g
