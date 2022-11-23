@@ -9,6 +9,7 @@ module HexEngine.Render exposing
     , viewWorld
     , withEntityFocus
     , withHexFocus
+    , withPlayerFocus
     , withZoom
     )
 
@@ -62,6 +63,11 @@ withEntityFocus position config =
             Point.add position.map position.local |> pointToPixel
     in
     config |> withCameraPosition pos
+
+
+withPlayerFocus : World tileData entityData -> RenderConfig -> RenderConfig
+withPlayerFocus world config =
+    config |> withEntityFocus (World.getPlayer world).position
 
 
 withZoom : Float -> RenderConfig -> RenderConfig
