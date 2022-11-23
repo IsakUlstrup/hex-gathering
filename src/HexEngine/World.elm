@@ -36,6 +36,7 @@ type World tileData entityData
         , maps : Dict Point (Map tileData)
         , player : Entity entityData
         , idCounter : Int
+        , mapHistory : List Point
         }
 
 
@@ -48,6 +49,7 @@ newWorld mapPosition initMap ( playerPosition, playerData ) entities =
         , maps = Dict.fromList [ ( mapPosition, initMap ) ]
         , player = Entity.new 0 mapPosition playerPosition playerData
         , idCounter = 1
+        , mapHistory = []
         }
         |> addEntities mapPosition entities
 
@@ -157,7 +159,15 @@ playerMoveMap : Point -> Point -> World tileData entityData -> World tileData en
 playerMoveMap mapPosition localPosition (World world) =
     case Dict.get mapPosition world.maps of
         Just _ ->
-            World { world | player = Entity.setPosition (WorldPosition mapPosition localPosition) world.player }
+            World
+                { world
+                    | mapHistory =
+                        world.mapHistory
+                            |> List.filter ((/=) mapPosition)
+                            |> List.filter ((/=) world.player.position.map)
+                            |> (::) world.player.position.map
+                    , player = Entity.setPosition (WorldPosition mapPosition localPosition) world.player
+                }
 
         Nothing ->
             World world
