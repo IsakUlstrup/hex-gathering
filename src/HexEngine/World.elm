@@ -7,6 +7,7 @@ module HexEngine.World exposing
     , mapCurrentEntities
     , mapCurrentGrid
     , mapMaps
+    , movementUpdate
     , newMap
     , newWorld
     , playerMoveMap
@@ -160,6 +161,13 @@ playerMoveMap mapPosition localPosition (World world) =
 
         Nothing ->
             World world
+
+
+movementUpdate : Int -> Int -> World tileData entityData -> World tileData entityData
+movementUpdate dt moveTime world =
+    world
+        |> updateEntities (Entity.tickCooldown dt)
+        |> updateEntities (Entity.move moveTime)
 
 
 

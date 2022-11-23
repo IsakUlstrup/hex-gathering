@@ -61,39 +61,13 @@ init _ =
 
 
 -- UPDATE
--- MAP
--- updateSelectedMapEntity : Point -> (Entity -> Entity) -> Model -> Model
--- updateSelectedMapEntity position f model =
---     { model | selectedIsland = Tuple.mapSecond (HexEngine.EntityMap.updateEntity position f) model.selectedIsland }
--- updateEntities : (Entity -> Entity) -> Model -> Model
--- updateEntities f model =
---     { model
---         | selectedIsland =
---             model.selectedIsland
---                 |> Tuple.mapSecond (Island.mapEntities f)
---         , allIslands =
---             model.allIslands
---                 |> Dict.map (\_ v -> Island.mapEntities f v)
---     }
--- setSelected : Point -> EntityMap Tile Entity -> Model -> Model
--- setSelected coordinate island model =
---     { model
---         | allIslands =
---             model.allIslands
---                 |> Dict.insert (HexEngine.EntityMap.getOffset model.selectedIsland) model.selectedIsland
---                 |> Dict.remove coordinate
---         , selectedIsland = island
---     }
--- selectMap : Point -> Model -> Model
--- selectMap coordinate model =
---     if HexEngine.EntityMap.getOffset model.selectedIsland == coordinate then
---         model
---     else
---         case Dict.get coordinate model.allIslands of
---             Just i ->
---                 setSelected coordinate i model
---             Nothing ->
---                 model
+
+
+type Msg
+    = Tick Int
+    | MapTransition Point Point
+    | ClickHex Point
+    | ClickEntity Point
 
 
 {-| determine if a given point is walkable
@@ -113,57 +87,20 @@ isWalkable world point =
             False
 
 
-type Msg
-    = Tick Int
-    | MapTransition Point Point
-    | ClickHex Point
-    | ClickEntity Point
-
-
-
--- | CloseModal
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick dt ->
-            -- ( { model
-            --     | player =
-            --         model.player
-            --             |> Player.tickCooldown dt
-            --             |> Player.move
-            --     , renderConfig =
-            --         model.selectedPoint
-            --             |> Maybe.map
-            --                 (\p ->
-            --                     if Player.readyToInteract model.player p then
-            --                         Render.withHexFocus p model.renderConfig
-            --                     else
-            --                         Render.withHexFocus (World.getPlayer model.world).position.local model.renderConfig
-            --                 )
-            --             |> Maybe.withDefault (Render.withHexFocus (World.getPlayer model.world).position.local model.renderConfig)
-            --   }
-            -- , Cmd.none
-            -- )
             ( { model
                 | world =
                     model.world
-                        |> World.updateEntities (Entity.tickCooldown dt)
-                        |> World.updateEntities (Entity.move AnimationConstants.playerMoveTime.value)
+                        |> World.movementUpdate dt AnimationConstants.playerMoveTime.value
                 , renderConfig = Render.withEntityFocus (World.getPlayer model.world).position model.renderConfig
               }
             , Cmd.none
             )
 
         MapTransition map position ->
-            -- ( { model
-            --     | player = Player.resetPosition model.player
-            --     , selectedPoint = Nothing
-            --   }
-            --     |> selectMap destination
-            -- , Cmd.none
-            -- )
             ( { model
                 | world = World.playerMoveMap map position model.world
                 , selectedPoint = Nothing
@@ -193,50 +130,7 @@ update msg model =
 
 
 
--- ( { model | selectedPoint = Just point }, Cmd.none )
--- CloseModal ->
---     ( { model | selectedPoint = Nothing }
---     , Cmd.none
---     )
 -- VIEW
--- viewEntityModal : Model -> Html Msg
--- viewEntityModal model =
---     model.selectedPoint
---         |> Maybe.map
---             (\p ->
---                 case Dict.get p (Tuple.second model.selectedIsland).entities of
---                     Just e ->
---                         if Player.readyToInteract model.player p then
---                             entityModal True MapTransition CloseModal p e
---                         else
---                             entityModal False MapTransition CloseModal p e
---                     Nothing ->
---                         entityModal False MapTransition CloseModal p ' '
---             )
---         |> Maybe.withDefault (entityModal False MapTransition CloseModal ( 0, 0, 0 ) ' ')
--- entityModal : Bool -> (Point -> Msg) -> Msg -> Point -> Entity -> Html Msg
--- entityModal visible _ closeMsg _ entity =
---     let
---         content : List (Html Msg)
---         content =
---             -- case entity of
---             -- Entity.Counter model ->
---             --     [ Html.map (CounterMsg position) (Entities.Counter.view model) ]
---             -- Entity.Timer model ->
---             --     [ Html.map (TimerMsg position) (Entities.Timer.view model) ]
---             -- Entity.Player _ ->
---             --     [ Html.h1 [ Html.Attributes.class "entity-header" ] [ Html.text "Test" ]
---             --     , Html.p [] [ Html.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere tincidunt nibh. Praesent enim dui, sagittis condimentum fermentum id, pulvinar eu quam. Nam aliquam tincidunt viverra. Vestibulum pulvinar est sit amet orci pellentesque, at gravida arcu vehicula. Suspendisse venenatis laoreet neque, vel tempus libero auctor eu. Nulla at scelerisque leo. Ut et turpis nulla. Ut cursus lorem sem, nec consequat orci pharetra id. " ]
---             --     ]
---             [ Html.p [] [ Html.text <| String.fromChar entity ] ]
---     in
---     Html.aside
---         [ Html.Attributes.class "modal-container"
---         , Html.Attributes.classList [ ( "visible", visible ) ]
---         ]
---         [ Html.div [ Html.Attributes.class "modal-content" ]
---             (Html.button [ Html.Events.onClick closeMsg ] [ Html.text "x" ] :: content)
---         ]
 
 
 viewDebug : World Tile Entity -> Html Msg
@@ -261,8 +155,6 @@ view model =
             model.world
             (View.viewTile (World.getPlayer model.world).position.local model.selectedPoint ClickHex)
             (View.viewEntity ClickEntity)
-
-        -- , viewEntityModal model
         ]
 
 
