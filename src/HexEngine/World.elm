@@ -116,8 +116,13 @@ updateEntities f (World world) =
 {-| Map the grid player is located in
 -}
 mapCurrentGrid : (List ( WorldPosition, tileData ) -> a) -> World tileData entityData -> a
-mapCurrentGrid f (World world) =
-    case Dict.get (Entity.getPosition world.player).map world.maps of
+mapCurrentGrid f ((World world) as w) =
+    mapGrid f (Entity.getPosition world.player).map w
+
+
+mapGrid : (List ( WorldPosition, tileData ) -> a) -> Point -> World tileData entityData -> a
+mapGrid f mapPosition (World world) =
+    case Dict.get mapPosition world.maps of
         Just map ->
             map.grid
                 |> Grid.toList
