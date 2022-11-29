@@ -217,7 +217,7 @@ move moveTime entity =
             entity
 
         MapTransitionCharge 0 from to ->
-            { entity | state = MapTransitionMove 200 from to }
+            { entity | state = MapTransitionMove 500 from to }
 
         MapTransitionCharge _ _ _ ->
             entity

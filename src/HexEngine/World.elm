@@ -159,12 +159,12 @@ getPlayerPosition (World world) =
 
 {-| Move player to another map, does nothing if map doesn't exist
 -}
-playerMoveMap : Point -> Point -> World tileData entityData -> World tileData entityData
-playerMoveMap mapPosition localPosition (World world) =
+playerMoveMap : Int -> Point -> Point -> World tileData entityData -> World tileData entityData
+playerMoveMap moveDuration mapPosition localPosition (World world) =
     case Dict.get mapPosition world.maps of
         Just _ ->
             World
-                { world | player = Entity.mapTransition 200 mapPosition localPosition world.player }
+                { world | player = Entity.mapTransition moveDuration mapPosition localPosition world.player }
 
         Nothing ->
             World world

@@ -102,7 +102,7 @@ update msg model =
 
         MapTransition map position ->
             ( { model
-                | world = World.playerMoveMap map position model.world
+                | world = World.playerMoveMap 200 map position model.world
                 , selectedPoint = Nothing
               }
             , Cmd.none
