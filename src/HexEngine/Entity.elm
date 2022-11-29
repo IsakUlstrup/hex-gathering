@@ -140,7 +140,11 @@ setPath path entity =
 
 mapTransition : Int -> Point -> Point -> Entity entityData -> Entity entityData
 mapTransition transitionDuration mapPosition localPosition entity =
-    { entity | state = MapTransitionCharge transitionDuration (getPosition entity) (WorldPosition mapPosition localPosition) }
+    if mapPosition /= (getPosition entity).map then
+        { entity | state = MapTransitionCharge transitionDuration (getPosition entity) (WorldPosition mapPosition localPosition) }
+
+    else
+        entity
 
 
 findPath : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
