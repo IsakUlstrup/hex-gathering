@@ -8,7 +8,7 @@ import Entity exposing (Entity)
 import HexEngine.Entity as Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
-import HexEngine.World as World exposing (World)
+import HexEngine.World as World exposing (Map, World)
 import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
@@ -136,6 +136,7 @@ update msg model =
 viewDebug : World Tile Entity -> Html Msg
 viewDebug world =
     let
+        button : ( Point, Map Tile ) -> Html Msg
         button ( coordinate, _ ) =
             Html.button
                 [ Html.Events.onClick <| MapTransition coordinate ( 0, 0, 0 ) ]

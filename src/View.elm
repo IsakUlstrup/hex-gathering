@@ -19,6 +19,7 @@ import Tile exposing (Tile(..))
 animationDelay : Point -> Attribute msg
 animationDelay position =
     let
+        delay : Float -> String
         delay duration =
             duration
                 |> round

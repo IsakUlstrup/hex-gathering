@@ -1,4 +1,4 @@
-module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, getPosition, mapTransition, move, new, stateString, tickCooldown, worldPositionToString)
+module HexEngine.Entity exposing (Entity, EntityState, WorldPosition, findPath, findPathAdjacent, getPosition, mapTransition, move, new, stateString, tickCooldown, worldPositionToString)
 
 import HexEngine.Point as Point exposing (Point)
 import Set
@@ -162,6 +162,7 @@ findPathAdjacent walkable to entity =
 tickCooldown : Int -> Entity entityData -> Entity entityData
 tickCooldown dt entity =
     let
+        cdDec : Int -> Int -> Int
         cdDec a b =
             max 0 (a - b)
     in

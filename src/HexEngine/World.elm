@@ -2,7 +2,6 @@ module HexEngine.World exposing
     ( Map
     , World
     , addMap
-    , getPlayer
     , getPlayerPosition
     , getPoint
     , mapCurrentEntities
@@ -12,7 +11,6 @@ module HexEngine.World exposing
     , newMap
     , newWorld
     , playerMoveMap
-    , updateEntities
     , updatePlayer
     )
 
@@ -145,11 +143,6 @@ mapMaps f (World world) =
     world.maps
         |> Dict.toList
         |> List.map f
-
-
-getPlayer : World tileData entityData -> Entity entityData
-getPlayer (World world) =
-    world.player
 
 
 getPlayerPosition : World tileData entityData -> WorldPosition
