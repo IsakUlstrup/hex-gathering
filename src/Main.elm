@@ -151,7 +151,7 @@ view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , viewDebug model.world
-        , Render.viewWorld
+        , Render.viewWorld2
             model.renderConfig
             model.world
             (View.viewTile (World.getPlayerPosition model.world).local model.selectedPoint ClickHex)

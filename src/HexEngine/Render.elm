@@ -6,13 +6,13 @@ module HexEngine.Render exposing
     , hardcodedPoints
     , initRenderConfig
     , pointAdd
-    , viewWorld
+    , viewWorld2
     , withEntityFocus
     , withPlayerFocus
     , withZoom
     )
 
-import HexEngine.Entity as Entity exposing (Entity, WorldPosition)
+import HexEngine.Entity as Entity exposing (Entity, EntityState(..), WorldPosition)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, g, svg)
@@ -235,13 +235,47 @@ layer sort attributes keyFunc renderTile tiles =
         )
 
 
-viewWorld :
+
+-- viewWorld :
+--     RenderConfig
+--     -> World tileData entityData
+--     -> (( Point, tileData ) -> Svg msg)
+--     -> (( Point, Entity entityData ) -> Svg msg)
+--     -> Svg msg
+-- viewWorld config world tileRenderFunc entityRenderFunc =
+--     svg
+--         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+--         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
+--         ]
+--         [ Svg.g
+--             [ Svg.Attributes.style
+--                 ("transform: translate("
+--                     ++ String.fromFloat -(config.cameraX * config.zoom)
+--                     ++ "px, "
+--                     ++ String.fromFloat -(config.cameraY * config.zoom)
+--                     ++ "px) scale("
+--                     ++ String.fromFloat config.zoom
+--                     ++ ");"
+--                 )
+--             , Svg.Attributes.class "camera"
+--             ]
+--             [ world
+--                 |> World.mapCurrentGrid
+--                     (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+--             , world
+--                 |> World.mapCurrentEntities
+--                     (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+--             ]
+--         ]
+
+
+viewWorld2 :
     RenderConfig
     -> World tileData entityData
     -> (( Point, tileData ) -> Svg msg)
     -> (( Point, Entity entityData ) -> Svg msg)
     -> Svg msg
-viewWorld config world tileRenderFunc entityRenderFunc =
+viewWorld2 config world tileRenderFunc entityRenderFunc =
     svg
         [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
@@ -258,11 +292,52 @@ viewWorld config world tileRenderFunc entityRenderFunc =
                 )
             , Svg.Attributes.class "camera"
             ]
-            [ world
-                |> World.mapCurrentGrid
-                    (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
-            , world
-                |> World.mapCurrentEntities
-                    (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
-            ]
+            (case (World.getPlayer world).state of
+                MapTransitionCharge _ from to ->
+                    [ world
+                        |> World.mapGrid
+                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            from.map
+                    , world
+                        |> World.mapEntities
+                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            from.map
+                    , world
+                        |> World.mapGrid
+                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            to.map
+                    , world
+                        |> World.mapEntities
+                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            to.map
+                    ]
+
+                MapTransitionMove _ from to ->
+                    [ world
+                        |> World.mapGrid
+                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            from.map
+                    , world
+                        |> World.mapEntities
+                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            from.map
+                    , world
+                        |> World.mapGrid
+                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            to.map
+                    , world
+                        |> World.mapEntities
+                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            to.map
+                    ]
+
+                _ ->
+                    [ world
+                        |> World.mapCurrentGrid
+                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                    , world
+                        |> World.mapCurrentEntities
+                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                    ]
+            )
         ]

@@ -2,10 +2,13 @@ module HexEngine.World exposing
     ( Map
     , World
     , addMap
+    , getPlayer
     , getPlayerPosition
     , getPoint
     , mapCurrentEntities
     , mapCurrentGrid
+    , mapEntities
+    , mapGrid
     , mapMaps
     , movementUpdate
     , newMap
@@ -99,6 +102,11 @@ getPoint target (World world) =
     )
 
 
+getPlayer : World tileData entityData -> Entity entityData
+getPlayer (World world) =
+    world.player
+
+
 updatePlayer : (Entity entityData -> Entity entityData) -> World tileData entityData -> World tileData entityData
 updatePlayer f (World world) =
     World { world | player = f world.player }
@@ -139,6 +147,14 @@ mapCurrentEntities : (List ( WorldPosition, Entity entityData ) -> a) -> World t
 mapCurrentEntities f (World world) =
     (world.player :: world.entities)
         |> List.filter (\e -> (Entity.getPosition e).map == (Entity.getPosition world.player).map)
+        |> List.map (\e -> ( Entity.getPosition e, e ))
+        |> f
+
+
+mapEntities : (List ( WorldPosition, Entity entityData ) -> a) -> Point -> World tileData entityData -> a
+mapEntities f mapPosition (World world) =
+    (world.player :: world.entities)
+        |> List.filter (\e -> (Entity.getPosition e).map == mapPosition)
         |> List.map (\e -> ( Entity.getPosition e, e ))
         |> f
 

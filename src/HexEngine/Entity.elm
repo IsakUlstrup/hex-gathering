@@ -1,4 +1,17 @@
-module HexEngine.Entity exposing (Entity, EntityState, WorldPosition, findPath, findPathAdjacent, getPosition, mapTransition, move, new, stateString, tickCooldown, worldPositionToString)
+module HexEngine.Entity exposing
+    ( Entity
+    , EntityState(..)
+    , WorldPosition
+    , findPath
+    , findPathAdjacent
+    , getPosition
+    , mapTransition
+    , move
+    , new
+    , stateString
+    , tickCooldown
+    , worldPositionToString
+    )
 
 import HexEngine.Point as Point exposing (Point)
 import Set
