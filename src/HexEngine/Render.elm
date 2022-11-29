@@ -26,32 +26,27 @@ import Svg.Lazy
 
 
 type alias RenderConfig =
-    { cameraX : Float
-    , cameraY : Float
+    { position : Point
     , zoom : Float
     }
 
 
 initRenderConfig : RenderConfig
 initRenderConfig =
-    RenderConfig 0 0 1
+    RenderConfig ( 0, 0, 0 ) 1
 
 
-withCameraPosition : ( Float, Float ) -> RenderConfig -> RenderConfig
-withCameraPosition ( x, y ) config =
-    { config | cameraX = x, cameraY = y }
+
+-- withCameraPosition : ( Float, Float ) -> RenderConfig -> RenderConfig
+-- withCameraPosition ( x, y ) config =
+--     { config | cameraX = x, cameraY = y }
 
 
 {-| move camera to focus on point
 -}
 withHexFocus : Point -> RenderConfig -> RenderConfig
 withHexFocus point config =
-    let
-        pos : ( Float, Float )
-        pos =
-            point |> pointToPixel
-    in
-    config |> withCameraPosition pos
+    { config | position = point }
 
 
 withEntityFocus : WorldPosition -> RenderConfig -> RenderConfig
@@ -276,16 +271,25 @@ viewWorld2 :
     -> (( Point, Entity entityData ) -> Svg msg)
     -> Svg msg
 viewWorld2 config world tileRenderFunc entityRenderFunc =
+    let
+        ( camX, camY ) =
+            config.position |> pointToPixel
+    in
     svg
-        [ Svg.Attributes.viewBox ([ -50, -50, 100, 100 ] |> List.map String.fromFloat |> List.intersperse " " |> String.concat)
+        [ Svg.Attributes.viewBox
+            ([ -50, -50, 100, 100 ]
+                |> List.map String.fromFloat
+                |> List.intersperse " "
+                |> String.concat
+            )
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         ]
         [ Svg.g
             [ Svg.Attributes.style
                 ("transform: translate("
-                    ++ String.fromFloat -(config.cameraX * config.zoom)
+                    ++ String.fromFloat -(camX * config.zoom)
                     ++ "px, "
-                    ++ String.fromFloat -(config.cameraY * config.zoom)
+                    ++ String.fromFloat -(camY * config.zoom)
                     ++ "px) scale("
                     ++ String.fromFloat config.zoom
                     ++ ");"
