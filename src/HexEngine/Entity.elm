@@ -1,4 +1,4 @@
-module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, getPosition, move, new, setPosition, stateString, tickCooldown, worldPositionToString)
+module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, getPosition, mapTransition, move, new, setPosition, stateString, tickCooldown, worldPositionToString)
 
 import HexEngine.Point as Point exposing (Point)
 import Set
@@ -130,6 +130,11 @@ setPosition position entity =
     { entity | state = Idle position }
 
 
+mapTransition : Int -> Point -> Point -> Entity entityData -> Entity entityData
+mapTransition transitionDuration mapPosition localPosition entity =
+    { entity | state = MapTransitionCharge transitionDuration (getPosition entity) (WorldPosition mapPosition localPosition) }
+
+
 findPath : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
 findPath walkable to entity =
     case Point.pathfind walkable (getPosition entity).local to of
@@ -178,7 +183,7 @@ tickCooldown dt entity =
             { entity | state = MapTransitionCharge (max 0 (cd - dt)) from to }
 
         MapTransitionMove cd from to ->
-            { entity | state = MapTransitionCharge (max 0 (cd - dt)) from to }
+            { entity | state = MapTransitionMove (max 0 (cd - dt)) from to }
 
 
 move : Int -> Entity entityData -> Entity entityData

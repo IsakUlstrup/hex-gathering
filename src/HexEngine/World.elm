@@ -164,9 +164,7 @@ playerMoveMap mapPosition localPosition (World world) =
     case Dict.get mapPosition world.maps of
         Just _ ->
             World
-                { world
-                    | player = Entity.setPosition (WorldPosition mapPosition localPosition) world.player
-                }
+                { world | player = Entity.mapTransition 200 mapPosition localPosition world.player }
 
         Nothing ->
             World world
