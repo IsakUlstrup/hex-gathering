@@ -300,38 +300,38 @@ viewWorld2 config world tileRenderFunc entityRenderFunc =
                 MapTransitionCharge _ from to ->
                     [ world
                         |> World.mapGrid
-                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            (layer True [ Svg.Attributes.class "terrain leaving" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
                             from.map
                     , world
                         |> World.mapEntities
-                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            (layer False [ Svg.Attributes.class "entities leaving" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
                             from.map
                     , world
                         |> World.mapGrid
-                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            (layer True [ Svg.Attributes.class "terrain entering" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
                             to.map
                     , world
                         |> World.mapEntities
-                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            (layer False [ Svg.Attributes.class "entities entering" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
                             to.map
                     ]
 
                 MapTransitionMove _ from to ->
                     [ world
                         |> World.mapGrid
-                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            (layer True [ Svg.Attributes.class "terrain leaving" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
                             from.map
                     , world
                         |> World.mapEntities
-                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            (layer False [ Svg.Attributes.class "entities leaving" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
                             from.map
                     , world
                         |> World.mapGrid
-                            (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
+                            (layer True [ Svg.Attributes.class "terrain entering" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
                             to.map
                     , world
                         |> World.mapEntities
-                            (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
+                            (layer False [ Svg.Attributes.class "entities entering" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
                             to.map
                     ]
 
