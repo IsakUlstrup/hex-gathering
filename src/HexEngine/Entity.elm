@@ -1,4 +1,4 @@
-module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, getPosition, mapTransition, move, new, setPosition, stateString, tickCooldown, worldPositionToString)
+module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, getPosition, mapTransition, move, new, stateString, tickCooldown, worldPositionToString)
 
 import HexEngine.Point as Point exposing (Point)
 import Set
@@ -125,11 +125,6 @@ setPath path entity =
             entity
 
 
-setPosition : WorldPosition -> Entity entityData -> Entity entityData
-setPosition position entity =
-    { entity | state = Idle position }
-
-
 mapTransition : Int -> Point -> Point -> Entity entityData -> Entity entityData
 mapTransition transitionDuration mapPosition localPosition entity =
     { entity | state = MapTransitionCharge transitionDuration (getPosition entity) (WorldPosition mapPosition localPosition) }
@@ -166,24 +161,28 @@ findPathAdjacent walkable to entity =
 
 tickCooldown : Int -> Entity entityData -> Entity entityData
 tickCooldown dt entity =
+    let
+        cdDec a b =
+            max 0 (a - b)
+    in
     case entity.state of
         Moving cd path position ->
-            { entity | state = Moving (max 0 (cd - dt)) path position }
+            { entity | state = Moving (cdDec cd dt) path position }
 
         Cooling cd path position ->
-            { entity | state = Cooling (max 0 (cd - dt)) path position }
+            { entity | state = Cooling (cdDec cd dt) path position }
 
         BlockedPath cd position ->
-            { entity | state = BlockedPath (max 0 (cd - dt)) position }
+            { entity | state = BlockedPath (cdDec cd dt) position }
 
         Idle _ ->
             entity
 
         MapTransitionCharge cd from to ->
-            { entity | state = MapTransitionCharge (max 0 (cd - dt)) from to }
+            { entity | state = MapTransitionCharge (cdDec cd dt) from to }
 
         MapTransitionMove cd from to ->
-            { entity | state = MapTransitionMove (max 0 (cd - dt)) from to }
+            { entity | state = MapTransitionMove (cdDec cd dt) from to }
 
 
 move : Int -> Entity entityData -> Entity entityData
