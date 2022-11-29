@@ -153,7 +153,7 @@ view model =
         , Render.viewWorld
             model.renderConfig
             model.world
-            (View.viewTile (World.getPlayer model.world).position.local model.selectedPoint ClickHex)
+            (View.viewTile (World.getPlayerPosition model.world).local model.selectedPoint ClickHex)
             (View.viewEntity ClickEntity)
         ]
 

@@ -1,4 +1,4 @@
-module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, move, new, setPosition, stateString, tickCooldown, worldPositionToString)
+module HexEngine.Entity exposing (Entity, WorldPosition, findPath, findPathAdjacent, getPosition, move, new, setPosition, stateString, tickCooldown, worldPositionToString)
 
 import HexEngine.Point as Point exposing (Point)
 import Set
@@ -17,19 +17,33 @@ type alias WorldPosition =
 
 
 {-| Entity state
+
+Moving: Cooldown, Path, Position
+
+Cooling: Cooldown, Path, Position
+
+BlockedPath: Cooldown, Position
+
+Idle: Position
+
+MapTransitionCharge: Cooldown, Position from, Position to
+
+MapTransitionMove: Cooldown, Position from, Position to
+
 -}
 type EntityState
-    = Moving (List Point) Int
-    | Cooling (List Point)
-    | BlockedPath Int
-    | Idle
+    = Moving Int (List Point) WorldPosition
+    | Cooling Int (List Point) WorldPosition
+    | BlockedPath Int WorldPosition
+    | Idle WorldPosition
+    | MapTransitionCharge Int WorldPosition WorldPosition
+    | MapTransitionMove Int WorldPosition WorldPosition
 
 
 {-| Entity wraps around provied entityData and adds position, state and a unique id
 -}
 type alias Entity entityData =
     { id : Int
-    , position : WorldPosition
     , state : EntityState
     , data : entityData
     }
@@ -37,23 +51,29 @@ type alias Entity entityData =
 
 new : Int -> Point -> Point -> entityData -> Entity entityData
 new id mapPosition localPosition data =
-    Entity id (WorldPosition mapPosition localPosition) Idle data
+    Entity id (Idle <| WorldPosition mapPosition localPosition) data
 
 
 stateString : Entity entityData -> String
-stateString player =
-    case player.state of
-        Moving _ _ ->
+stateString entity =
+    case entity.state of
+        Moving _ _ _ ->
             "moving"
 
-        Cooling _ ->
+        Cooling _ _ _ ->
             "cooling"
 
-        BlockedPath _ ->
+        BlockedPath _ _ ->
             "blocked"
 
-        Idle ->
+        Idle _ ->
             "idle"
+
+        MapTransitionCharge _ _ _ ->
+            "map-transition-charge"
+
+        MapTransitionMove _ _ _ ->
+            "map-transition-move"
 
 
 worldPositionToString : WorldPosition -> String
@@ -61,105 +81,147 @@ worldPositionToString position =
     Point.toString position.map ++ "," ++ Point.toString position.local
 
 
+getPosition : Entity entityData -> WorldPosition
+getPosition entity =
+    case entity.state of
+        Moving _ _ position ->
+            position
+
+        Cooling _ _ position ->
+            position
+
+        BlockedPath _ position ->
+            position
+
+        Idle position ->
+            position
+
+        MapTransitionCharge _ from _ ->
+            from
+
+        MapTransitionMove _ _ to ->
+            to
+
+
 setPath : List Point -> Entity entityData -> Entity entityData
-setPath path player =
-    case player.state of
-        Moving _ cd ->
-            { player | state = Moving path cd }
+setPath path entity =
+    case entity.state of
+        Moving cd _ position ->
+            { entity | state = Moving cd path position }
 
-        Cooling _ ->
-            { player | state = Cooling path }
+        Cooling cd _ position ->
+            { entity | state = Cooling cd path position }
 
-        BlockedPath _ ->
-            { player | state = Cooling path }
+        BlockedPath _ position ->
+            { entity | state = Cooling 200 path position }
 
-        Idle ->
-            { player | state = Cooling path }
+        Idle position ->
+            { entity | state = Cooling 200 path position }
+
+        MapTransitionCharge _ _ _ ->
+            entity
+
+        MapTransitionMove _ _ _ ->
+            entity
 
 
 setPosition : WorldPosition -> Entity entityData -> Entity entityData
 setPosition position entity =
-    { entity | position = position }
-        |> setPath [ position.local ]
+    { entity | state = Idle position }
 
 
 findPath : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
-findPath walkable to player =
-    case Point.pathfind walkable player.position.local to of
+findPath walkable to entity =
+    case Point.pathfind walkable (getPosition entity).local to of
         Just path ->
-            setPath path player
+            setPath path entity
 
         Nothing ->
-            { player | state = BlockedPath 200 }
+            { entity | state = BlockedPath 200 (getPosition entity) }
 
 
 {-| find shortest path to a tile adjacent to target tile
 -}
 findPathAdjacent : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
-findPathAdjacent walkable to player =
+findPathAdjacent walkable to entity =
     Point.neighbors to
         |> Set.toList
-        |> List.filterMap (Point.pathfind walkable player.position.local)
+        |> List.filterMap (Point.pathfind walkable (getPosition entity).local)
         |> List.sortBy List.length
         |> List.head
         |> (\p ->
                 case p of
                     Just path ->
-                        setPath path player
+                        setPath path entity
 
                     Nothing ->
-                        { player | state = BlockedPath 200 }
+                        { entity | state = BlockedPath 200 (getPosition entity) }
            )
 
 
 tickCooldown : Int -> Entity entityData -> Entity entityData
-tickCooldown dt player =
-    case player.state of
-        Moving path cd ->
-            { player | state = Moving path (max 0 (cd - dt)) }
+tickCooldown dt entity =
+    case entity.state of
+        Moving cd path position ->
+            { entity | state = Moving (max 0 (cd - dt)) path position }
 
-        Cooling path ->
-            { player | state = Cooling path }
+        Cooling cd path position ->
+            { entity | state = Cooling (max 0 (cd - dt)) path position }
 
-        BlockedPath cd ->
-            { player | state = BlockedPath (max 0 (cd - dt)) }
+        BlockedPath cd position ->
+            { entity | state = BlockedPath (max 0 (cd - dt)) position }
 
-        Idle ->
-            player
+        Idle _ ->
+            entity
+
+        MapTransitionCharge cd from to ->
+            { entity | state = MapTransitionCharge (max 0 (cd - dt)) from to }
+
+        MapTransitionMove cd from to ->
+            { entity | state = MapTransitionCharge (max 0 (cd - dt)) from to }
 
 
 move : Int -> Entity entityData -> Entity entityData
-move moveTime player =
-    case player.state of
-        Moving path cd ->
+move moveTime entity =
+    case entity.state of
+        Moving cd path position ->
             if cd == 0 then
-                { player | state = Cooling path }
+                { entity | state = Cooling 200 path position }
 
             else
-                player
+                entity
 
-        Cooling (p :: path) ->
-            { player
-                | state = Moving path moveTime
-                , position = { map = player.position.map, local = p }
-            }
+        Cooling cd (p :: path) position ->
+            if cd == 0 then
+                { entity | state = Moving moveTime path (WorldPosition position.map p) }
 
-        Cooling [] ->
-            { player
-                | state = Idle
-            }
+            else
+                entity
 
-        BlockedPath cd ->
+        Cooling _ [] position ->
+            { entity | state = Idle position }
+
+        BlockedPath cd position ->
             if cd <= 0 then
-                { player
-                    | state = Idle
-                }
+                { entity | state = Idle position }
 
             else
-                player
+                entity
 
-        Idle ->
-            player
+        Idle _ ->
+            entity
+
+        MapTransitionCharge 0 from to ->
+            { entity | state = MapTransitionMove 200 from to }
+
+        MapTransitionCharge _ _ _ ->
+            entity
+
+        MapTransitionMove 0 _ to ->
+            { entity | state = Idle to }
+
+        MapTransitionMove _ _ _ ->
+            entity
 
 
 

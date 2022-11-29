@@ -3,6 +3,7 @@ module HexEngine.World exposing
     , World
     , addMap
     , getPlayer
+    , getPlayerPosition
     , getPoint
     , mapCurrentEntities
     , mapCurrentGrid
@@ -87,7 +88,7 @@ addMap position map entities (World world) =
 -}
 playerMap : World tileData entityData -> Maybe (Map tileData)
 playerMap (World world) =
-    Dict.get world.player.position.map world.maps
+    Dict.get (Entity.getPosition world.player).map world.maps
 
 
 {-| Get tile and entity at given position in active map
@@ -97,7 +98,7 @@ getPoint target (World world) =
     ( playerMap (World world)
         |> Maybe.andThen (\m -> Grid.get target m.grid)
     , world.entities
-        |> List.filter (\e -> e.position.local == target && e.position.map == world.player.position.map)
+        |> List.filter (\e -> (Entity.getPosition e).local == target && (Entity.getPosition e).map == (Entity.getPosition world.player).map)
         |> List.head
     )
 
@@ -120,11 +121,11 @@ updateEntities f (World world) =
 -}
 mapCurrentGrid : (List ( WorldPosition, tileData ) -> a) -> World tileData entityData -> a
 mapCurrentGrid f (World world) =
-    case Dict.get world.player.position.map world.maps of
+    case Dict.get (Entity.getPosition world.player).map world.maps of
         Just map ->
             map.grid
                 |> Grid.toList
-                |> List.map (\( p, t ) -> ( WorldPosition world.player.position.map p, t ))
+                |> List.map (\( p, t ) -> ( WorldPosition (Entity.getPosition world.player).map p, t ))
                 |> f
 
         Nothing ->
@@ -136,8 +137,8 @@ mapCurrentGrid f (World world) =
 mapCurrentEntities : (List ( WorldPosition, Entity entityData ) -> a) -> World tileData entityData -> a
 mapCurrentEntities f (World world) =
     (world.player :: world.entities)
-        |> List.filter (\e -> e.position.map == world.player.position.map)
-        |> List.map (\e -> ( e.position, e ))
+        |> List.filter (\e -> (Entity.getPosition e).map == (Entity.getPosition world.player).map)
+        |> List.map (\e -> ( Entity.getPosition e, e ))
         |> f
 
 
@@ -153,6 +154,11 @@ getPlayer (World world) =
     world.player
 
 
+getPlayerPosition : World tileData entityData -> WorldPosition
+getPlayerPosition (World world) =
+    Entity.getPosition world.player
+
+
 {-| Move player to another map, does nothing if map doesn't exist
 -}
 playerMoveMap : Point -> Point -> World tileData entityData -> World tileData entityData
@@ -164,8 +170,8 @@ playerMoveMap mapPosition localPosition (World world) =
                     | mapHistory =
                         world.mapHistory
                             |> List.filter ((/=) mapPosition)
-                            |> List.filter ((/=) world.player.position.map)
-                            |> (::) world.player.position.map
+                            |> List.filter ((/=) (Entity.getPosition world.player).map)
+                            |> (::) (Entity.getPosition world.player).map
                     , player = Entity.setPosition (WorldPosition mapPosition localPosition) world.player
                 }
 

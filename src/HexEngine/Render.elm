@@ -67,7 +67,7 @@ withEntityFocus position config =
 
 withPlayerFocus : World tileData entityData -> RenderConfig -> RenderConfig
 withPlayerFocus world config =
-    config |> withEntityFocus (World.getPlayer world).position
+    config |> withEntityFocus (World.getPlayerPosition world)
 
 
 withZoom : Float -> RenderConfig -> RenderConfig
