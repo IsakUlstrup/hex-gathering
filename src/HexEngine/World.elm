@@ -8,6 +8,7 @@ module HexEngine.World exposing
     , mapCurrentEntities
     , mapCurrentGrid
     , mapEntities
+    , mapEntityGrid
     , mapGrid
     , mapMaps
     , movementUpdate
@@ -157,6 +158,38 @@ mapEntities f mapPosition (World world) =
         |> List.filter (\e -> (Entity.getPosition e).map == mapPosition)
         |> List.map (\e -> ( Entity.getPosition e, e ))
         |> f
+
+
+mapEntityGrid :
+    Point
+    ->
+        (Point
+         -> List ( Point, tileData )
+         -> List ( Point, Entity entityData )
+         -> a
+        )
+    -> World tileData entityData
+    -> a
+mapEntityGrid mapPosition f (World world) =
+    let
+        tiles =
+            case Dict.get mapPosition world.maps of
+                Just map ->
+                    map.grid
+                        |> Grid.toList
+                        |> List.map (\( p, t ) -> ( p, t ))
+
+                Nothing ->
+                    []
+
+        entities =
+            (world.player :: world.entities)
+                |> List.filter (\e -> (Entity.getPosition e).map == mapPosition)
+                |> List.map (\e -> ( Entity.getPosition e |> .local, e ))
+    in
+    f mapPosition
+        tiles
+        entities
 
 
 mapMaps : (( Point, Map tileData ) -> b) -> World tileData entityData -> List b

@@ -12,7 +12,7 @@ module HexEngine.Render exposing
     , withZoom
     )
 
-import HexEngine.Entity as Entity exposing (Entity, EntityState(..), WorldPosition)
+import HexEngine.Entity exposing (Entity, EntityState(..), WorldPosition)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, g, svg)
@@ -94,9 +94,9 @@ pointToPixel point =
 --     pointToPixel point |> Tuple.second
 
 
-yPixelPosition : WorldPosition -> Float
+yPixelPosition : Point -> Float
 yPixelPosition position =
-    pointToPixel position.local |> Tuple.second
+    pointToPixel position |> Tuple.second
 
 
 cornerListToString : List ( Float, Float ) -> String
@@ -155,27 +155,27 @@ hardcodedPoints =
 
 
 -- RENDER
--- renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
--- renderHex renderTile ( point, t ) =
---     let
---         ( x, y ) =
---             pointToPixel point
---     in
---     g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
---         [ renderTile ( point, t ) ]
 
 
-renderWorldHex : (( Point, tile ) -> Svg msg) -> ( WorldPosition, tile ) -> Svg msg
-renderWorldHex renderTile ( worldPos, t ) =
+renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
+renderHex renderTile ( point, t ) =
     let
         ( x, y ) =
-            pointToPixel (Point.add worldPos.map worldPos.local)
+            pointToPixel point
     in
     g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
-        [ renderTile ( worldPos.local, t ) ]
+        [ renderTile ( point, t ) ]
 
 
 
+-- renderWorldHex : (( Point, tile ) -> Svg msg) -> ( WorldPosition, tile ) -> Svg msg
+-- renderWorldHex renderTile ( worldPos, t ) =
+--     let
+--         ( x, y ) =
+--             pointToPixel (Point.add worldPos.map worldPos.local)
+--     in
+--     g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
+--         [ renderTile ( worldPos.local, t ) ]
 -- EXPERIMENTAL
 -- sortedLayer : List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
 -- sortedLayer attributes keyFunc renderTile tiles =
@@ -208,13 +208,37 @@ renderTile: tile render function
 tiles: a list of tiles
 
 -}
-layer : Bool -> List (Attribute msg) -> (( WorldPosition, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( WorldPosition, a ) -> Svg msg
-layer sort attributes keyFunc renderTile tiles =
+
+
+
+-- layer : Bool -> List (Attribute msg) -> (( WorldPosition, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( WorldPosition, a ) -> Svg msg
+-- layer sort attributes keyFunc renderTile tiles =
+--     let
+--         keyedViewTile : ( WorldPosition, a ) -> ( String, Svg msg )
+--         keyedViewTile entity =
+--             ( keyFunc entity
+--             , Svg.Lazy.lazy (renderWorldHex renderTile) entity
+--             )
+--     in
+--     Svg.Keyed.node "g"
+--         (Svg.Attributes.class "layer" :: attributes)
+--         (tiles
+--             |> (if sort then
+--                     List.sortBy (Tuple.first >> yPixelPosition)
+--                 else
+--                     identity
+--                )
+--             |> List.map keyedViewTile
+--         )
+
+
+layer2 : Bool -> List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
+layer2 sort attributes keyFunc renderTile tiles =
     let
-        keyedViewTile : ( WorldPosition, a ) -> ( String, Svg msg )
+        keyedViewTile : ( Point, a ) -> ( String, Svg msg )
         keyedViewTile entity =
             ( keyFunc entity
-            , Svg.Lazy.lazy (renderWorldHex renderTile) entity
+            , Svg.Lazy.lazy (renderHex renderTile) entity
             )
     in
     Svg.Keyed.node "g"
@@ -228,6 +252,27 @@ layer sort attributes keyFunc renderTile tiles =
                )
             |> List.map keyedViewTile
         )
+
+
+renderMap :
+    (( Point, tileData ) -> Svg msg)
+    -> (( Point, Entity entityData ) -> Svg msg)
+    -> Point
+    -> List ( Point, tileData )
+    -> List ( Point, Entity entityData )
+    -> Svg msg
+renderMap renderTile renderEntity mapPosition tiles entities =
+    let
+        ( x, y ) =
+            pointToPixel mapPosition
+    in
+    g
+        [ Svg.Attributes.class "map"
+        , Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);")
+        ]
+        [ layer2 True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) renderTile tiles
+        , layer2 False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) renderEntity entities
+        ]
 
 
 customSvg : RenderConfig -> List (Svg msg) -> Svg msg
@@ -259,6 +304,30 @@ customSvg config children =
             ]
             children
         ]
+
+
+viewWorld2 :
+    RenderConfig
+    -> World tileData entityData
+    -> (( Point, tileData ) -> Svg msg)
+    -> (( Point, Entity entityData ) -> Svg msg)
+    -> Svg msg
+viewWorld2 config world tileRenderFunc entityRenderFunc =
+    customSvg config <|
+        case (World.getPlayer world).state of
+            MapTransitionCharge _ from to ->
+                [ World.mapEntityGrid from.map (renderMap tileRenderFunc entityRenderFunc) world
+                , World.mapEntityGrid to.map (renderMap tileRenderFunc entityRenderFunc) world
+                ]
+
+            MapTransitionMove _ from to ->
+                [ World.mapEntityGrid from.map (renderMap tileRenderFunc entityRenderFunc) world
+                , World.mapEntityGrid to.map (renderMap tileRenderFunc entityRenderFunc) world
+                ]
+
+            _ ->
+                [ World.mapEntityGrid (World.getPlayerPosition world).map (renderMap tileRenderFunc entityRenderFunc) world
+                ]
 
 
 
@@ -293,60 +362,3 @@ customSvg config children =
 --                     (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
 --             ]
 --         ]
-
-
-viewWorld2 :
-    RenderConfig
-    -> World tileData entityData
-    -> (( Point, tileData ) -> Svg msg)
-    -> (( Point, Entity entityData ) -> Svg msg)
-    -> Svg msg
-viewWorld2 config world tileRenderFunc entityRenderFunc =
-    customSvg config <|
-        case (World.getPlayer world).state of
-            MapTransitionCharge _ from to ->
-                [ world
-                    |> World.mapGrid
-                        (layer True [ Svg.Attributes.class "terrain leaving" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
-                        from.map
-                , world
-                    |> World.mapEntities
-                        (layer False [ Svg.Attributes.class "entities leaving" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
-                        from.map
-                , world
-                    |> World.mapGrid
-                        (layer True [ Svg.Attributes.class "terrain entering" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
-                        to.map
-                , world
-                    |> World.mapEntities
-                        (layer False [ Svg.Attributes.class "entities entering" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
-                        to.map
-                ]
-
-            MapTransitionMove _ from to ->
-                [ world
-                    |> World.mapGrid
-                        (layer True [ Svg.Attributes.class "terrain leaving" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
-                        from.map
-                , world
-                    |> World.mapEntities
-                        (layer False [ Svg.Attributes.class "entities leaving" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
-                        from.map
-                , world
-                    |> World.mapGrid
-                        (layer True [ Svg.Attributes.class "terrain entering" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
-                        to.map
-                , world
-                    |> World.mapEntities
-                        (layer False [ Svg.Attributes.class "entities entering" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
-                        to.map
-                ]
-
-            _ ->
-                [ world
-                    |> World.mapCurrentGrid
-                        (layer True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Entity.worldPositionToString) tileRenderFunc)
-                , world
-                    |> World.mapCurrentEntities
-                        (layer False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) entityRenderFunc)
-                ]
