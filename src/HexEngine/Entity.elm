@@ -10,7 +10,6 @@ module HexEngine.Entity exposing
     , new
     , stateString
     , tickCooldown
-    , worldPositionToString
     )
 
 import HexEngine.Point as Point exposing (Point)
@@ -87,11 +86,6 @@ stateString entity =
 
         MapTransitionMove _ _ _ ->
             "map-transition-move"
-
-
-worldPositionToString : WorldPosition -> String
-worldPositionToString position =
-    Point.toString position.map ++ "," ++ Point.toString position.local
 
 
 getPosition : Entity entityData -> WorldPosition
