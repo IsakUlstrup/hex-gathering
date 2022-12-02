@@ -88,12 +88,6 @@ pointToPixel point =
     )
 
 
-
--- pointToYpos : Point -> Float
--- pointToYpos point =
---     pointToPixel point |> Tuple.second
-
-
 yPixelPosition : Point -> Float
 yPixelPosition position =
     pointToPixel position |> Tuple.second
@@ -157,13 +151,27 @@ hardcodedPoints =
 -- RENDER
 
 
-renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
-renderHex renderTile ( point, t ) =
+translate2 : Float -> Float -> String
+translate2 x y =
+    "transform: translate("
+        ++ String.fromFloat x
+        ++ "px, "
+        ++ String.fromFloat y
+        ++ "px);"
+
+
+translatePoint : Point -> Attribute msg
+translatePoint position =
     let
         ( x, y ) =
-            pointToPixel point
+            pointToPixel position
     in
-    g [ Svg.Attributes.class "point", Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);") ]
+    Svg.Attributes.style <| translate2 x y
+
+
+renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
+renderHex renderTile ( point, t ) =
+    g [ Svg.Attributes.class "point", translatePoint point ]
         [ renderTile ( point, t ) ]
 
 
