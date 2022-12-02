@@ -85,32 +85,16 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
         (viewTerrain clickEvent ( point, tile ) :: marker)
 
 
-
--- case tile of
---     Terrain terrain ->
---         wrapper
---             (viewTerrain ( point, terrain ) :: marker)
---     TerrainEntity terrain entity ->
---         wrapper
---             (viewTerrain ( point, terrain ) :: marker ++ [ viewEntity ( point, entity ) ])
-
-
 viewMarker : Svg msg
 viewMarker =
     Svg.g [ Svg.Attributes.class "marker" ]
         [ Svg.circle
             [ Svg.Attributes.r "1"
-
-            -- , Svg.Attributes.cx "2.5"
-            -- , Svg.Attributes.cy "2.5"
             , Svg.Attributes.class "marker-dot"
             ]
             []
         , Svg.circle
             [ Svg.Attributes.r "1"
-
-            -- , Svg.Attributes.cx "2.5"
-            -- , Svg.Attributes.cy "2.5"
             , Svg.Attributes.fill "none"
             , Svg.Attributes.class "marker-circle"
             ]
@@ -180,49 +164,6 @@ viewTerrain clickEvent ( position, tile ) =
         ]
 
 
-
--- viewEntityHelper : List (Attribute msg) -> Char -> Svg msg
--- viewEntityHelper attrs icon =
---     Svg.g
---         [ Svg.Attributes.class "entity"
---         ]
---         [ Svg.text_
---             ([ Svg.Attributes.class "content"
---              , Svg.Attributes.x "2.5"
---              , Svg.Attributes.y "2.5"
---              ]
---                 ++ attrs
---             )
---             [ Svg.text (String.fromChar icon) ]
---         ]
--- viewEntity : ( Point, Entity ) -> Svg msg
--- viewEntity ( _, entity ) =
---     -- case entity of
---     --     Counter _ ->
---     --         viewEntityHelper [] '🧮'
---     --     Timer _ ->
---     --         viewEntityHelper [] '⏲'
---     --     Entity.Player _ ->
---     --         viewEntityHelper [] '🐼'
---     viewEntityHelper [] entity
--- positionNode : Point -> List (Attribute msg) -> List (Svg msg) -> Svg msg
--- positionNode position attributes children =
---     let
---         ( x, y ) =
---             Render.pointToPixel position
---     in
---     Svg.g (Svg.Attributes.style ("transform: translate(" ++ String.fromFloat x ++ "px, " ++ String.fromFloat y ++ "px);") :: attributes)
---         children
--- viewPlayer : Player -> Svg msg
--- viewPlayer player =
---     positionNode player.position
---         [ Svg.Attributes.class (Player.stateString player), Svg.Attributes.class "entity" ]
---         [ Svg.g [ Svg.Attributes.class "player-animation" ]
---             [ Svg.text_ [ Svg.Attributes.class "content" ] [ Svg.text (player.icon |> String.fromChar) ]
---             ]
---         ]
-
-
 viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg msg
 viewEntity clickEvent ( position, entity ) =
     Svg.g
@@ -235,11 +176,7 @@ viewEntity clickEvent ( position, entity ) =
             , animationDelay position
             ]
             [ Svg.text_
-                [ Svg.Attributes.class "content"
-
-                -- , Svg.Attributes.x "2.5"
-                -- , Svg.Attributes.y "2.5"
-                ]
+                [ Svg.Attributes.class "content" ]
                 [ Svg.text (entity.data |> String.fromChar) ]
             ]
         ]
