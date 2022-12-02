@@ -141,12 +141,9 @@ pointAdd ( x1, y1 ) ( x2, y2 ) =
 generateHexCorners : HexCorners
 generateHexCorners =
     let
-        angleRad cornerNumber =
-            degrees (60 * cornerNumber |> toFloat)
-
         corner cornerNumber =
-            ( hexSize * cos (angleRad cornerNumber)
-            , hexSize * sin (angleRad cornerNumber)
+            ( hexSize * cos (degrees <| 60 * cornerNumber)
+            , hexSize * sin (degrees <| 60 * cornerNumber)
             )
     in
     HexCorners
