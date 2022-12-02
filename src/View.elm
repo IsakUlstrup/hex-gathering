@@ -100,15 +100,17 @@ viewMarker =
     Svg.g [ Svg.Attributes.class "marker" ]
         [ Svg.circle
             [ Svg.Attributes.r "1"
-            , Svg.Attributes.cx "2.5"
-            , Svg.Attributes.cy "2.5"
+
+            -- , Svg.Attributes.cx "2.5"
+            -- , Svg.Attributes.cy "2.5"
             , Svg.Attributes.class "marker-dot"
             ]
             []
         , Svg.circle
             [ Svg.Attributes.r "1"
-            , Svg.Attributes.cx "2.5"
-            , Svg.Attributes.cy "2.5"
+
+            -- , Svg.Attributes.cx "2.5"
+            -- , Svg.Attributes.cy "2.5"
             , Svg.Attributes.fill "none"
             , Svg.Attributes.class "marker-circle"
             ]
@@ -133,7 +135,7 @@ viewTerrain clickEvent ( position, tile ) =
 
         points : HexCorners
         points =
-            Render.hardcodedPoints
+            Render.generateHexCorners
 
         columnHeight : Float
         columnHeight =
@@ -232,5 +234,12 @@ viewEntity clickEvent ( position, entity ) =
             [ Svg.Attributes.class "animation"
             , animationDelay position
             ]
-            [ Svg.text_ [ Svg.Attributes.class "content", Svg.Attributes.x "2.5", Svg.Attributes.y "2.5" ] [ Svg.text (entity.data |> String.fromChar) ] ]
+            [ Svg.text_
+                [ Svg.Attributes.class "content"
+
+                -- , Svg.Attributes.x "2.5"
+                -- , Svg.Attributes.y "2.5"
+                ]
+                [ Svg.text (entity.data |> String.fromChar) ]
+            ]
         ]

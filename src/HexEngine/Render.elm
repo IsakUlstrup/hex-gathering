@@ -3,7 +3,7 @@ module HexEngine.Render exposing
     , RenderConfig
     , cornerListToString
     , cornersToString
-    , hardcodedPoints
+    , generateHexCorners
     , initRenderConfig
     , pointAdd
     , viewWorld2
@@ -136,15 +136,26 @@ pointAdd ( x1, y1 ) ( x2, y2 ) =
     ( x1 + x2, y1 + y2 )
 
 
-hardcodedPoints : HexCorners
-hardcodedPoints =
+{-| Calculate hex corners in screen coordinates
+-}
+generateHexCorners : HexCorners
+generateHexCorners =
+    let
+        angleRad cornerNumber =
+            degrees (60 * cornerNumber |> toFloat)
+
+        corner cornerNumber =
+            ( hexSize * cos (angleRad cornerNumber)
+            , hexSize * sin (angleRad cornerNumber)
+            )
+    in
     HexCorners
-        ( 7.5, 2.5 )
-        ( 5, 6.830127018922193 )
-        ( 8.881784197001252e-16, 6.8301270189221945 )
-        ( -2.5, 2.5000000000000004 )
-        ( -2.220446049250313e-15, -1.8301270189221919 )
-        ( 5, -1.8301270189221928 )
+        (corner 0)
+        (corner 1)
+        (corner 2)
+        (corner 3)
+        (corner 4)
+        (corner 5)
 
 
 
@@ -301,9 +312,9 @@ customSvg config children =
         [ Svg.g
             [ Svg.Attributes.style
                 ("transform: translate("
-                    ++ String.fromFloat -(camX * config.zoom)
+                    ++ String.fromFloat -((camX - hexSize / 2) * config.zoom)
                     ++ "px, "
-                    ++ String.fromFloat -(camY * config.zoom)
+                    ++ String.fromFloat -((camY - hexSize / 2) * config.zoom)
                     ++ "px) scale("
                     ++ String.fromFloat config.zoom
                     ++ ");"
