@@ -119,38 +119,6 @@ updateEntities f (World world) =
         }
 
 
-
--- {-| Map the grid player is located in
--- -}
--- -- mapCurrentGrid : (List ( WorldPosition, tileData ) -> a) -> World tileData entityData -> a
--- -- mapCurrentGrid f ((World world) as w) =
--- --     mapGrid f (Entity.getPosition world.player).map w
--- -- mapGrid : (List ( WorldPosition, tileData ) -> a) -> Point -> World tileData entityData -> a
--- -- mapGrid f mapPosition (World world) =
--- --     case Dict.get mapPosition world.maps of
--- --         Just map ->
--- --             map.grid
--- --                 |> Grid.toList
--- --                 |> List.map (\( p, t ) -> ( WorldPosition (Entity.getPosition world.player).map p, t ))
--- --                 |> f
--- --         Nothing ->
--- --             f []
--- {-| Map Entities that are on the same map as player, including player
--- -}
--- mapCurrentEntities : (List ( WorldPosition, Entity entityData ) -> a) -> World tileData entityData -> a
--- mapCurrentEntities f (World world) =
---     (world.player :: world.entities)
---         |> List.filter (\e -> (Entity.getPosition e).map == (Entity.getPosition world.player).map)
---         |> List.map (\e -> ( Entity.getPosition e, e ))
---         |> f
--- mapEntities : (List ( WorldPosition, Entity entityData ) -> a) -> Point -> World tileData entityData -> a
--- mapEntities f mapPosition (World world) =
---     (world.player :: world.entities)
---         |> List.filter (\e -> (Entity.getPosition e).map == mapPosition)
---         |> List.map (\e -> ( Entity.getPosition e, e ))
---         |> f
-
-
 mapGrid :
     Point
     -> (Point -> List ( Point, tileData ) -> a)

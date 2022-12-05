@@ -238,30 +238,3 @@ move moveTime entity =
 
         MapTransitionMove _ _ _ ->
             entity
-
-
-
--- isIdle : Entity entityData -> Bool
--- isIdle player =
---     case player.state of
---         Idle ->
---             True
---         _ ->
---             False
--- hasPath : Entity entityData -> Bool
--- hasPath player =
---     case player.state of
---         Idle ->
---             False
---         BlockedPath _ ->
---             False
---         Moving _ _ ->
---             True
---         Cooling _ ->
---             True
--- readyToInteract : Entity entityData -> Point -> Bool
--- readyToInteract player point =
---     Point.distance point player.position.local == 1 && isIdle player
--- resetPosition : Entity entityData -> Entity entityData
--- resetPosition player =
---     { player | position = { mapOffset = player.position.mapOffset, local = ( 0, 0, 0 ) } }

@@ -15,22 +15,6 @@ import Tile exposing (Tile(..))
 
 
 -- CONSTANTS
--- animationDelay : Point -> Attribute msg
--- animationDelay position =
---     let
---         delay : Float -> String
---         delay duration =
---             duration
---                 |> round
---                 |> (*) AnimationConstants.delayMultiplier.value
---                 |> (+) AnimationConstants.playerMoveTime.value
---                 |> String.fromInt
---     in
---     Svg.Attributes.style
---         ("animation-delay: "
---             ++ (delay <| Point.distanceFloat ( 0, 0, 0 ) position)
---             ++ "ms"
---         )
 
 
 svgClassList : List ( String, Bool ) -> Attribute msg
