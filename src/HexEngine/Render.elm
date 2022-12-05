@@ -36,12 +36,6 @@ initRenderConfig =
     RenderConfig ( 0, 0, 0 ) 1
 
 
-
--- withCameraPosition : ( Float, Float ) -> RenderConfig -> RenderConfig
--- withCameraPosition ( x, y ) config =
---     { config | cameraX = x, cameraY = y }
-
-
 {-| move camera to focus on point
 -}
 withHexFocus : Point -> RenderConfig -> RenderConfig
@@ -177,10 +171,20 @@ translatePoint position =
     Svg.Attributes.style <| translate2 x y
 
 
-renderHex : (( Point, tile ) -> Svg msg) -> ( Point, tile ) -> Svg msg
-renderHex renderTile ( point, t ) =
-    g [ Svg.Attributes.class "point", translatePoint point ]
-        [ renderTile ( point, t ) ]
+renderTile : (( Point, a ) -> Svg msg) -> ( Point, a ) -> Svg msg
+renderTile renderFunc ( point, t ) =
+    Svg.g
+        [ Svg.Attributes.class "tile"
+        , translatePoint point
+        ]
+        [ renderFunc ( point, t ) ]
+
+
+keyedViewTile : (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> ( Point, a ) -> ( String, Svg msg )
+keyedViewTile keyFunc renderFunc entity =
+    ( keyFunc entity
+    , Svg.Lazy.lazy (renderTile renderFunc) entity
+    )
 
 
 
@@ -249,14 +253,7 @@ tiles: a list of tiles
 
 
 layer2 : Bool -> List (Attribute msg) -> (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> List ( Point, a ) -> Svg msg
-layer2 sort attributes keyFunc renderTile tiles =
-    let
-        keyedViewTile : ( Point, a ) -> ( String, Svg msg )
-        keyedViewTile entity =
-            ( keyFunc entity
-            , Svg.Lazy.lazy (renderHex renderTile) entity
-            )
-    in
+layer2 sort attributes keyFunc renderFunc tiles =
     Svg.Keyed.node "g"
         (Svg.Attributes.class "layer" :: attributes)
         (tiles
@@ -266,7 +263,7 @@ layer2 sort attributes keyFunc renderTile tiles =
                 else
                     identity
                )
-            |> List.map keyedViewTile
+            |> List.map (keyedViewTile keyFunc renderFunc)
         )
 
 
@@ -277,16 +274,12 @@ renderMap :
     -> List ( Point, tileData )
     -> List ( Point, Entity entityData )
     -> Svg msg
-renderMap renderTile renderEntity mapPosition tiles entities =
-    let
-        ( x, y ) =
-            pointToPixel mapPosition
-    in
+renderMap renderTileFunc renderEntity mapPosition tiles entities =
     g
         [ Svg.Attributes.class "map"
-        , Svg.Attributes.style ("transform: translate(" ++ String.fromFloat (x - hexSize / 2) ++ "px, " ++ String.fromFloat (y - hexSize / 2) ++ "px);")
+        , translatePoint mapPosition
         ]
-        [ layer2 True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) renderTile tiles
+        [ layer2 True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) renderTileFunc tiles
         , layer2 False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) renderEntity entities
         ]
 
@@ -309,9 +302,9 @@ customSvg config children =
         [ Svg.g
             [ Svg.Attributes.style
                 ("transform: translate("
-                    ++ String.fromFloat -((camX - hexSize / 2) * config.zoom)
+                    ++ String.fromFloat -(camX * config.zoom)
                     ++ "px, "
-                    ++ String.fromFloat -((camY - hexSize / 2) * config.zoom)
+                    ++ String.fromFloat -(camY * config.zoom)
                     ++ "px) scale("
                     ++ String.fromFloat config.zoom
                     ++ ");"
