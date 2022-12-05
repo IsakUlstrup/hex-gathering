@@ -12,7 +12,7 @@ module HexEngine.Render exposing
     , withZoom
     )
 
-import HexEngine.Entity exposing (Entity, EntityState(..), WorldPosition)
+import HexEngine.Entity as Entity exposing (Entity, EntityState(..), WorldPosition)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, g, svg)
@@ -269,18 +269,17 @@ layer2 sort attributes keyFunc renderFunc tiles =
 
 renderMap :
     (( Point, tileData ) -> Svg msg)
-    -> (( Point, Entity entityData ) -> Svg msg)
     -> Point
     -> List ( Point, tileData )
-    -> List ( Point, Entity entityData )
     -> Svg msg
-renderMap renderTileFunc renderEntity mapPosition tiles entities =
+renderMap renderTileFunc mapPosition tiles =
     g
         [ Svg.Attributes.class "map"
         , translatePoint mapPosition
         ]
         [ layer2 True [ Svg.Attributes.class "terrain" ] (Tuple.first >> Point.toString) renderTileFunc tiles
-        , layer2 False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) renderEntity entities
+
+        -- , layer2 False [ Svg.Attributes.class "entities" ] (Tuple.second >> .id >> String.fromInt) renderEntity entities
         ]
 
 
@@ -315,6 +314,31 @@ customSvg config children =
         ]
 
 
+renderEntity :
+    (( Point, Entity entityData )
+     -> Svg msg
+    )
+    -> List Point
+    -> Entity entityData
+    -> Maybe (Svg msg)
+renderEntity renderFunc targetMaps entity =
+    let
+        position =
+            Entity.getPosition entity
+    in
+    if List.member position.map targetMaps then
+        Just <|
+            Svg.g
+                [ Svg.Attributes.class "entity"
+                , Svg.Attributes.class (Entity.stateString entity)
+                , translatePoint (Point.add position.map position.local)
+                ]
+                [ renderFunc ( Point.add position.map position.local, entity ) ]
+
+    else
+        Nothing
+
+
 viewWorld2 :
     RenderConfig
     -> World tileData entityData
@@ -325,17 +349,20 @@ viewWorld2 config world tileRenderFunc entityRenderFunc =
     customSvg config <|
         case (World.getPlayer world).state of
             MapTransitionCharge _ from to ->
-                [ World.mapEntityGrid from.map (renderMap tileRenderFunc entityRenderFunc) world
-                , World.mapEntityGrid to.map (renderMap tileRenderFunc entityRenderFunc) world
+                [ World.mapEntityGrid from.map (renderMap tileRenderFunc) world
+                , World.mapEntityGrid to.map (renderMap tileRenderFunc) world
+                , Svg.g [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ from.map, to.map ]) world)
                 ]
 
             MapTransitionMove _ from to ->
-                [ World.mapEntityGrid from.map (renderMap tileRenderFunc entityRenderFunc) world
-                , World.mapEntityGrid to.map (renderMap tileRenderFunc entityRenderFunc) world
+                [ World.mapEntityGrid from.map (renderMap tileRenderFunc) world
+                , World.mapEntityGrid to.map (renderMap tileRenderFunc) world
+                , Svg.g [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ from.map, to.map ]) world)
                 ]
 
             _ ->
-                [ World.mapEntityGrid (World.getPlayerPosition world).map (renderMap tileRenderFunc entityRenderFunc) world
+                [ World.mapEntityGrid (World.getPlayerPosition world).map (renderMap tileRenderFunc) world
+                , Svg.g [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ (World.getPlayerPosition world).map ]) world)
                 ]
 
 

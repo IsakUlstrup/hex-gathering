@@ -2,6 +2,7 @@ module HexEngine.World exposing
     ( Map
     , World
     , addMap
+    , filterMapEntities
     , getPlayer
     , getPlayerPosition
     , getPoint
@@ -155,7 +156,6 @@ mapEntityGrid :
     ->
         (Point
          -> List ( Point, tileData )
-         -> List ( Point, Entity entityData )
          -> a
         )
     -> World tileData entityData
@@ -172,16 +172,15 @@ mapEntityGrid mapPosition f (World world) =
 
                 Nothing ->
                     []
-
-        entities : List ( Point, Entity entityData )
-        entities =
-            (world.player :: world.entities)
-                |> List.filter (\e -> (Entity.getPosition e).map == mapPosition)
-                |> List.map (\e -> ( Entity.getPosition e |> .local, e ))
     in
     f mapPosition
         tiles
-        entities
+
+
+filterMapEntities : (Entity entityData -> Maybe a) -> World tileData entityData -> List a
+filterMapEntities f (World world) =
+    (world.player :: world.entities)
+        |> List.filterMap f
 
 
 mapMaps : (( Point, Map tileData ) -> b) -> World tileData entityData -> List b
