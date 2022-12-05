@@ -205,7 +205,7 @@ move : Int -> Entity entityData -> Entity entityData
 move moveTime entity =
     case entity.state of
         Moving 0 path position ->
-            { entity | state = Cooling 300 path position }
+            { entity | state = Cooling (moveTime // 2) path position }
 
         Moving _ _ _ ->
             entity
@@ -229,13 +229,13 @@ move moveTime entity =
             entity
 
         MapTransitionCharge 0 from to ->
-            { entity | state = MapTransitionMove 500 from to }
+            { entity | state = MapTransitionMove moveTime from to }
 
         MapTransitionCharge _ _ _ ->
             entity
 
         MapTransitionMove 0 _ to ->
-            { entity | state = Cooling 300 [] to }
+            { entity | state = Cooling (moveTime // 2) [] to }
 
         MapTransitionMove _ _ _ ->
             entity

@@ -72,17 +72,17 @@ svg
     .content
         transition: transform $player-move-duration ease-out
     &.idle .content
-        transform: translateY(0)
+        transform: translateY(0) rotateX(25deg)
     &.moving .content
-        transform: translateY(-0.2rem) scale(1.1)
+        transform: translateY(-0.1rem) scale(1.1) rotateX(25deg)
     &.cooling .content
-        transform: translateY(0.2rem) scale(0.9)
+        transform: translateY(0.1rem) scale(0.9) rotateX(25deg)
     &.blocked .content
         animation: shake 200ms infinite
     &.map-transition-charge .content
-        transform: translateY(0.2rem)
+        transform: translateY(0.2rem) scale(0.8) rotateX(25deg)
     &.map-transition-move .content
-        transform: translateY(-0.2rem) scale(1.4)
+        transform: translateY(-0.2rem) scale(1.2) rotateX(25deg)
 
 .marker
     pointer-events: none

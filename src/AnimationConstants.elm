@@ -11,7 +11,7 @@ type alias Constant =
 
 playerMoveTime : Constant
 playerMoveTime =
-    Constant "player-move-duration" 500
+    Constant "player-move-duration" 400
 
 
 fallDuration : Constant
