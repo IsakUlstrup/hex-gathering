@@ -6,7 +6,7 @@ module HexEngine.World exposing
     , getPlayer
     , getPlayerPosition
     , getPoint
-    , mapEntityGrid
+    , mapGrid
     , mapMaps
     , movementUpdate
     , newMap
@@ -151,16 +151,12 @@ updateEntities f (World world) =
 --         |> f
 
 
-mapEntityGrid :
+mapGrid :
     Point
-    ->
-        (Point
-         -> List ( Point, tileData )
-         -> a
-        )
+    -> (Point -> List ( Point, tileData ) -> a)
     -> World tileData entityData
     -> a
-mapEntityGrid mapPosition f (World world) =
+mapGrid mapPosition f (World world) =
     let
         tiles : List ( Point, tileData )
         tiles =
