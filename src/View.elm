@@ -108,13 +108,13 @@ viewTerrain clickEvent ( position, tile ) =
         columnHeight =
             case tile of
                 Low ->
-                    0.5
+                    4.5
 
                 Medium ->
-                    2
+                    6
 
                 High ->
-                    4
+                    8
     in
     [ Svg.polygon
         [ Svg.Attributes.class "column-right"
