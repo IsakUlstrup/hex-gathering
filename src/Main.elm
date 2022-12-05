@@ -47,7 +47,7 @@ init _ =
             , ( ( 3, -2, -1 ), '🌻' )
             ]
             |> World.addMap
-                ( 5, 5, -10 )
+                ( 8, 5, -13 )
                 (World.newMap "Test2" Content.Map.testGrid2)
                 [ ( ( 1, 0, -1 ), '🌵' ) ]
             |> World.addMap
