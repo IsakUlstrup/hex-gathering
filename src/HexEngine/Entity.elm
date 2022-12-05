@@ -123,7 +123,11 @@ setPath path entity =
             { entity | state = Cooling 200 path position }
 
         Idle position ->
-            { entity | state = Cooling 200 path position }
+            let
+                newPos =
+                    List.head path |> Maybe.withDefault position.local
+            in
+            { entity | state = Moving 200 (List.drop 1 path) (WorldPosition position.map newPos) }
 
         MapTransitionCharge _ _ _ ->
             entity
