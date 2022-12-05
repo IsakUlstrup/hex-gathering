@@ -61,11 +61,27 @@ svg
 
 .entity
     transition: transform $player-move-duration ease-in-out
+
     filter: saturate(80%) sepia(30%)
     font-size: 0.5rem
     text-anchor: middle
     cursor: pointer
     user-select: none
+
+    .content
+        transition: transform $player-move-duration ease-out
+    &.idle .content
+        transform: translateY(0)
+    &.moving .content
+        transform: translateY(-0.2rem)
+    &.cooling .content
+        transform: translateY(0.2rem)
+    &.blocked .content
+        animation: shake 200ms infinite
+    &.map-transition-charge .content
+        transform: translateY(0.2rem)
+    &.map-transition-move .content
+        animation: flip $player-move-duration
 
 // .entities
 //     .point
