@@ -235,7 +235,7 @@ move moveTime entity =
             entity
 
         MapTransitionMove 0 _ to ->
-            { entity | state = Idle to }
+            { entity | state = Cooling 300 [] to }
 
         MapTransitionMove _ _ _ ->
             entity
