@@ -135,6 +135,7 @@ pointAdd ( x1, y1 ) ( x2, y2 ) =
 generateHexCorners : HexCorners
 generateHexCorners =
     let
+        corner : Float -> ( Float, Float )
         corner cornerNumber =
             ( hexSize * cos (degrees <| 60 * cornerNumber)
             , hexSize * sin (degrees <| 60 * cornerNumber)
@@ -243,6 +244,7 @@ renderEntity :
     -> Maybe ( String, Svg msg )
 renderEntity renderFunc targetMaps entity =
     let
+        position : WorldPosition
         position =
             Entity.getPosition entity
     in
