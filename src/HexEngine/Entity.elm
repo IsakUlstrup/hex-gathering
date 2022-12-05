@@ -204,29 +204,26 @@ tickCooldown dt entity =
 move : Int -> Entity entityData -> Entity entityData
 move moveTime entity =
     case entity.state of
-        Moving cd path position ->
-            if cd == 0 then
-                { entity | state = Cooling 200 path position }
+        Moving 0 path position ->
+            { entity | state = Cooling 300 path position }
 
-            else
-                entity
+        Moving _ _ _ ->
+            entity
 
-        Cooling cd (p :: path) position ->
-            if cd == 0 then
-                { entity | state = Moving moveTime path (WorldPosition position.map p) }
+        Cooling 0 (p :: path) position ->
+            { entity | state = Moving moveTime path (WorldPosition position.map p) }
 
-            else
-                entity
-
-        Cooling _ [] position ->
+        Cooling 0 [] position ->
             { entity | state = Idle position }
 
-        BlockedPath cd position ->
-            if cd <= 0 then
-                { entity | state = Idle position }
+        Cooling _ _ _ ->
+            entity
 
-            else
-                entity
+        BlockedPath 0 position ->
+            { entity | state = Idle position }
+
+        BlockedPath _ _ ->
+            entity
 
         Idle _ ->
             entity
