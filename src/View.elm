@@ -161,7 +161,7 @@ viewTerrain clickEvent ( position, tile ) =
              ]
                 |> Render.cornerListToString
             )
-        , Svg.Attributes.fill "url(#column-mask)"
+        , Svg.Attributes.fill <| "url(#" ++ columnMaskId ++ ")"
         ]
         []
     ]
@@ -181,23 +181,26 @@ viewEntity clickEvent ( position, entity ) =
         ]
 
 
+columnMaskId : String
+columnMaskId =
+    "column-mask"
+
+
 svgDefs : Svg msg
 svgDefs =
     Svg.defs []
         [ Svg.radialGradient
-            [ Svg.Attributes.id "column-mask"
+            [ Svg.Attributes.id columnMaskId
             , Svg.Attributes.gradientTransform "translate(-0.5, -1.7) scale(2)"
             ]
             [ Svg.stop
-                [ Svg.Attributes.stopColor "red"
-                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
+                [ Svg.Attributes.stopColor "rgb(254, 255, 221)"
                 , Svg.Attributes.stopOpacity "0"
                 , Svg.Attributes.offset "90%"
                 ]
                 []
             , Svg.stop
-                [ Svg.Attributes.stopColor "blue"
-                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
+                [ Svg.Attributes.stopColor "rgb(254, 255, 221)"
                 , Svg.Attributes.offset "100%"
                 ]
                 []
