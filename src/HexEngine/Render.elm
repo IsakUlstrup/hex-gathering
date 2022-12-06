@@ -204,8 +204,8 @@ renderMap renderTileFunc mapPosition tiles =
         )
 
 
-customSvg : RenderConfig -> List ( String, Svg msg ) -> Svg msg
-customSvg config children =
+customSvg : RenderConfig -> Svg msg -> List ( String, Svg msg ) -> Svg msg
+customSvg config defs children =
     let
         ( camX, camY ) =
             config.position |> pointToPixel
@@ -219,7 +219,8 @@ customSvg config children =
             )
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         ]
-        [ Svg.Keyed.node "g"
+        [ defs
+        , Svg.Keyed.node "g"
             [ Svg.Attributes.style
                 ("transform: translate("
                     ++ String.fromFloat -(camX * config.zoom)
@@ -265,12 +266,13 @@ renderEntity renderFunc targetMaps entity =
 
 viewWorld2 :
     RenderConfig
+    -> Svg msg
     -> World tileData entityData
     -> (( Point, tileData ) -> Svg msg)
     -> (( Point, Entity entityData ) -> Svg msg)
     -> Svg msg
-viewWorld2 config world tileRenderFunc entityRenderFunc =
-    customSvg config <|
+viewWorld2 config defs world tileRenderFunc entityRenderFunc =
+    customSvg config defs <|
         case (World.getPlayer world).state of
             MapTransitionCharge _ from to ->
                 [ ( Point.toString from.map, World.mapGrid from.map (renderMap tileRenderFunc) world )

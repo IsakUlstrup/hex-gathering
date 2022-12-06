@@ -153,6 +153,7 @@ view model =
         , viewDebug model.world
         , Render.viewWorld2
             model.renderConfig
+            View.svgDefs
             model.world
             (View.viewTile (World.getPlayerPosition model.world).local model.selectedPoint ClickHex)
             (View.viewEntity ClickEntity)

@@ -1,4 +1,4 @@
-module View exposing (viewEntity, viewTile)
+module View exposing (svgDefs, viewEntity, viewTile)
 
 -- import AnimationConstants
 
@@ -122,27 +122,7 @@ viewTerrain clickEvent ( position, tile ) =
                 High ->
                     12
     in
-    [ Svg.defs []
-        [ Svg.radialGradient
-            [ Svg.Attributes.id "column-mask"
-            , Svg.Attributes.gradientTransform "translate(-0.5, -1.7) scale(2)"
-            ]
-            [ Svg.stop
-                [ Svg.Attributes.stopColor "red"
-                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
-                , Svg.Attributes.stopOpacity "0"
-                , Svg.Attributes.offset "90%"
-                ]
-                []
-            , Svg.stop
-                [ Svg.Attributes.stopColor "blue"
-                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
-                , Svg.Attributes.offset "100%"
-                ]
-                []
-            ]
-        ]
-    , Svg.g [ Svg.Attributes.class "animation", animationDelay position ]
+    [ Svg.g [ Svg.Attributes.class "animation", animationDelay position ]
         [ Svg.polygon
             [ Svg.Attributes.class "column-right"
             , Svg.Attributes.class "column-segment"
@@ -198,4 +178,28 @@ viewEntity clickEvent ( position, entity ) =
             , Svg.Events.onClick <| clickEvent position
             ]
             [ Svg.text (entity.data |> String.fromChar) ]
+        ]
+
+
+svgDefs : Svg msg
+svgDefs =
+    Svg.defs []
+        [ Svg.radialGradient
+            [ Svg.Attributes.id "column-mask"
+            , Svg.Attributes.gradientTransform "translate(-0.5, -1.7) scale(2)"
+            ]
+            [ Svg.stop
+                [ Svg.Attributes.stopColor "red"
+                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
+                , Svg.Attributes.stopOpacity "0"
+                , Svg.Attributes.offset "90%"
+                ]
+                []
+            , Svg.stop
+                [ Svg.Attributes.stopColor "blue"
+                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
+                , Svg.Attributes.offset "100%"
+                ]
+                []
+            ]
         ]
