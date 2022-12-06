@@ -4,7 +4,7 @@ module View exposing (viewEntity, viewTile)
 
 import Entity exposing (Entity)
 import HexEngine.Entity
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
 import Html exposing (Html)
 import Svg exposing (Attribute, Svg)
@@ -13,8 +13,13 @@ import Svg.Events
 import Tile exposing (Tile(..))
 
 
-
--- CONSTANTS
+animationDelay : Point -> Attribute msg
+animationDelay position =
+    let
+        distance =
+            Point.distanceFloat position ( 0, 0, 0 )
+    in
+    Svg.Attributes.style <| "animation-delay: " ++ String.fromFloat (distance * 100) ++ "ms"
 
 
 svgClassList : List ( String, Bool ) -> Attribute msg
@@ -108,72 +113,74 @@ viewTerrain clickEvent ( position, tile ) =
         columnHeight =
             case tile of
                 Low ->
-                    6.5
+                    8.5
 
                 Medium ->
-                    8
+                    10
 
                 High ->
-                    10
+                    12
     in
     [ Svg.defs []
         [ Svg.radialGradient
             [ Svg.Attributes.id "column-mask"
-            , Svg.Attributes.gradientTransform "translate(-0.5, -1) scale(2)"
+            , Svg.Attributes.gradientTransform "translate(-0.5, -1.7) scale(2)"
             ]
             [ Svg.stop
                 [ Svg.Attributes.stopColor "red"
                 , Svg.Attributes.stopColor "rgb(254, 255, 221)"
                 , Svg.Attributes.stopOpacity "0"
-                , Svg.Attributes.offset "40%"
+                , Svg.Attributes.offset "90%"
                 ]
                 []
             , Svg.stop
                 [ Svg.Attributes.stopColor "blue"
                 , Svg.Attributes.stopColor "rgb(254, 255, 221)"
-                , Svg.Attributes.offset "60%"
+                , Svg.Attributes.offset "100%"
                 ]
                 []
             ]
         ]
-    , Svg.polygon
-        [ Svg.Attributes.class "column-right"
-        , Svg.Attributes.class "column-segment"
-        , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornerListToString)
+    , Svg.g [ Svg.Attributes.class "animation", animationDelay position ]
+        [ Svg.polygon
+            [ Svg.Attributes.class "column-right"
+            , Svg.Attributes.class "column-segment"
+            , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornerListToString)
+            ]
+            []
+        , Svg.polygon
+            [ Svg.Attributes.class "column-left"
+            , Svg.Attributes.class "column-segment"
+            , Svg.Attributes.points ([ points.p2, points.p3, Render.pointAdd points.p3 ( 0, columnHeight ), Render.pointAdd points.p2 ( 0, columnHeight ) ] |> Render.cornerListToString)
+            ]
+            []
+        , Svg.polygon
+            [ Svg.Attributes.class "column-middle"
+            , Svg.Attributes.class "column-segment"
+            , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornerListToString)
+            ]
+            []
+        , Svg.polygon
+            [ Svg.Attributes.class "face"
+            , Svg.Attributes.points (points |> Render.cornersToString)
+            , Svg.Events.onClick <| clickEvent position
+            ]
+            []
         ]
-        []
-    , Svg.polygon
-        [ Svg.Attributes.class "column-left"
-        , Svg.Attributes.class "column-segment"
-        , Svg.Attributes.points ([ points.p2, points.p3, Render.pointAdd points.p3 ( 0, columnHeight ), Render.pointAdd points.p2 ( 0, columnHeight ) ] |> Render.cornerListToString)
-        ]
-        []
-    , Svg.polygon
-        [ Svg.Attributes.class "column-middle"
-        , Svg.Attributes.class "column-segment"
-        , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornerListToString)
-        ]
-        []
     , Svg.polygon
         [ Svg.Attributes.points
-            ([ Render.pointAdd points.p0 ( 0, 3 )
-             , Render.pointAdd points.p1 ( 0, 3 )
-             , Render.pointAdd points.p2 ( 0, 3 )
-             , Render.pointAdd points.p3 ( 0, 3 )
-             , Render.pointAdd points.p3 ( 0, 10 )
-             , Render.pointAdd points.p2 ( 0, 10 )
-             , Render.pointAdd points.p1 ( 0, 10 )
-             , Render.pointAdd points.p0 ( 0, 10 )
+            ([ Render.pointAdd points.p0 ( 0, 2 )
+             , Render.pointAdd points.p1 ( 0, 2 )
+             , Render.pointAdd points.p2 ( 0, 2 )
+             , Render.pointAdd points.p3 ( 0, 2 )
+             , Render.pointAdd points.p3 ( 0, 25 )
+             , Render.pointAdd points.p2 ( 0, 25 )
+             , Render.pointAdd points.p1 ( 0, 25 )
+             , Render.pointAdd points.p0 ( 0, 25 )
              ]
                 |> Render.cornerListToString
             )
         , Svg.Attributes.fill "url(#column-mask)"
-        ]
-        []
-    , Svg.polygon
-        [ Svg.Attributes.class "face"
-        , Svg.Attributes.points (points |> Render.cornersToString)
-        , Svg.Events.onClick <| clickEvent position
         ]
         []
     ]
@@ -181,7 +188,10 @@ viewTerrain clickEvent ( position, tile ) =
 
 viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg msg
 viewEntity clickEvent ( position, entity ) =
-    Svg.g [ Svg.Attributes.class "animation" ]
+    Svg.g
+        [ Svg.Attributes.class "animation"
+        , animationDelay position
+        ]
         [ Svg.text_
             [ Svg.Attributes.class "content", Svg.Events.onClick <| clickEvent position ]
             [ Svg.text (entity.data |> String.fromChar) ]
