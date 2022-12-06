@@ -204,7 +204,7 @@ renderMap renderTileFunc mapPosition tiles =
         )
 
 
-customSvg : RenderConfig -> List (Svg msg) -> Svg msg
+customSvg : RenderConfig -> List ( String, Svg msg ) -> Svg msg
 customSvg config children =
     let
         ( camX, camY ) =
@@ -219,7 +219,7 @@ customSvg config children =
             )
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         ]
-        [ Svg.g
+        [ Svg.Keyed.node "g"
             [ Svg.Attributes.style
                 ("transform: translate("
                     ++ String.fromFloat -(camX * config.zoom)
@@ -273,18 +273,18 @@ viewWorld2 config world tileRenderFunc entityRenderFunc =
     customSvg config <|
         case (World.getPlayer world).state of
             MapTransitionCharge _ from to ->
-                [ World.mapGrid from.map (renderMap tileRenderFunc) world
-                , World.mapGrid to.map (renderMap tileRenderFunc) world
-                , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ from.map, to.map ]) world)
+                [ ( Point.toString from.map, World.mapGrid from.map (renderMap tileRenderFunc) world )
+                , ( Point.toString to.map, World.mapGrid to.map (renderMap tileRenderFunc) world )
+                , ( "entities", Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ from.map, to.map ]) world) )
                 ]
 
             MapTransitionMove _ from to ->
-                [ World.mapGrid from.map (renderMap tileRenderFunc) world
-                , World.mapGrid to.map (renderMap tileRenderFunc) world
-                , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ from.map, to.map ]) world)
+                [ ( Point.toString from.map, World.mapGrid from.map (renderMap tileRenderFunc) world )
+                , ( Point.toString to.map, World.mapGrid to.map (renderMap tileRenderFunc) world )
+                , ( "entities", Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ from.map, to.map ]) world) )
                 ]
 
             _ ->
-                [ World.mapGrid (World.getPlayerPosition world).map (renderMap tileRenderFunc) world
-                , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ (World.getPlayerPosition world).map ]) world)
+                [ ( Point.toString (World.getPlayerPosition world).map, World.mapGrid (World.getPlayerPosition world).map (renderMap tileRenderFunc) world )
+                , ( "entities", Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (renderEntity entityRenderFunc [ (World.getPlayerPosition world).map ]) world) )
                 ]
