@@ -108,15 +108,35 @@ viewTerrain clickEvent ( position, tile ) =
         columnHeight =
             case tile of
                 Low ->
-                    4.5
+                    6.5
 
                 Medium ->
-                    6
+                    8
 
                 High ->
-                    8
+                    10
     in
-    [ Svg.polygon
+    [ Svg.defs []
+        [ Svg.radialGradient
+            [ Svg.Attributes.id "column-mask"
+            , Svg.Attributes.gradientTransform "translate(-0.5, -1) scale(2)"
+            ]
+            [ Svg.stop
+                [ Svg.Attributes.stopColor "red"
+                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
+                , Svg.Attributes.stopOpacity "0"
+                , Svg.Attributes.offset "40%"
+                ]
+                []
+            , Svg.stop
+                [ Svg.Attributes.stopColor "blue"
+                , Svg.Attributes.stopColor "rgb(254, 255, 221)"
+                , Svg.Attributes.offset "60%"
+                ]
+                []
+            ]
+        ]
+    , Svg.polygon
         [ Svg.Attributes.class "column-right"
         , Svg.Attributes.class "column-segment"
         , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornerListToString)
@@ -132,6 +152,22 @@ viewTerrain clickEvent ( position, tile ) =
         [ Svg.Attributes.class "column-middle"
         , Svg.Attributes.class "column-segment"
         , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornerListToString)
+        ]
+        []
+    , Svg.polygon
+        [ Svg.Attributes.points
+            ([ Render.pointAdd points.p0 ( 0, 3 )
+             , Render.pointAdd points.p1 ( 0, 3 )
+             , Render.pointAdd points.p2 ( 0, 3 )
+             , Render.pointAdd points.p3 ( 0, 3 )
+             , Render.pointAdd points.p3 ( 0, 10 )
+             , Render.pointAdd points.p2 ( 0, 10 )
+             , Render.pointAdd points.p1 ( 0, 10 )
+             , Render.pointAdd points.p0 ( 0, 10 )
+             ]
+                |> Render.cornerListToString
+            )
+        , Svg.Attributes.fill "url(#column-mask)"
         ]
         []
     , Svg.polygon
