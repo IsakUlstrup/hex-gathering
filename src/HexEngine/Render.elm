@@ -257,7 +257,7 @@ renderEntity renderFunc targetMaps entity =
                 , Svg.Attributes.class (Entity.stateString entity)
                 , translatePoint (Point.add position.map position.local)
                 ]
-                [ renderFunc ( Point.add position.map position.local, entity ) ]
+                [ renderFunc ( position.local, entity ) ]
             )
 
     else
