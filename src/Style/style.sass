@@ -102,23 +102,19 @@ svg
         stroke: color.scale($color, $lightness: 50%)
     .column-right
         // stroke: color.scale($color, $lightness: 40%)
-        fill: color.scale($color, $lightness: 40%)
+        fill: color.scale($color, $lightness: 10%)
     .column-middle
         // stroke: color.scale($color, $lightness: 50%)
-        fill: color.scale($color, $lightness: 50%)
+        fill: color.scale($color, $lightness: 20%)
     .column-left
         // stroke: color.scale($color, $lightness: 60%)
-        fill: color.scale($color, $lightness: 60%)
+        fill: color.scale($color, $lightness: 30%)
 
 .hex
     -webkit-tap-highlight-color: transparent
     .face,.column-segment
-        stroke-width: 0.2
+        stroke-width: 0.1
         stroke-linejoin: round
-        transition: fill 300ms ease
-
-    .column-segment
-        paint-order: stroke
 
     &.high
         @include hex($high-hex-color)
