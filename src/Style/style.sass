@@ -69,19 +69,19 @@ svg
     user-select: none
 
     // state animations
-    .content
+    .animation
         transition: transform $player-move-duration ease-out
-    &.idle .content
+    &.idle .animation
         transform: translateY(0) rotateX(25deg)
-    &.moving .content
+    &.moving .animation
         transform: translateY(-0.1rem) scale(1.1) rotateX(25deg)
-    &.cooling .content
+    &.cooling .animation
         transform: translateY(0.1rem) scale(0.9) rotateX(25deg)
-    &.blocked .content
+    &.blocked .animation
         animation: shake 200ms infinite
-    &.map-transition-charge .content
+    &.map-transition-charge .animation
         transform: translateY(0.2rem) scale(0.8) rotateX(25deg)
-    &.map-transition-move .content
+    &.map-transition-move .animation
         transform: translateY(-0.2rem) scale(1.2) rotateX(25deg)
 
 .marker
