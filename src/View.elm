@@ -191,9 +191,11 @@ viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg 
 viewEntity clickEvent ( position, entity ) =
     Svg.g
         [ Svg.Attributes.class "animation"
-        , animationDelay position
         ]
         [ Svg.text_
-            [ Svg.Attributes.class "content", Svg.Events.onClick <| clickEvent position ]
+            [ Svg.Attributes.class "content"
+            , animationDelay position
+            , Svg.Events.onClick <| clickEvent position
+            ]
             [ Svg.text (entity.data |> String.fromChar) ]
         ]
