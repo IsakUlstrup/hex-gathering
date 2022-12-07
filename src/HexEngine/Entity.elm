@@ -124,6 +124,7 @@ setPath path entity =
 
         Idle position ->
             let
+                newPos : Point
                 newPos =
                     List.head path |> Maybe.withDefault position.local
             in

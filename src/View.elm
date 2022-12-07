@@ -17,6 +17,7 @@ import Tile exposing (Tile(..))
 animationDelay : Point -> Attribute msg
 animationDelay position =
     let
+        distance : Float
         distance =
             Point.distanceFloat position ( 0, 0, 0 )
     in
