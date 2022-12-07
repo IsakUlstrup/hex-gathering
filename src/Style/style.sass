@@ -104,12 +104,15 @@ svg
 @mixin hex($color)
     .face
         fill: $color
-        stroke: color.scale($color, $lightness: 50%)
+        // stroke: color.scale($color, $lightness: 50%)
     .column
         fill: color.scale($color, $lightness: 10%)
 
 .hex
     -webkit-tap-highlight-color: transparent
+    .edge
+        fill: white
+        fill-opacity: 0.4
     .face,.column
         stroke-width: 0.1
         stroke-linejoin: round
@@ -121,7 +124,7 @@ svg
     &.high
         @include hex($high-hex-color)
         pointer-events: none
-        .face,.column
+        .face,.column,.edge
             transform: translateY(-0.12rem)
 
     &.medium
@@ -132,5 +135,5 @@ svg
     &.low
         @include hex($low-hex-color)
         pointer-events: none
-        .face,.column
+        .face,.column,.edge
             transform: translateY(0.09rem)
