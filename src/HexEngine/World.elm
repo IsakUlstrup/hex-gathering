@@ -3,6 +3,7 @@ module HexEngine.World exposing
     , World
     , addMap
     , filterMapEntities
+    , filterMapGrids
     , getPlayer
     , getPlayerPosition
     , getPoint
@@ -145,6 +146,14 @@ filterMapEntities : (Entity entityData -> Maybe a) -> World tileData entityData 
 filterMapEntities f (World world) =
     (world.player :: world.entities)
         |> List.filterMap f
+
+
+filterMapGrids : (Point -> List ( Point, tileData ) -> Maybe a) -> World tileData entityData -> List a
+filterMapGrids f (World world) =
+    world.maps
+        |> Dict.toList
+        |> List.map (Tuple.mapSecond (.grid >> Grid.toList))
+        |> List.filterMap (\( pos, grid ) -> f pos grid)
 
 
 mapMaps : (( Point, Map tileData ) -> b) -> World tileData entityData -> List b

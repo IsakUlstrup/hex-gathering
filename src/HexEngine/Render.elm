@@ -220,20 +220,23 @@ keyedViewTile keyFunc renderFunc entity =
     )
 
 
-viewMap :
-    (( Point, tileData ) -> Svg msg)
-    -> Point
-    -> List ( Point, tileData )
-    -> Svg msg
-viewMap renderTileFunc mapPosition tiles =
-    Svg.Keyed.node "g"
-        [ Svg.Attributes.class "map"
-        , translatePoint mapPosition
-        ]
-        (tiles
-            |> List.sortBy (Tuple.first >> yPixelPosition)
-            |> List.map (keyedViewTile (Tuple.first >> Point.toString) renderTileFunc)
-        )
+viewKeyedTile : (( Point, tileData ) -> Svg msg) -> List Point -> Point -> List ( Point, tileData ) -> Maybe ( String, Svg msg )
+viewKeyedTile renderFunc targetMaps mapPosition grid =
+    if List.member mapPosition targetMaps then
+        Just <|
+            ( Point.toString mapPosition
+            , Svg.Keyed.node "g"
+                [ Svg.Attributes.class "map"
+                , translatePoint mapPosition
+                ]
+                (grid
+                    |> List.sortBy (Tuple.first >> yPixelPosition)
+                    |> List.map (keyedViewTile (Tuple.first >> Point.toString) renderFunc)
+                )
+            )
+
+    else
+        Nothing
 
 
 viewKeyedEntity :
@@ -266,14 +269,7 @@ viewKeyedEntity renderFunc targetMaps entity =
 
 viewScene : (( Point, tileData ) -> Svg msg) -> (( Point, Entity entityData ) -> Svg msg) -> List Point -> World tileData entityData -> List ( String, Svg msg )
 viewScene tileRenderFunc entityRenderFunc maps world =
-    let
-        keyedMap : Point -> ( String, Svg msg )
-        keyedMap m =
-            ( Point.toString m
-            , World.mapGrid m (viewMap tileRenderFunc) world
-            )
-    in
-    List.map keyedMap maps
+    World.filterMapGrids (viewKeyedTile tileRenderFunc maps) world
         ++ [ ( "entities"
              , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc maps) world)
              )
