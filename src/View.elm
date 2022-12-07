@@ -7,7 +7,6 @@ import Entity exposing (Entity)
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
-import Html exposing (Html)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
@@ -51,30 +50,6 @@ meq m a =
 viewTile : Point -> Maybe Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
 viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
     let
-        tileType : String
-        tileType =
-            case tile of
-                Low ->
-                    "low"
-
-                Medium ->
-                    "medium"
-
-                High ->
-                    "high"
-
-        wrapper : List (Html msg) -> Html msg
-        wrapper cs =
-            Svg.g
-                [ svgClassList
-                    [ ( "hex", True )
-                    , ( "selected", meq selectedPoint point )
-                    , ( "player", point == playerPosition )
-                    ]
-                , Svg.Attributes.class tileType
-                ]
-                cs
-
         marker : List (Svg msg)
         marker =
             if meq selectedPoint point then
@@ -83,8 +58,74 @@ viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
             else
                 []
     in
-    wrapper
+    Svg.g
+        [ svgClassList
+            [ ( "hex", True )
+            , ( "selected", meq selectedPoint point )
+            , ( "player", point == playerPosition )
+            ]
+        , Svg.Attributes.class <| Tile.tileToString tile
+        ]
         (viewTerrain clickEvent ( point, tile ) ++ marker)
+
+
+viewTerrainColumn : Float -> HexCorners -> Svg msg
+viewTerrainColumn height corners =
+    Svg.polygon
+        [ Svg.Attributes.class "column"
+        , Svg.Attributes.points
+            ([ corners.p0
+             , corners.p1
+             , corners.p2
+             , corners.p3
+             , Render.pointAdd corners.p3 ( 0, height )
+             , Render.pointAdd corners.p2 ( 0, height )
+             , Render.pointAdd corners.p1 ( 0, height )
+             ]
+                |> Render.cornerListToString
+            )
+        ]
+        []
+
+
+viewTerrainMask : HexCorners -> Svg msg
+viewTerrainMask corners =
+    Svg.polygon
+        [ Svg.Attributes.points
+            ([ Render.pointAdd corners.p0 ( 0, 2 )
+             , Render.pointAdd corners.p1 ( 0, 2 )
+             , Render.pointAdd corners.p2 ( 0, 2 )
+             , Render.pointAdd corners.p3 ( 0, 2 )
+             , Render.pointAdd corners.p3 ( 0, 25 )
+             , Render.pointAdd corners.p2 ( 0, 25 )
+             , Render.pointAdd corners.p1 ( 0, 25 )
+             , Render.pointAdd corners.p0 ( 0, 25 )
+             ]
+                |> Render.cornerListToString
+            )
+        , Svg.Attributes.fill <| "url(#" ++ columnMaskId ++ ")"
+        ]
+        []
+
+
+viewTerrain : (Point -> msg) -> ( Point, Tile ) -> List (Svg msg)
+viewTerrain clickEvent ( position, tile ) =
+    let
+        corners : HexCorners
+        corners =
+            Render.generateHexCorners
+    in
+    [ Svg.g [ Svg.Attributes.class "animation", animationDelay position ]
+        [ viewTerrainColumn 10 corners
+        , Svg.polygon
+            [ Svg.Attributes.class "face"
+            , Svg.Attributes.points (corners |> Render.cornersToString)
+            , Svg.Events.onClick <| clickEvent position
+            ]
+            []
+        ]
+    , viewTerrainMask corners
+    ]
 
 
 viewMarker : Svg msg
@@ -102,70 +143,6 @@ viewMarker =
             ]
             []
         ]
-
-
-viewTerrain : (Point -> msg) -> ( Point, Tile ) -> List (Svg msg)
-viewTerrain clickEvent ( position, tile ) =
-    let
-        points : HexCorners
-        points =
-            Render.generateHexCorners
-
-        columnHeight : Float
-        columnHeight =
-            case tile of
-                Low ->
-                    8.5
-
-                Medium ->
-                    10
-
-                High ->
-                    12
-    in
-    [ Svg.g [ Svg.Attributes.class "animation", animationDelay position ]
-        [ Svg.polygon
-            [ Svg.Attributes.class "column-right"
-            , Svg.Attributes.class "column-segment"
-            , Svg.Attributes.points ([ points.p0, points.p1, Render.pointAdd points.p1 ( 0, columnHeight ), Render.pointAdd points.p0 ( 0, columnHeight ) ] |> Render.cornerListToString)
-            ]
-            []
-        , Svg.polygon
-            [ Svg.Attributes.class "column-left"
-            , Svg.Attributes.class "column-segment"
-            , Svg.Attributes.points ([ points.p2, points.p3, Render.pointAdd points.p3 ( 0, columnHeight ), Render.pointAdd points.p2 ( 0, columnHeight ) ] |> Render.cornerListToString)
-            ]
-            []
-        , Svg.polygon
-            [ Svg.Attributes.class "column-middle"
-            , Svg.Attributes.class "column-segment"
-            , Svg.Attributes.points ([ points.p1, points.p2, Render.pointAdd points.p2 ( 0, columnHeight ), Render.pointAdd points.p1 ( 0, columnHeight ) ] |> Render.cornerListToString)
-            ]
-            []
-        , Svg.polygon
-            [ Svg.Attributes.class "face"
-            , Svg.Attributes.points (points |> Render.cornersToString)
-            , Svg.Events.onClick <| clickEvent position
-            ]
-            []
-        ]
-    , Svg.polygon
-        [ Svg.Attributes.points
-            ([ Render.pointAdd points.p0 ( 0, 2 )
-             , Render.pointAdd points.p1 ( 0, 2 )
-             , Render.pointAdd points.p2 ( 0, 2 )
-             , Render.pointAdd points.p3 ( 0, 2 )
-             , Render.pointAdd points.p3 ( 0, 25 )
-             , Render.pointAdd points.p2 ( 0, 25 )
-             , Render.pointAdd points.p1 ( 0, 25 )
-             , Render.pointAdd points.p0 ( 0, 25 )
-             ]
-                |> Render.cornerListToString
-            )
-        , Svg.Attributes.fill <| "url(#" ++ columnMaskId ++ ")"
-        ]
-        []
-    ]
 
 
 viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg msg
