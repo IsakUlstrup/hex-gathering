@@ -10,7 +10,7 @@ import HexEngine.Render as Render exposing (HexCorners)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
-import Tile exposing (Tile(..))
+import Tile exposing (Tile)
 
 
 animationDelay : Point -> Attribute msg
@@ -117,7 +117,7 @@ viewTerrainMask corners =
 
 
 viewTerrain : (Point -> msg) -> ( Point, Tile ) -> List (Svg msg)
-viewTerrain clickEvent ( position, tile ) =
+viewTerrain clickEvent ( position, _ ) =
     let
         corners : HexCorners
         corners =
