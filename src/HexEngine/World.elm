@@ -7,10 +7,10 @@ module HexEngine.World exposing
     , getPlayer
     , getPlayerPosition
     , getPoint
-    , movementUpdate
     , newMap
     , newWorld
     , playerMoveMap
+    , updateEntities
     , updatePlayer
     )
 
@@ -62,6 +62,8 @@ addEntity mapOffset position entity (World world) =
         }
 
 
+{-| add a list of entities to a map
+-}
 addEntities : Point -> List ( Point, entityData ) -> World tileData entityData -> World tileData entityData
 addEntities mapPosition entities world =
     List.foldl (\( p, e ) -> addEntity mapPosition p e) world entities
@@ -99,16 +101,29 @@ getPoint target (World world) =
     )
 
 
+{-| get player
+-}
 getPlayer : World tileData entityData -> Entity entityData
 getPlayer (World world) =
     world.player
 
 
+{-| Get player position
+-}
+getPlayerPosition : World tileData entityData -> WorldPosition
+getPlayerPosition (World world) =
+    Entity.getPosition world.player
+
+
+{-| update player with provided function
+-}
 updatePlayer : (Entity entityData -> Entity entityData) -> World tileData entityData -> World tileData entityData
 updatePlayer f (World world) =
     World { world | player = f world.player }
 
 
+{-| updates all entities in the world with provided function
+-}
 updateEntities : (Entity entityData -> Entity entityData) -> World tileData entityData -> World tileData entityData
 updateEntities f (World world) =
     World
@@ -118,23 +133,22 @@ updateEntities f (World world) =
         }
 
 
+{-| filterMap all entities in the world with provided function
+-}
 filterMapEntities : (Entity entityData -> Maybe a) -> World tileData entityData -> List a
 filterMapEntities f (World world) =
     (world.player :: world.entities)
         |> List.filterMap f
 
 
+{-| filterMap all grids in the world with provided function
+-}
 filterMapGrids : (Point -> List ( Point, tileData ) -> Maybe a) -> World tileData entityData -> List a
 filterMapGrids f (World world) =
     world.maps
         |> Dict.toList
         |> List.map (Tuple.mapSecond (.grid >> Grid.toList))
         |> List.filterMap (\( pos, grid ) -> f pos grid)
-
-
-getPlayerPosition : World tileData entityData -> WorldPosition
-getPlayerPosition (World world) =
-    Entity.getPosition world.player
 
 
 {-| Move player to another map, does nothing if map doesn't exist
@@ -148,13 +162,6 @@ playerMoveMap moveDuration mapPosition localPosition (World world) =
 
         Nothing ->
             World world
-
-
-movementUpdate : Int -> Int -> World tileData entityData -> World tileData entityData
-movementUpdate dt moveTime world =
-    world
-        |> updateEntities (Entity.tickCooldown dt)
-        |> updateEntities (Entity.move moveTime)
 
 
 

@@ -93,7 +93,9 @@ update msg model =
         Tick dt ->
             ( { model
                 | world =
-                    World.movementUpdate dt AnimationConstants.playerMoveTime.value model.world
+                    model.world
+                        |> World.updateEntities (Entity.tickCooldown dt)
+                        |> World.updateEntities (Entity.move AnimationConstants.playerMoveTime.value)
                 , renderConfig =
                     Render.withPlayerFocus model.world model.renderConfig
               }
