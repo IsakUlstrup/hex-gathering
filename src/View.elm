@@ -73,18 +73,16 @@ viewTerrainColumn : Float -> HexCorners -> Svg msg
 viewTerrainColumn height corners =
     Svg.polygon
         [ Svg.Attributes.class "column"
-        , Svg.Attributes.points
-            ([ corners.p0
-             , corners.p1
-             , corners.p2
-             , corners.p3
-             , Render.pointAdd corners.p3 ( 0, height )
-             , Render.pointAdd corners.p2 ( 0, height )
-             , Render.pointAdd corners.p1 ( 0, height )
-             , Render.pointAdd corners.p0 ( 0, height )
-             ]
-                |> Render.cornerListToString
-            )
+        , [ corners.p0
+          , corners.p1
+          , corners.p2
+          , corners.p3
+          , Render.pointAdd corners.p3 ( 0, height )
+          , Render.pointAdd corners.p2 ( 0, height )
+          , Render.pointAdd corners.p1 ( 0, height )
+          , Render.pointAdd corners.p0 ( 0, height )
+          ]
+            |> Render.cornerListToPoints
         ]
         []
 
@@ -103,18 +101,16 @@ viewTerrainEdges =
 viewTerrainMask : HexCorners -> Svg msg
 viewTerrainMask corners =
     Svg.polygon
-        [ Svg.Attributes.points
-            ([ Render.pointAdd corners.p0 ( 0, 2 )
-             , Render.pointAdd corners.p1 ( 0, 2 )
-             , Render.pointAdd corners.p2 ( 0, 2 )
-             , Render.pointAdd corners.p3 ( 0, 2 )
-             , Render.pointAdd corners.p3 ( 0, 25 )
-             , Render.pointAdd corners.p2 ( 0, 25 )
-             , Render.pointAdd corners.p1 ( 0, 25 )
-             , Render.pointAdd corners.p0 ( 0, 25 )
-             ]
-                |> Render.cornerListToString
-            )
+        [ [ Render.pointAdd corners.p0 ( 0, 2 )
+          , Render.pointAdd corners.p1 ( 0, 2 )
+          , Render.pointAdd corners.p2 ( 0, 2 )
+          , Render.pointAdd corners.p3 ( 0, 2 )
+          , Render.pointAdd corners.p3 ( 0, 25 )
+          , Render.pointAdd corners.p2 ( 0, 25 )
+          , Render.pointAdd corners.p1 ( 0, 25 )
+          , Render.pointAdd corners.p0 ( 0, 25 )
+          ]
+            |> Render.cornerListToPoints
         , Svg.Attributes.fill <| "url(#" ++ columnMaskId ++ ")"
         ]
         []
@@ -131,7 +127,7 @@ viewTerrain clickEvent ( position, tile ) =
         [ viewTerrainColumn 10 corners
         , Svg.polygon
             [ Svg.Attributes.class "face"
-            , Svg.Attributes.points (corners |> Render.cornersToString)
+            , Render.cornersToPoints corners
             , Svg.Events.onClick <| clickEvent position
             ]
             []

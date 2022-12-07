@@ -1,8 +1,8 @@
 module HexEngine.Render exposing
     ( HexCorners
     , RenderConfig
-    , cornerListToString
-    , cornersToString
+    , cornerListToPoints
+    , cornersToPoints
     , generateHexCorners
     , initRenderConfig
     , pointAdd
@@ -25,12 +25,16 @@ import Svg.Lazy
 ---- CONFIG BUILDER ----
 
 
+{-| Holds renderer config values
+-}
 type alias RenderConfig =
     { position : Point
     , zoom : Float
     }
 
 
+{-| Default render config
+-}
 initRenderConfig : RenderConfig
 initRenderConfig =
     RenderConfig ( 0, 0, 0 ) 1
@@ -43,16 +47,22 @@ withHexFocus point config =
     { config | position = point }
 
 
+{-| Focus camera on entity
+-}
 withEntityFocus : WorldPosition -> RenderConfig -> RenderConfig
 withEntityFocus position config =
     config |> withHexFocus (Point.add position.map position.local)
 
 
+{-| Focus camera on player
+-}
 withPlayerFocus : World tileData entityData -> RenderConfig -> RenderConfig
 withPlayerFocus world config =
     config |> withEntityFocus (World.getPlayerPosition world)
 
 
+{-| Set camera zoom
+-}
 withZoom : Float -> RenderConfig -> RenderConfig
 withZoom zoom config =
     { config | zoom = zoom }
@@ -63,6 +73,9 @@ withZoom zoom config =
 
 
 {-| Hex size constant
+
+If you want to change hex size, use WithZoom instead
+
 -}
 hexSize : Float
 hexSize =
@@ -82,23 +95,29 @@ pointToPixel point =
     )
 
 
+{-| Get point y position in pixels
+-}
 yPixelPosition : Point -> Float
 yPixelPosition position =
     pointToPixel position |> Tuple.second
 
 
-cornerListToString : List ( Float, Float ) -> String
-cornerListToString points =
+{-| Convert a list of floats to a Svg points attribute
+-}
+cornerListToPoints : List ( Float, Float ) -> Attribute msg
+cornerListToPoints points =
     let
         tupleToString : ( Float, Float ) -> String
         tupleToString ( x, y ) =
             String.fromFloat x ++ "," ++ String.fromFloat y
     in
-    List.map tupleToString points |> List.intersperse " " |> String.concat
+    List.map tupleToString points |> List.intersperse " " |> String.concat |> Svg.Attributes.points
 
 
-cornersToString : HexCorners -> String
-cornersToString points =
+{-| Transform Hex Corners to Svg points attribute
+-}
+cornersToPoints : HexCorners -> Attribute msg
+cornersToPoints points =
     let
         tupleToString : ( Float, Float ) -> String
         tupleToString ( x, y ) =
@@ -113,8 +132,11 @@ cornersToString points =
     ]
         |> List.intersperse " "
         |> String.concat
+        |> Svg.Attributes.points
 
 
+{-| Represents the points of a hexagon, staring with east and moving counter clockwise
+-}
 type alias HexCorners =
     { p0 : ( Float, Float )
     , p1 : ( Float, Float )
@@ -125,6 +147,8 @@ type alias HexCorners =
     }
 
 
+{-| Add two tuples of floats together
+-}
 pointAdd : ( Float, Float ) -> ( Float, Float ) -> ( Float, Float )
 pointAdd ( x1, y1 ) ( x2, y2 ) =
     ( x1 + x2, y1 + y2 )
@@ -154,24 +178,24 @@ generateHexCorners =
 -- RENDER
 
 
-translate2 : Float -> Float -> String
-translate2 x y =
-    "transform: translate("
-        ++ String.fromFloat x
-        ++ "px, "
-        ++ String.fromFloat y
-        ++ "px);"
-
-
+{-| CSS transform translate attribute based on position
+-}
 translatePoint : Point -> Attribute msg
 translatePoint position =
     let
         ( x, y ) =
             pointToPixel position
     in
-    Svg.Attributes.style <| translate2 x y
+    Svg.Attributes.style <|
+        "transform: translate("
+            ++ String.fromFloat x
+            ++ "px, "
+            ++ String.fromFloat y
+            ++ "px);"
 
 
+{-| A custom SVG element with camera support
+-}
 customSvg : RenderConfig -> Svg msg -> List ( String, Svg msg ) -> Svg msg
 customSvg config defs children =
     let
@@ -204,6 +228,8 @@ customSvg config defs children =
         ]
 
 
+{-| Create a wrapper with correct position and render a tile with provied function
+-}
 renderTile : (( Point, a ) -> Svg msg) -> ( Point, a ) -> Svg msg
 renderTile renderFunc ( point, t ) =
     Svg.g
@@ -213,15 +239,19 @@ renderTile renderFunc ( point, t ) =
         [ renderFunc ( point, t ) ]
 
 
-keyedViewTile : (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> ( Point, a ) -> ( String, Svg msg )
-keyedViewTile keyFunc renderFunc entity =
+{-| Keyed and lazy tile render
+-}
+viewKeyedTile : (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> ( Point, a ) -> ( String, Svg msg )
+viewKeyedTile keyFunc renderFunc entity =
     ( keyFunc entity
     , Svg.Lazy.lazy (renderTile renderFunc) entity
     )
 
 
-viewKeyedTile : (( Point, tileData ) -> Svg msg) -> List Point -> Point -> List ( Point, tileData ) -> Maybe ( String, Svg msg )
-viewKeyedTile renderFunc targetMaps mapPosition grid =
+{-| If current grid position matches and of the target maps, render grid
+-}
+viewKeyedGrid : (( Point, tileData ) -> Svg msg) -> List Point -> Point -> List ( Point, tileData ) -> Maybe ( String, Svg msg )
+viewKeyedGrid renderFunc targetMaps mapPosition grid =
     if List.member mapPosition targetMaps then
         Just <|
             ( Point.toString mapPosition
@@ -231,7 +261,7 @@ viewKeyedTile renderFunc targetMaps mapPosition grid =
                 ]
                 (grid
                     |> List.sortBy (Tuple.first >> yPixelPosition)
-                    |> List.map (keyedViewTile (Tuple.first >> Point.toString) renderFunc)
+                    |> List.map (viewKeyedTile (Tuple.first >> Point.toString) renderFunc)
                 )
             )
 
@@ -239,6 +269,8 @@ viewKeyedTile renderFunc targetMaps mapPosition grid =
         Nothing
 
 
+{-| If entity map position is in target maps, render entity
+-}
 viewKeyedEntity :
     (( Point, Entity entityData )
      -> Svg msg
@@ -267,15 +299,19 @@ viewKeyedEntity renderFunc targetMaps entity =
         Nothing
 
 
+{-| Render a list of grids and their associated entities
+-}
 viewScene : (( Point, tileData ) -> Svg msg) -> (( Point, Entity entityData ) -> Svg msg) -> List Point -> World tileData entityData -> List ( String, Svg msg )
 viewScene tileRenderFunc entityRenderFunc maps world =
-    World.filterMapGrids (viewKeyedTile tileRenderFunc maps) world
+    World.filterMapGrids (viewKeyedGrid tileRenderFunc maps) world
         ++ [ ( "entities"
              , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc maps) world)
              )
            ]
 
 
+{-| Render a world
+-}
 viewWorld :
     RenderConfig
     -> Svg msg
