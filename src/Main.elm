@@ -41,18 +41,18 @@ init _ =
         )
         (World.newWorld
             mapPosition
-            (World.newMap "Test" Content.Map.testGrid)
+            Content.Map.testGrid
             ( playerPosition, '🐼' )
             [ ( ( 0, -3, 3 ), '🌺' )
             , ( ( 3, -2, -1 ), '🌻' )
             ]
             |> World.addMap
                 ( 8, 5, -13 )
-                (World.newMap "Test2" Content.Map.testGrid2)
+                Content.Map.testGrid2
                 [ ( ( 1, 0, -1 ), '🌵' ) ]
             |> World.addMap
                 ( -10, 5, 5 )
-                (World.newMap "Test3" Content.Map.testGrid3)
+                Content.Map.testGrid3
                 []
         )
     , Cmd.none

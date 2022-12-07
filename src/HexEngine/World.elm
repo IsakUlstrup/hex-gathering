@@ -1,13 +1,11 @@
 module HexEngine.World exposing
-    ( Map
-    , World
+    ( World
     , addMap
     , filterMapEntities
     , filterMapGrids
     , getPlayer
     , getPlayerPosition
     , getPoint
-    , newMap
     , newWorld
     , playerMoveMap
     , updateEntities
@@ -32,7 +30,7 @@ Handles entity Ids automatically
 type World tileData entityData
     = World
         { entities : List (Entity entityData)
-        , maps : Dict Point (Map tileData)
+        , maps : Dict Point (HexGrid tileData)
         , player : Entity entityData
         , idCounter : Int
         }
@@ -40,7 +38,7 @@ type World tileData entityData
 
 {-| Create a new world with provided map and player. Both will be placed at (0, 0, 0)
 -}
-newWorld : Point -> Map tileData -> ( Point, entityData ) -> List ( Point, entityData ) -> World tileData entityData
+newWorld : Point -> HexGrid tileData -> ( Point, entityData ) -> List ( Point, entityData ) -> World tileData entityData
 newWorld mapPosition initMap ( playerPosition, playerData ) entities =
     World
         { entities = []
@@ -71,7 +69,7 @@ addEntities mapPosition entities world =
 
 {-| add new map to world, does nothing if a map exists at target position
 -}
-addMap : Point -> Map tileData -> List ( Point, entityData ) -> World tileData entityData -> World tileData entityData
+addMap : Point -> HexGrid tileData -> List ( Point, entityData ) -> World tileData entityData -> World tileData entityData
 addMap position map entities (World world) =
     case Dict.get position world.maps of
         Just _ ->
@@ -84,7 +82,7 @@ addMap position map entities (World world) =
 
 {-| Get map where player is located
 -}
-playerMap : World tileData entityData -> Maybe (Map tileData)
+playerMap : World tileData entityData -> Maybe (HexGrid tileData)
 playerMap (World world) =
     Dict.get (Entity.getPosition world.player).map world.maps
 
@@ -94,7 +92,7 @@ playerMap (World world) =
 getPoint : Point -> World tileData entityData -> ( Maybe tileData, Maybe (Entity entityData) )
 getPoint target (World world) =
     ( playerMap (World world)
-        |> Maybe.andThen (\m -> Grid.get target m.grid)
+        |> Maybe.andThen (Grid.get target)
     , world.entities
         |> List.filter (\e -> (Entity.getPosition e).local == target && (Entity.getPosition e).map == (Entity.getPosition world.player).map)
         |> List.head
@@ -147,7 +145,7 @@ filterMapGrids : (Point -> List ( Point, tileData ) -> Maybe a) -> World tileDat
 filterMapGrids f (World world) =
     world.maps
         |> Dict.toList
-        |> List.map (Tuple.mapSecond (.grid >> Grid.toList))
+        |> List.map (Tuple.mapSecond Grid.toList)
         |> List.filterMap (\( pos, grid ) -> f pos grid)
 
 
@@ -162,20 +160,3 @@ playerMoveMap moveDuration mapPosition localPosition (World world) =
 
         Nothing ->
             World world
-
-
-
--- MAP
-
-
-{-| A map is a container for a hex grid and a name
--}
-type alias Map tileData =
-    { name : String
-    , grid : HexGrid tileData
-    }
-
-
-newMap : String -> HexGrid tileData -> Map tileData
-newMap name grid =
-    Map name grid
