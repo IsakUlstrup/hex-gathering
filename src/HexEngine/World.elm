@@ -7,7 +7,6 @@ module HexEngine.World exposing
     , getPlayer
     , getPlayerPosition
     , getPoint
-    , mapMaps
     , movementUpdate
     , newMap
     , newWorld
@@ -131,13 +130,6 @@ filterMapGrids f (World world) =
         |> Dict.toList
         |> List.map (Tuple.mapSecond (.grid >> Grid.toList))
         |> List.filterMap (\( pos, grid ) -> f pos grid)
-
-
-mapMaps : (( Point, Map tileData ) -> b) -> World tileData entityData -> List b
-mapMaps f (World world) =
-    world.maps
-        |> Dict.toList
-        |> List.map f
 
 
 getPlayerPosition : World tileData entityData -> WorldPosition

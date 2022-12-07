@@ -8,7 +8,7 @@ import Entity exposing (Entity)
 import HexEngine.Entity as Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
-import HexEngine.World as World exposing (Map, World)
+import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
@@ -136,14 +136,15 @@ update msg model =
 viewDebug : World Tile Entity -> Html Msg
 viewDebug world =
     let
-        button : ( Point, Map Tile ) -> Html Msg
-        button ( coordinate, _ ) =
-            Html.button
-                [ Html.Events.onClick <| MapTransition coordinate ( 0, 0, 0 ) ]
-                [ Html.text <| "Travel to " ++ Point.toString coordinate ]
+        button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
+        button mapPos _ =
+            Just <|
+                Html.button
+                    [ Html.Events.onClick <| MapTransition mapPos ( 0, 0, 0 ) ]
+                    [ Html.text <| "Travel to " ++ Point.toString mapPos ]
     in
     Html.div [ Html.Attributes.class "debug" ]
-        (World.mapMaps button world)
+        (World.filterMapGrids button world)
 
 
 view : Model -> Html Msg
