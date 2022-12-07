@@ -163,12 +163,16 @@ viewEntity clickEvent ( position, entity ) =
     Svg.g
         [ Svg.Attributes.class "animation"
         ]
-        [ Svg.text_
-            [ Svg.Attributes.class "content"
+        [ Svg.g
+            [ Svg.Attributes.class "enter-animation"
             , animationDelay position
-            , Svg.Events.onClick <| clickEvent position
             ]
-            [ Svg.text (entity.data |> String.fromChar) ]
+            [ Svg.text_
+                [ Svg.Attributes.class "content"
+                , Svg.Events.onClick <| clickEvent position
+                ]
+                [ Svg.text (entity.data |> String.fromChar) ]
+            ]
         ]
 
 
