@@ -301,8 +301,8 @@ viewKeyedEntity renderFunc targetMaps entity =
 
 {-| Render a list of grids and their associated entities
 -}
-viewScene : (( Point, tileData ) -> Svg msg) -> (( Point, Entity entityData ) -> Svg msg) -> List Point -> World tileData entityData -> List ( String, Svg msg )
-viewScene tileRenderFunc entityRenderFunc maps world =
+viewScene : (( Point, tileData ) -> Svg msg) -> (( Point, Entity entityData ) -> Svg msg) -> World tileData entityData -> List Point -> List ( String, Svg msg )
+viewScene tileRenderFunc entityRenderFunc world maps =
     World.filterMapGrids (viewKeyedGrid tileRenderFunc maps) world
         ++ [ ( "entities"
              , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc maps) world)
@@ -318,15 +318,8 @@ viewWorld :
     -> World tileData entityData
     -> (( Point, tileData ) -> Svg msg)
     -> (( Point, Entity entityData ) -> Svg msg)
+    -> List Point
     -> Svg msg
-viewWorld config defs world tileRenderFunc entityRenderFunc =
+viewWorld config defs world tileRenderFunc entityRenderFunc maps =
     customSvg config defs <|
-        case (World.getPlayer world).state of
-            MapTransitionCharge _ from to ->
-                viewScene tileRenderFunc entityRenderFunc [ from.map, to.map ] world
-
-            MapTransitionMove _ from to ->
-                viewScene tileRenderFunc entityRenderFunc [ from.map, to.map ] world
-
-            _ ->
-                viewScene tileRenderFunc entityRenderFunc [ (World.getPlayerPosition world).map ] world
+        viewScene tileRenderFunc entityRenderFunc world maps
