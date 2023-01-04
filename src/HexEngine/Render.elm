@@ -299,15 +299,13 @@ viewKeyedEntity renderFunc targetMaps entity =
         Nothing
 
 
-{-| Render a list of grids and their associated entities
--}
-viewScene : (( Point, tileData ) -> Svg msg) -> (( Point, Entity entityData ) -> Svg msg) -> World tileData entityData -> List Point -> List ( String, Svg msg )
-viewScene tileRenderFunc entityRenderFunc world maps =
-    World.filterMapGrids (viewKeyedGrid tileRenderFunc maps) world
-        ++ [ ( "entities"
-             , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc maps) world)
-             )
-           ]
+viewCurrentMaps : (( Point, tileData ) -> Svg msg) -> World tileData entityData -> List Point -> Svg msg
+viewCurrentMaps tileRenderFunc world maps =
+    let
+        _ =
+            Debug.log "render" maps
+    in
+    Svg.Keyed.node "g" [ Svg.Attributes.class "maps" ] (World.filterMapGrids (viewKeyedGrid tileRenderFunc maps) world)
 
 
 {-| Render a world
@@ -321,5 +319,12 @@ viewWorld :
     -> List Point
     -> Svg msg
 viewWorld config defs world tileRenderFunc entityRenderFunc maps =
-    customSvg config defs <|
-        viewScene tileRenderFunc entityRenderFunc world maps
+    customSvg config
+        defs
+        [ ( "maps"
+          , Svg.Lazy.lazy (viewCurrentMaps tileRenderFunc world) maps
+          )
+        , ( "entities"
+          , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc maps) world)
+          )
+        ]
