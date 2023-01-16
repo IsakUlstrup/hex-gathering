@@ -1,8 +1,5 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
--- import AnimationConstants
-
-import AnimationConstants
 import Character exposing (Character)
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
@@ -20,7 +17,7 @@ animationDelay position =
         distance =
             Point.distanceFloat position ( 0, 0, 0 )
     in
-    Svg.Attributes.style <| "animation-delay: " ++ String.fromFloat (distance * 100 + toFloat AnimationConstants.playerMoveTime.value) ++ "ms"
+    Svg.Attributes.style <| "animation-delay: " ++ String.fromFloat (distance * 150) ++ "ms"
 
 
 svgClassList : List ( String, Bool ) -> Attribute msg
