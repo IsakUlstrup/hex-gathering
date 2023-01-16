@@ -303,7 +303,7 @@ viewMap renderFunc targetMaps mapPosition grid =
                 )
     in
     if List.member mapPosition targetMaps then
-        Just <| Svg.Lazy.lazy (renderGrid renderFunc mapPosition) grid
+        Just <| renderGrid renderFunc mapPosition grid
 
     else
         Nothing
@@ -358,7 +358,7 @@ viewWorld2 config defs world tileRenderFunc entityRenderFunc =
     customSvg config
         defs
         [ ( "maps"
-          , Svg.Lazy.lazy2 (viewMaps tileRenderFunc) [ ( 2, -1, -1 ) ] (World.getMaps world)
+          , Svg.Lazy.lazy (viewMaps tileRenderFunc activeMaps) (World.getMaps world)
           )
         , ( "entities"
           , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc activeMaps) world)

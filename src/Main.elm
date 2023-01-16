@@ -161,7 +161,7 @@ view model =
             model.renderConfig
             View.svgDefs
             model.world
-            (View.viewTile (World.getPlayerPosition model.world).local model.selectedPoint ClickHex)
+            (View.viewTile ClickHex)
             (View.viewEntity ClickEntity)
         ]
 

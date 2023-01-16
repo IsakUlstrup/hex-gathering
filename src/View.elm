@@ -37,36 +37,15 @@ svgClassList classes =
 -- VIEW FUNCTIONS
 
 
-meq : Maybe a -> a -> Bool
-meq m a =
-    case m of
-        Just x ->
-            x == a
-
-        Nothing ->
-            False
-
-
-viewTile : Point -> Maybe Point -> (Point -> msg) -> ( Point, Tile ) -> Svg msg
-viewTile playerPosition selectedPoint clickEvent ( point, tile ) =
-    let
-        marker : List (Svg msg)
-        marker =
-            if meq selectedPoint point then
-                [ viewMarker ]
-
-            else
-                []
-    in
+viewTile : (Point -> msg) -> ( Point, Tile ) -> Svg msg
+viewTile clickEvent ( point, tile ) =
     Svg.g
         [ svgClassList
             [ ( "hex", True )
-            , ( "selected", meq selectedPoint point )
-            , ( "player", point == playerPosition )
             ]
         , Svg.Attributes.class <| Tile.tileToString tile
         ]
-        (viewTerrain clickEvent ( point, tile ) ++ marker)
+        (viewTerrain clickEvent ( point, tile ))
 
 
 viewTerrainColumn : Float -> HexCorners -> Svg msg
@@ -135,23 +114,6 @@ viewTerrain clickEvent ( position, _ ) =
         ]
     , viewTerrainMask corners
     ]
-
-
-viewMarker : Svg msg
-viewMarker =
-    Svg.g [ Svg.Attributes.class "marker" ]
-        [ Svg.circle
-            [ Svg.Attributes.r "1"
-            , Svg.Attributes.class "marker-dot"
-            ]
-            []
-        , Svg.circle
-            [ Svg.Attributes.r "1"
-            , Svg.Attributes.fill "none"
-            , Svg.Attributes.class "marker-circle"
-            ]
-            []
-        ]
 
 
 viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg msg
