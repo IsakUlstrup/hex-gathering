@@ -7,6 +7,7 @@ module HexEngine.World exposing
     , getPlayer
     , getPlayerPosition
     , getPoint
+    , lazyRenderMaps
     , mapMaps
     , newWorld
     , playerMoveMap
@@ -18,6 +19,8 @@ import Dict exposing (Dict)
 import HexEngine.Entity as Entity exposing (Entity, WorldPosition)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
 import HexEngine.Point exposing (Point)
+import Svg exposing (Svg)
+import Svg.Lazy
 
 
 
@@ -118,6 +121,11 @@ getMaps (World world) =
 mapMaps : (Point -> HexGrid tileData -> b) -> World tileData entityData -> Dict Point b
 mapMaps f (World world) =
     Dict.map f world.maps
+
+
+lazyRenderMaps : (Dict Point (HexGrid tileData) -> Svg msg) -> World tileData entityData -> Svg msg
+lazyRenderMaps f world =
+    Svg.Lazy.lazy f (getMaps world)
 
 
 {-| Get player position

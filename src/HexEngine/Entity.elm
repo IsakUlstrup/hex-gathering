@@ -64,12 +64,13 @@ type alias Entity entityData =
     { id : Int
     , state : EntityState
     , data : entityData
+    , maps : List Point
     }
 
 
 new : Int -> Point -> Point -> entityData -> Entity entityData
 new id mapPosition localPosition data =
-    Entity id (Idle <| WorldPosition mapPosition localPosition) data
+    Entity id (Idle <| WorldPosition mapPosition localPosition) data [ mapPosition ]
 
 
 stateString : Entity entityData -> String
@@ -236,13 +237,13 @@ move moveTime entity =
             entity
 
         MapTransitionCharge 0 from to ->
-            { entity | state = MapTransitionMove moveTime from to }
+            { entity | state = MapTransitionMove moveTime from to, maps = [ from.map, to.map ] }
 
         MapTransitionCharge _ _ _ ->
             entity
 
         MapTransitionMove 0 _ to ->
-            { entity | state = Cooling (moveTime // 2) [] to }
+            { entity | state = Cooling (moveTime // 2) [] to, maps = [ to.map ] }
 
         MapTransitionMove _ _ _ ->
             entity

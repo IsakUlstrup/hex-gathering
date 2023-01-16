@@ -284,9 +284,12 @@ viewKeyedEntity renderFunc targetMaps entity =
 --
 
 
-viewMap : (( Point, tileData ) -> Svg msg) -> List Point -> Point -> HexGrid tileData -> Maybe (Svg msg)
-viewMap renderFunc targetMaps mapPosition grid =
+viewMap : Point -> HexGrid tileData -> Svg msg
+viewMap mapPosition grid =
     let
+        renderFunc ( pos, tile ) =
+            Svg.text_ [] [ Svg.text "hei" ]
+
         renderGrid r m g =
             let
                 _ =
@@ -302,16 +305,7 @@ viewMap renderFunc targetMaps mapPosition grid =
                     |> List.map (viewKeyedTile r)
                 )
     in
-    if List.member mapPosition targetMaps then
-        Just <| renderGrid renderFunc mapPosition grid
-
-    else
-        Nothing
-
-
-filterInactiveMap : ( Point, Maybe (Svg msg) ) -> Maybe ( Point, Svg msg )
-filterInactiveMap ( position, svg ) =
-    Maybe.map (Tuple.pair position) svg
+    renderGrid renderFunc mapPosition grid
 
 
 setMapKey : ( Point, Svg msg ) -> ( String, Svg msg )
@@ -319,14 +313,19 @@ setMapKey ( position, svg ) =
     ( Point.toString position, svg )
 
 
-viewMaps : (( Point, tileData ) -> Svg msg) -> List Point -> Dict Point (HexGrid tileData) -> Svg msg
-viewMaps renderFunc activeMaps grids =
+mapIsActive : List Point -> Point -> a -> Bool
+mapIsActive activeMaps position _ =
+    List.member position activeMaps
+
+
+viewMaps : List Point -> Dict Point (HexGrid tileData) -> Svg msg
+viewMaps activeMaps grids =
     Svg.Keyed.node "g"
         [ Svg.Attributes.class "maps" ]
         (grids
-            |> Dict.map (viewMap renderFunc activeMaps)
+            |> Dict.filter (mapIsActive activeMaps)
+            |> Dict.map viewMap
             |> Dict.toList
-            |> List.filterMap filterInactiveMap
             |> List.map setMapKey
         )
 
@@ -358,7 +357,7 @@ viewWorld2 config defs world tileRenderFunc entityRenderFunc =
     customSvg config
         defs
         [ ( "maps"
-          , Svg.Lazy.lazy (viewMaps tileRenderFunc activeMaps) (World.getMaps world)
+          , Svg.Lazy.lazy2 viewMaps (World.getPlayer world).maps (World.getMaps world)
           )
         , ( "entities"
           , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc activeMaps) world)
