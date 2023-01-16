@@ -99,18 +99,6 @@ svg
     &.map-transition-move .animation
         transform: translateY(-0.4rem) scale(1.2)
 
-.marker
-    pointer-events: none
-    .marker-dot
-        animation: fade 400ms forwards
-        fill: $secondary-color
-    .marker-circle
-        stroke-width: 0.5
-        stroke: $secondary-color
-        transform-origin: 50% 50%
-        transform-box: fill-box
-        animation: pop-fade 400ms forwards
-
 @mixin hex($color)
     .face
         fill: $color
