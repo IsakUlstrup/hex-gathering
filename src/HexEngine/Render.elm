@@ -258,28 +258,22 @@ viewKeyedEntity :
     (( Point, Entity entityData )
      -> Svg msg
     )
-    -> List Point
     -> Entity entityData
-    -> Maybe ( String, Svg msg )
-viewKeyedEntity renderFunc targetMaps entity =
+    -> ( String, Svg msg )
+viewKeyedEntity renderFunc entity =
     let
         position : WorldPosition
         position =
             Entity.getPosition entity
     in
-    if List.member position.map targetMaps then
-        Just <|
-            ( entity.id |> String.fromInt
-            , Svg.g
-                [ Svg.Attributes.class "entity"
-                , Svg.Attributes.class (Entity.stateString entity)
-                , translatePoint (Point.add position.map position.local)
-                ]
-                [ renderFunc ( position.local, entity ) ]
-            )
-
-    else
-        Nothing
+    ( entity.id |> String.fromInt
+    , Svg.g
+        [ Svg.Attributes.class "entity"
+        , Svg.Attributes.class (Entity.stateString entity)
+        , translatePoint (Point.add position.map position.local)
+        ]
+        [ renderFunc ( position.local, entity ) ]
+    )
 
 
 
@@ -329,6 +323,16 @@ viewMaps renderFunc activeMaps grids =
         )
 
 
+viewEntities : (( Point, Entity entityData ) -> Svg msg) -> List Point -> List (Entity entityData) -> Svg msg
+viewEntities renderFunc activeMaps entities =
+    Svg.Keyed.node "g"
+        [ Svg.Attributes.class "entities" ]
+        (entities
+            |> List.filter (\e -> List.member (Entity.getPosition e |> Entity.getMapPosition) activeMaps)
+            |> List.map (viewKeyedEntity renderFunc)
+        )
+
+
 {-| Render a world
 -}
 viewWorld2 :
@@ -339,26 +343,12 @@ viewWorld2 :
     -> (( Point, Entity entityData ) -> Svg msg)
     -> Svg msg
 viewWorld2 config defs world tileRenderFunc entityRenderFunc =
-    let
-        activeMaps =
-            (case (World.getPlayer world).state of
-                MapTransitionCharge _ from to ->
-                    [ from, to ]
-
-                MapTransitionMove _ from to ->
-                    [ from, to ]
-
-                _ ->
-                    [ Entity.getPosition (World.getPlayer world) ]
-            )
-                |> List.map Entity.getMapPosition
-    in
     customSvg config
         defs
         [ ( "maps"
           , Svg.Lazy.lazy3 viewMaps tileRenderFunc (World.getPlayer world).maps (World.getMaps world)
           )
         , ( "entities"
-          , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc activeMaps) world)
+          , viewEntities entityRenderFunc (World.getPlayer world).maps (World.getEntities world)
           )
         ]
