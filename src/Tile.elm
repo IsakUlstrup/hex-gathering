@@ -2,19 +2,19 @@ module Tile exposing (Tile(..), tileToString)
 
 
 type Tile
-    = Low
-    | Medium
-    | High
+    = Water
+    | Grass
+    | Mountain
 
 
 tileToString : Tile -> String
 tileToString tile =
     case tile of
-        Low ->
+        Water ->
             "low"
 
-        Medium ->
+        Grass ->
             "medium"
 
-        High ->
+        Mountain ->
             "high"

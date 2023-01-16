@@ -83,7 +83,7 @@ Entities are not walkable
 isWalkable : World Tile Character -> Point -> Bool
 isWalkable world point =
     case World.getPoint point world of
-        ( Just Medium, Nothing ) ->
+        ( Just Grass, Nothing ) ->
             True
 
         _ ->
