@@ -122,7 +122,7 @@ viewEntity clickEvent ( position, entity ) =
         [ Svg.circle
             [ Svg.Attributes.x "0"
             , Svg.Attributes.y "0"
-            , Svg.Attributes.r "3"
+            , Svg.Attributes.r "1.5"
             , Svg.Attributes.class "shadow"
             ]
             []
