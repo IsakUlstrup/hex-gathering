@@ -119,11 +119,18 @@ viewTerrain clickEvent ( position, _ ) =
 viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
 viewEntity clickEvent ( position, entity ) =
     Svg.g
-        [ Svg.Attributes.class "animation"
+        [ Svg.Attributes.class "enter-animation"
+        , animationDelay position
         ]
-        [ Svg.g
-            [ Svg.Attributes.class "enter-animation"
-            , animationDelay position
+        [ Svg.circle
+            [ Svg.Attributes.x "0"
+            , Svg.Attributes.y "0"
+            , Svg.Attributes.r "3"
+            , Svg.Attributes.class "shadow"
+            ]
+            []
+        , Svg.g
+            [ Svg.Attributes.class "animation"
             ]
             [ Svg.text_
                 [ Svg.Attributes.class "content"
