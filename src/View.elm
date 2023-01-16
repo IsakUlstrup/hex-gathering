@@ -3,7 +3,7 @@ module View exposing (svgDefs, viewEntity, viewTile)
 -- import AnimationConstants
 
 import AnimationConstants
-import Entity exposing (Entity)
+import Character exposing (Character)
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
@@ -116,7 +116,7 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
-viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Entity ) -> Svg msg
+viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
 viewEntity clickEvent ( position, entity ) =
     Svg.g
         [ Svg.Attributes.class "animation"

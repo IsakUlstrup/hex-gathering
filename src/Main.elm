@@ -3,8 +3,8 @@ module Main exposing (Model, Msg, main)
 import AnimationConstants
 import Browser
 import Browser.Events
+import Character exposing (Character)
 import Content.Map
-import Entity exposing (Entity)
 import HexEngine.Entity as Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
@@ -24,7 +24,7 @@ import View
 type alias Model =
     { selectedPoint : Maybe Point
     , renderConfig : RenderConfig
-    , world : World Tile Entity
+    , world : World Tile Character
     , mapsToRender : List Point
     }
 
@@ -80,7 +80,7 @@ Only tiles that exist and are of variant Medium are walkable
 Entities are not walkable
 
 -}
-isWalkable : World Tile Entity -> Point -> Bool
+isWalkable : World Tile Character -> Point -> Bool
 isWalkable world point =
     case World.getPoint point world of
         ( Just Medium, Nothing ) ->
@@ -139,7 +139,7 @@ update msg model =
 -- VIEW
 
 
-viewDebug : World Tile Entity -> Html Msg
+viewDebug : World Tile Character -> Html Msg
 viewDebug world =
     let
         button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
@@ -158,6 +158,11 @@ renderTile =
     View.viewTile ClickHex
 
 
+renderEntity : ( Point, Entity.Entity Character ) -> Svg Msg
+renderEntity =
+    View.viewEntity ClickEntity
+
+
 view : Model -> Html Msg
 view model =
     main_ []
@@ -168,7 +173,7 @@ view model =
             View.svgDefs
             model.world
             renderTile
-            (View.viewEntity ClickEntity)
+            renderEntity
         ]
 
 
