@@ -16,7 +16,7 @@ module HexEngine.World exposing
 import Dict exposing (Dict)
 import HexEngine.Entity as Entity exposing (Entity, WorldPosition)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
-import HexEngine.Point exposing (Point)
+import HexEngine.Point as Point exposing (Point)
 
 
 
@@ -54,11 +54,15 @@ newWorld mapPosition initMap ( playerPosition, playerData ) entities =
 -}
 addEntity : Point -> Point -> entityData -> World tileData entityData -> World tileData entityData
 addEntity mapOffset position entity (World world) =
-    World
-        { world
-            | entities = Entity.new world.idCounter mapOffset position entity :: world.entities
-            , idCounter = world.idCounter + 1
-        }
+    if Point.valid position then
+        World
+            { world
+                | entities = Entity.new world.idCounter mapOffset position entity :: world.entities
+                , idCounter = world.idCounter + 1
+            }
+
+    else
+        World world
 
 
 {-| add a list of entities to a map
@@ -77,8 +81,12 @@ addMap position map entities (World world) =
             World world
 
         Nothing ->
-            World { world | maps = Dict.insert position map world.maps }
-                |> addEntities position entities
+            if Point.valid position then
+                World { world | maps = Dict.insert position map world.maps }
+                    |> addEntities position entities
+
+            else
+                World world
 
 
 {-| Get map where player is located
