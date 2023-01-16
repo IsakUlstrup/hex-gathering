@@ -25,7 +25,6 @@ type alias Model =
     { selectedPoint : Maybe Point
     , renderConfig : RenderConfig
     , world : World Tile Character
-    , mapsToRender : List Point
     }
 
 
@@ -57,7 +56,6 @@ init _ =
                 Content.Map.testGrid3
                 []
         )
-        [ mapPosition ]
     , Cmd.none
     )
 
@@ -108,7 +106,6 @@ update msg model =
         MapTransition map position ->
             ( { model
                 | world = World.playerMoveMap 200 map position model.world
-                , mapsToRender = map :: model.mapsToRender |> List.take 2
                 , selectedPoint = Nothing
               }
             , Cmd.none
