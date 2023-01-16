@@ -4,6 +4,7 @@ module HexEngine.Entity exposing
     , WorldPosition
     , findPath
     , findPathAdjacent
+    , getMapPosition
     , getPosition
     , mapTransition
     , move
@@ -26,6 +27,11 @@ type alias WorldPosition =
     { map : Point
     , local : Point
     }
+
+
+getMapPosition : WorldPosition -> Point
+getMapPosition wPos =
+    wPos.map
 
 
 {-| Entity state

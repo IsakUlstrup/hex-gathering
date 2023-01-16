@@ -6,13 +6,15 @@ module HexEngine.Render exposing
     , generateHexCorners
     , initRenderConfig
     , pointAdd
-    , viewWorld
+    , viewWorld2
     , withEntityFocus
     , withPlayerFocus
     , withZoom
     )
 
+import Dict exposing (Dict)
 import HexEngine.Entity as Entity exposing (Entity, EntityState(..), WorldPosition)
+import HexEngine.HexGrid exposing (HexGrid)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
 import Svg exposing (Attribute, Svg, svg)
@@ -241,32 +243,11 @@ renderTile renderFunc ( point, t ) =
 
 {-| Keyed and lazy tile render
 -}
-viewKeyedTile : (( Point, a ) -> String) -> (( Point, a ) -> Svg msg) -> ( Point, a ) -> ( String, Svg msg )
-viewKeyedTile keyFunc renderFunc entity =
-    ( keyFunc entity
-    , Svg.Lazy.lazy (renderTile renderFunc) entity
+viewKeyedTile : (( Point, a ) -> Svg msg) -> ( Point, a ) -> ( String, Svg msg )
+viewKeyedTile renderFunc entity =
+    ( Point.toString (Tuple.first entity)
+    , renderTile renderFunc entity
     )
-
-
-{-| If current grid position matches and of the target maps, render grid
--}
-viewKeyedGrid : (( Point, tileData ) -> Svg msg) -> List Point -> Point -> List ( Point, tileData ) -> Maybe ( String, Svg msg )
-viewKeyedGrid renderFunc targetMaps mapPosition grid =
-    if List.member mapPosition targetMaps then
-        Just <|
-            ( Point.toString mapPosition
-            , Svg.Keyed.node "g"
-                [ Svg.Attributes.class "map"
-                , translatePoint mapPosition
-                ]
-                (grid
-                    |> List.sortBy (Tuple.first >> yPixelPosition)
-                    |> List.map (viewKeyedTile (Tuple.first >> Point.toString) renderFunc)
-                )
-            )
-
-    else
-        Nothing
 
 
 {-| If entity map position is in target maps, render entity
@@ -299,32 +280,87 @@ viewKeyedEntity renderFunc targetMaps entity =
         Nothing
 
 
-viewCurrentMaps : (( Point, tileData ) -> Svg msg) -> World tileData entityData -> List Point -> Svg msg
-viewCurrentMaps tileRenderFunc world maps =
+
+--
+
+
+viewMap : (( Point, tileData ) -> Svg msg) -> List Point -> Point -> HexGrid tileData -> Maybe (Svg msg)
+viewMap renderFunc targetMaps mapPosition grid =
     let
-        _ =
-            Debug.log "render" maps
+        renderGrid r m g =
+            let
+                _ =
+                    Debug.log "Render grid" m
+            in
+            Svg.Keyed.node "g"
+                [ Svg.Attributes.class "map"
+                , translatePoint m
+                ]
+                (g
+                    |> HexEngine.HexGrid.toList
+                    |> List.sortBy (Tuple.first >> yPixelPosition)
+                    |> List.map (viewKeyedTile r)
+                )
     in
-    Svg.Keyed.node "g" [ Svg.Attributes.class "maps" ] (World.filterMapGrids (viewKeyedGrid tileRenderFunc maps) world)
+    if List.member mapPosition targetMaps then
+        Just <| Svg.Lazy.lazy (renderGrid renderFunc mapPosition) grid
+
+    else
+        Nothing
+
+
+filterInactiveMap : ( Point, Maybe (Svg msg) ) -> Maybe ( Point, Svg msg )
+filterInactiveMap ( position, svg ) =
+    Maybe.map (Tuple.pair position) svg
+
+
+setMapKey : ( Point, Svg msg ) -> ( String, Svg msg )
+setMapKey ( position, svg ) =
+    ( Point.toString position, svg )
+
+
+viewMaps : (( Point, tileData ) -> Svg msg) -> List Point -> Dict Point (HexGrid tileData) -> Svg msg
+viewMaps renderFunc activeMaps grids =
+    Svg.Keyed.node "g"
+        [ Svg.Attributes.class "maps" ]
+        (grids
+            |> Dict.map (viewMap renderFunc activeMaps)
+            |> Dict.toList
+            |> List.filterMap filterInactiveMap
+            |> List.map setMapKey
+        )
 
 
 {-| Render a world
 -}
-viewWorld :
+viewWorld2 :
     RenderConfig
     -> Svg msg
     -> World tileData entityData
     -> (( Point, tileData ) -> Svg msg)
     -> (( Point, Entity entityData ) -> Svg msg)
-    -> List Point
     -> Svg msg
-viewWorld config defs world tileRenderFunc entityRenderFunc maps =
+viewWorld2 config defs world tileRenderFunc entityRenderFunc =
+    let
+        activeMaps =
+            (case (World.getPlayer world).state of
+                MapTransitionCharge _ from to ->
+                    [ from, to ]
+
+                MapTransitionMove _ from to ->
+                    [ from, to ]
+
+                _ ->
+                    [ Entity.getPosition (World.getPlayer world) ]
+            )
+                |> List.map Entity.getMapPosition
+    in
     customSvg config
         defs
         [ ( "maps"
-          , Svg.Lazy.lazy (viewCurrentMaps tileRenderFunc world) maps
+          , Svg.Lazy.lazy2 (viewMaps tileRenderFunc) [ ( 2, -1, -1 ) ] (World.getMaps world)
           )
         , ( "entities"
-          , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc maps) world)
+          , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc activeMaps) world)
           )
         ]

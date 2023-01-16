@@ -3,9 +3,11 @@ module HexEngine.World exposing
     , addMap
     , filterMapEntities
     , filterMapGrids
+    , getMaps
     , getPlayer
     , getPlayerPosition
     , getPoint
+    , mapMaps
     , newWorld
     , playerMoveMap
     , updateEntities
@@ -104,6 +106,18 @@ getPoint target (World world) =
 getPlayer : World tileData entityData -> Entity entityData
 getPlayer (World world) =
     world.player
+
+
+{-| Get world maps
+-}
+getMaps : World tileData entityData -> Dict Point (HexGrid tileData)
+getMaps (World world) =
+    world.maps
+
+
+mapMaps : (Point -> HexGrid tileData -> b) -> World tileData entityData -> Dict Point b
+mapMaps f (World world) =
+    Dict.map f world.maps
 
 
 {-| Get player position
