@@ -12,6 +12,7 @@ import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
+import Svg exposing (Svg)
 import Tile exposing (Tile(..))
 import View
 
@@ -152,6 +153,11 @@ viewDebug world =
         (World.filterMapGrids button world)
 
 
+renderTile : ( Point, Tile ) -> Svg Msg
+renderTile =
+    View.viewTile ClickHex
+
+
 view : Model -> Html Msg
 view model =
     main_ []
@@ -161,7 +167,7 @@ view model =
             model.renderConfig
             View.svgDefs
             model.world
-            (View.viewTile ClickHex)
+            renderTile
             (View.viewEntity ClickEntity)
         ]
 

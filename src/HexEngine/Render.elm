@@ -284,17 +284,14 @@ viewKeyedEntity renderFunc targetMaps entity =
 --
 
 
-viewMap : Point -> HexGrid tileData -> Svg msg
-viewMap mapPosition grid =
+viewMap : (( Point, tileData ) -> Svg msg) -> Point -> HexGrid tileData -> Svg msg
+viewMap renderFunc mapPosition grid =
     let
-        renderFunc ( pos, tile ) =
-            Svg.text_ [] [ Svg.text "hei" ]
-
         renderGrid r m g =
-            let
-                _ =
-                    Debug.log "Render grid" m
-            in
+            -- let
+            --     _ =
+            --         Debug.log "Render grid" m
+            -- in
             Svg.Keyed.node "g"
                 [ Svg.Attributes.class "map"
                 , translatePoint m
@@ -318,13 +315,13 @@ mapIsActive activeMaps position _ =
     List.member position activeMaps
 
 
-viewMaps : List Point -> Dict Point (HexGrid tileData) -> Svg msg
-viewMaps activeMaps grids =
+viewMaps : (( Point, tileData ) -> Svg msg) -> List Point -> Dict Point (HexGrid tileData) -> Svg msg
+viewMaps renderFunc activeMaps grids =
     Svg.Keyed.node "g"
         [ Svg.Attributes.class "maps" ]
         (grids
             |> Dict.filter (mapIsActive activeMaps)
-            |> Dict.map viewMap
+            |> Dict.map (viewMap renderFunc)
             |> Dict.toList
             |> List.map setMapKey
         )
@@ -357,7 +354,7 @@ viewWorld2 config defs world tileRenderFunc entityRenderFunc =
     customSvg config
         defs
         [ ( "maps"
-          , Svg.Lazy.lazy2 viewMaps (World.getPlayer world).maps (World.getMaps world)
+          , Svg.Lazy.lazy3 viewMaps tileRenderFunc (World.getPlayer world).maps (World.getMaps world)
           )
         , ( "entities"
           , Svg.Keyed.node "g" [ Svg.Attributes.class "entities" ] (World.filterMapEntities (viewKeyedEntity entityRenderFunc activeMaps) world)
