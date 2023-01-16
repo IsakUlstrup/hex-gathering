@@ -1,15 +1,12 @@
 module HexEngine.World exposing
     ( World
     , addMap
-    , filterMapEntities
     , filterMapGrids
     , getEntities
     , getMaps
     , getPlayer
     , getPlayerPosition
     , getPoint
-    , lazyRenderMaps
-    , mapMaps
     , newWorld
     , playerMoveMap
     , updateEntities
@@ -20,8 +17,6 @@ import Dict exposing (Dict)
 import HexEngine.Entity as Entity exposing (Entity, WorldPosition)
 import HexEngine.HexGrid as Grid exposing (HexGrid)
 import HexEngine.Point exposing (Point)
-import Svg exposing (Svg)
-import Svg.Lazy
 
 
 
@@ -124,16 +119,6 @@ getEntities (World world) =
     world.player :: world.entities
 
 
-mapMaps : (Point -> HexGrid tileData -> b) -> World tileData entityData -> Dict Point b
-mapMaps f (World world) =
-    Dict.map f world.maps
-
-
-lazyRenderMaps : (Dict Point (HexGrid tileData) -> Svg msg) -> World tileData entityData -> Svg msg
-lazyRenderMaps f world =
-    Svg.Lazy.lazy f (getMaps world)
-
-
 {-| Get player position
 -}
 getPlayerPosition : World tileData entityData -> WorldPosition
@@ -157,14 +142,6 @@ updateEntities f (World world) =
             | player = f world.player
             , entities = List.map f world.entities
         }
-
-
-{-| filterMap all entities in the world with provided function
--}
-filterMapEntities : (Entity entityData -> Maybe a) -> World tileData entityData -> List a
-filterMapEntities f (World world) =
-    (world.player :: world.entities)
-        |> List.filterMap f
 
 
 {-| filterMap all grids in the world with provided function

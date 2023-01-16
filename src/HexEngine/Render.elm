@@ -6,14 +6,14 @@ module HexEngine.Render exposing
     , generateHexCorners
     , initRenderConfig
     , pointAdd
-    , viewWorld2
+    , viewWorld
     , withEntityFocus
     , withPlayerFocus
     , withZoom
     )
 
 import Dict exposing (Dict)
-import HexEngine.Entity as Entity exposing (Entity, EntityState(..), WorldPosition)
+import HexEngine.Entity as Entity exposing (Entity, WorldPosition)
 import HexEngine.HexGrid exposing (HexGrid)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.World as World exposing (World)
@@ -282,23 +282,15 @@ viewKeyedEntity renderFunc entity =
 
 viewMap : (( Point, tileData ) -> Svg msg) -> Point -> HexGrid tileData -> Svg msg
 viewMap renderFunc mapPosition grid =
-    let
-        renderGrid r m g =
-            -- let
-            --     _ =
-            --         Debug.log "Render grid" m
-            -- in
-            Svg.Keyed.node "g"
-                [ Svg.Attributes.class "map"
-                , translatePoint m
-                ]
-                (g
-                    |> HexEngine.HexGrid.toList
-                    |> List.sortBy (Tuple.first >> yPixelPosition)
-                    |> List.map (viewKeyedTile r)
-                )
-    in
-    renderGrid renderFunc mapPosition grid
+    Svg.Keyed.node "g"
+        [ Svg.Attributes.class "map"
+        , translatePoint mapPosition
+        ]
+        (grid
+            |> HexEngine.HexGrid.toList
+            |> List.sortBy (Tuple.first >> yPixelPosition)
+            |> List.map (viewKeyedTile renderFunc)
+        )
 
 
 setMapKey : ( Point, Svg msg ) -> ( String, Svg msg )
@@ -335,14 +327,14 @@ viewEntities renderFunc activeMaps entities =
 
 {-| Render a world
 -}
-viewWorld2 :
+viewWorld :
     RenderConfig
     -> Svg msg
     -> World tileData entityData
     -> (( Point, tileData ) -> Svg msg)
     -> (( Point, Entity entityData ) -> Svg msg)
     -> Svg msg
-viewWorld2 config defs world tileRenderFunc entityRenderFunc =
+viewWorld config defs world tileRenderFunc entityRenderFunc =
     customSvg config
         defs
         [ ( "maps"

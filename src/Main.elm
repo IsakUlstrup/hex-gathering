@@ -165,7 +165,7 @@ view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
         , viewDebug model.world
-        , Render.viewWorld2
+        , Render.viewWorld
             model.renderConfig
             View.svgDefs
             model.world
