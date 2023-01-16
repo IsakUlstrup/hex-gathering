@@ -38,7 +38,7 @@ init _ =
         Nothing
         (Render.initRenderConfig
             |> Render.withEntityFocus (Entity.WorldPosition mapPosition playerPosition)
-            |> Render.withZoom 1.2
+            |> Render.withZoom 0.3
         )
         (World.newWorld
             mapPosition
