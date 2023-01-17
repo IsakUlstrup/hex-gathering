@@ -136,8 +136,8 @@ update msg model =
 -- VIEW
 
 
-viewDebug : World Tile Character -> Html Msg
-viewDebug world =
+viewDebug : Maybe Point -> World Tile Character -> Html Msg
+viewDebug selectedPoint world =
     let
         button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
         button mapPos _ =
@@ -145,9 +145,26 @@ viewDebug world =
                 Html.button
                     [ Html.Events.onClick <| MapTransition mapPos ( 0, 0, 0 ) ]
                     [ Html.text <| "Travel to " ++ Point.toString mapPos ]
+
+        adjacent =
+            case selectedPoint of
+                Just p ->
+                    case World.getPoint p world of
+                        ( _, Just _ ) ->
+                            if Point.distance p (World.getPlayer world |> Entity.getPosition).local == 1 then
+                                Html.p [] [ Html.text "adjacent" ]
+
+                            else
+                                Html.p [] [ Html.text "not adjacent" ]
+
+                        _ ->
+                            Html.p [] [ Html.text "not adjacent" ]
+
+                Nothing ->
+                    Html.p [] [ Html.text "not adjacent" ]
     in
     Html.div [ Html.Attributes.class "debug" ]
-        (World.filterMapGrids button world)
+        (adjacent :: World.filterMapGrids button world)
 
 
 renderTile : ( Point, Tile ) -> Svg Msg
@@ -164,7 +181,7 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , viewDebug model.world
+        , viewDebug model.selectedPoint model.world
         , Render.viewWorld
             model.renderConfig
             View.svgDefs
