@@ -111,6 +111,8 @@ svg
     .edge
         fill: $secondary-color
         fill-opacity: 0.3
+    .face
+        cursor: pointer
     .face,.column
         stroke-width: 0.1
         stroke-linejoin: round
@@ -121,17 +123,15 @@ svg
 
     &.high
         @include hex($high-hex-color)
-        pointer-events: none
+        // pointer-events: none
         .face,.column,.edge
             transform: translateY(-0.12rem)
 
     &.medium
         @include hex($medium-hex-color)
-        .face
-            cursor: pointer
 
     &.low
         @include hex($low-hex-color)
-        pointer-events: none
+        // pointer-events: none
         .face,.column,.edge
             transform: translateY(0.09rem)
