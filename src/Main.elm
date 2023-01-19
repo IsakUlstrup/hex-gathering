@@ -144,7 +144,16 @@ update msg model =
                 | world =
                     World.updatePlayer (Entity.findPathAdjacent (isWalkable model.world) point) model.world
                 , selected =
-                    Just <| Entity point
+                    case model.selected of
+                        Just (Entity p) ->
+                            if point == p then
+                                Nothing
+
+                            else
+                                Just <| Entity point
+
+                        _ ->
+                            Just <| Entity point
               }
             , Cmd.none
             )
