@@ -214,6 +214,7 @@ customSvg config defs children =
         , Svg.Attributes.preserveAspectRatio "xMidYMid slice"
         , Svg.Attributes.width "1000px"
         , Svg.Attributes.height "1000px"
+        , Svg.Attributes.class "hex-svg"
         ]
         [ defs
         , Svg.Keyed.node "g"
