@@ -21,10 +21,16 @@ import View
 -- MODEL
 
 
+type Selected
+    = Entity Point
+    | Tile Point
+
+
 type alias Model =
     { selectedPoint : Maybe Point
     , renderConfig : RenderConfig
     , world : World Tile Character
+    , selected : Maybe Selected
     }
 
 
@@ -56,6 +62,7 @@ init _ =
                 Content.Map.testGrid3
                 []
         )
+        Nothing
     , Cmd.none
     )
 
@@ -88,6 +95,15 @@ isWalkable world point =
             False
 
 
+zoomIfAdjacent : Maybe Selected -> World Tile Character -> RenderConfig -> RenderConfig
+zoomIfAdjacent selected world config =
+    if selectedEntityAdjacent selected world then
+        Render.withZoom 0.4 config
+
+    else
+        Render.withZoom 0.3 config
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -98,7 +114,9 @@ update msg model =
                         |> World.updateEntities (Entity.tickCooldown dt)
                         |> World.updateEntities (Entity.move AnimationConstants.playerMoveTime.value)
                 , renderConfig =
-                    Render.withPlayerFocus model.world model.renderConfig
+                    model.renderConfig
+                        |> Render.withPlayerFocus model.world
+                        |> zoomIfAdjacent model.selected model.world
               }
             , Cmd.none
             )
@@ -115,8 +133,8 @@ update msg model =
             ( { model
                 | world =
                     World.updatePlayer (Entity.findPath (isWalkable model.world) point) model.world
-                , selectedPoint =
-                    Just point
+                , selected =
+                    Just <| Tile point
               }
             , Cmd.none
             )
@@ -125,8 +143,8 @@ update msg model =
             ( { model
                 | world =
                     World.updatePlayer (Entity.findPathAdjacent (isWalkable model.world) point) model.world
-                , selectedPoint =
-                    Just point
+                , selected =
+                    Just <| Entity point
               }
             , Cmd.none
             )
@@ -136,8 +154,18 @@ update msg model =
 -- VIEW
 
 
-viewDebug : Maybe Point -> World Tile Character -> Html Msg
-viewDebug selectedPoint world =
+selectedEntityAdjacent : Maybe Selected -> World Tile Character -> Bool
+selectedEntityAdjacent selected world =
+    case selected of
+        Just (Entity p) ->
+            Point.distance p (World.getPlayer world |> Entity.getPosition).local == 1
+
+        _ ->
+            False
+
+
+viewDebug : Maybe Selected -> World Tile Character -> Html Msg
+viewDebug selected world =
     let
         button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
         button mapPos _ =
@@ -147,21 +175,11 @@ viewDebug selectedPoint world =
                     [ Html.text <| "Travel to " ++ Point.toString mapPos ]
 
         adjacent =
-            case selectedPoint of
-                Just p ->
-                    case World.getPoint p world of
-                        ( _, Just _ ) ->
-                            if Point.distance p (World.getPlayer world |> Entity.getPosition).local == 1 then
-                                Html.p [] [ Html.text "adjacent" ]
+            if selectedEntityAdjacent selected world then
+                Html.p [] [ Html.text "adjacent" ]
 
-                            else
-                                Html.p [] [ Html.text "not adjacent" ]
-
-                        _ ->
-                            Html.p [] [ Html.text "not adjacent" ]
-
-                Nothing ->
-                    Html.p [] [ Html.text "not adjacent" ]
+            else
+                Html.p [] [ Html.text "not entity adjacent" ]
     in
     Html.div [ Html.Attributes.class "debug" ]
         (adjacent :: World.filterMapGrids button world)
@@ -181,7 +199,7 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , viewDebug model.selectedPoint model.world
+        , viewDebug model.selected model.world
         , Render.viewWorld
             model.renderConfig
             View.svgDefs
