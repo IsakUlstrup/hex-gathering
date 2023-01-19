@@ -5,7 +5,7 @@ import Browser
 import Browser.Events
 import Character exposing (Character)
 import Content.Map
-import HexEngine.Entity as Entity
+import HexEngine.Entity as Entity exposing (WorldPosition)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import HexEngine.World as World exposing (World)
@@ -104,6 +104,27 @@ zoomIfAdjacent selected world config =
         Render.withZoom 0.3 config
 
 
+cameraFocus : Maybe Selected -> World Tile Character -> RenderConfig -> RenderConfig
+cameraFocus selected world config =
+    case selected of
+        Just (Entity p) ->
+            if selectedEntityAdjacent selected world then
+                Render.withEntityFocus (WorldPosition (World.getPlayerPosition world).map p) config
+
+            else
+                Render.withPlayerFocus world config
+
+        _ ->
+            Render.withPlayerFocus world config
+
+
+
+-- if selectedEntityAdjacent selected world then
+--     Render.withEntityFocus
+-- else
+--     Render.withZoom 0.3 config
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -115,7 +136,7 @@ update msg model =
                         |> World.updateEntities (Entity.move AnimationConstants.playerMoveTime.value)
                 , renderConfig =
                     model.renderConfig
-                        |> Render.withPlayerFocus model.world
+                        |> cameraFocus model.selected model.world
                         |> zoomIfAdjacent model.selected model.world
               }
             , Cmd.none
