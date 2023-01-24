@@ -1,6 +1,6 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
-import Character exposing (Character)
+import Character exposing (Character, CharacterMsg)
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
@@ -113,6 +113,29 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
+viewEntityActions : Int -> CharacterMsg -> Svg msg
+viewEntityActions index _ =
+    let
+        radius =
+            10
+
+        spread =
+            60
+
+        ( x, y ) =
+            ( radius * sin (toFloat index * spread)
+            , radius * cos (toFloat index * spread)
+            )
+    in
+    Svg.circle
+        [ Svg.Attributes.cx <| (x |> String.fromFloat)
+        , Svg.Attributes.cy <| (y |> String.fromFloat)
+        , Svg.Attributes.r "2.5"
+        , Svg.Attributes.class "action"
+        ]
+        []
+
+
 viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
 viewEntity clickEvent ( position, entity ) =
     Svg.g
@@ -126,6 +149,7 @@ viewEntity clickEvent ( position, entity ) =
             , Svg.Attributes.class "shadow"
             ]
             []
+        , Svg.g [ Svg.Attributes.class "actions" ] (List.indexedMap viewEntityActions (entity.data.actions |> List.take 6))
         , Svg.g
             [ Svg.Attributes.class "animation"
             ]

@@ -26,4 +26,12 @@ cactus =
 
 airplane : WorldPosition -> Character
 airplane destination =
-    Character '🛫' [ Character.Travel destination ]
+    Character '🛫'
+        [ Character.Travel destination
+        , Character.Travel destination
+        , Character.Travel destination
+        , Character.Travel destination
+        , Character.Travel destination
+        , Character.Travel destination
+        , Character.Travel destination
+        ]
