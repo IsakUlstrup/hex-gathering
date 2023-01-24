@@ -52,7 +52,7 @@ init _ =
             Content.Map.testGrid
             ( playerPosition, Content.Characters.panda )
             [ ( ( 0, -3, 3 ), Content.Characters.hibiscus )
-            , ( ( 3, -2, -1 ), Content.Characters.sunflower )
+            , ( ( 3, -2, -1 ), Content.Characters.airplane (WorldPosition ( 8, 5, -13 ) ( 0, 0, 0 )) )
             ]
             |> World.addMap
                 ( 8, 5, -13 )
