@@ -133,7 +133,7 @@ viewEntity clickEvent ( position, entity ) =
                 [ Svg.Attributes.class "content"
                 , Svg.Events.onClick <| clickEvent position
                 ]
-                [ Svg.text <| String.fromChar entity.data ]
+                [ Svg.text <| String.fromChar entity.data.icon ]
             ]
         ]
 

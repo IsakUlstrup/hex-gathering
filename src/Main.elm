@@ -4,6 +4,7 @@ import AnimationConstants
 import Browser
 import Browser.Events
 import Character exposing (Character)
+import Content.Characters
 import Content.Map
 import HexEngine.Entity as Entity exposing (WorldPosition)
 import HexEngine.Point as Point exposing (Point)
@@ -49,14 +50,14 @@ init _ =
         (World.newWorld
             mapPosition
             Content.Map.testGrid
-            ( playerPosition, '🐼' )
-            [ ( ( 0, -3, 3 ), '🌺' )
-            , ( ( 3, -2, -1 ), '🌻' )
+            ( playerPosition, Content.Characters.panda )
+            [ ( ( 0, -3, 3 ), Content.Characters.hibiscus )
+            , ( ( 3, -2, -1 ), Content.Characters.sunflower )
             ]
             |> World.addMap
                 ( 8, 5, -13 )
                 Content.Map.testGrid2
-                [ ( ( 1, 0, -1 ), '🌵' ) ]
+                [ ( ( 1, 0, -1 ), Content.Characters.sunflower ) ]
             |> World.addMap
                 ( -10, 5, 5 )
                 Content.Map.testGrid3
