@@ -11,8 +11,6 @@ import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (RenderConfig)
 import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
-import Html.Attributes
-import Html.Events
 import Svg exposing (Svg)
 import Tile exposing (Tile(..))
 import View
@@ -53,15 +51,16 @@ init _ =
             ( playerPosition, Content.Characters.panda )
             [ ( ( 0, -3, 3 ), Content.Characters.hibiscus )
             , ( ( 3, -2, -1 ), Content.Characters.airplane (WorldPosition ( 8, 5, -13 ) ( 0, 0, 0 )) )
+            , ( ( -1, 3, -2 ), Content.Characters.airplane (WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )) )
             ]
             |> World.addMap
                 ( 8, 5, -13 )
                 Content.Map.testGrid2
-                [ ( ( 1, 0, -1 ), Content.Characters.sunflower ) ]
+                [ ( ( 1, 0, -1 ), Content.Characters.sunflower ), ( ( -1, 2, -1 ), Content.Characters.airplane (WorldPosition mapPosition ( 0, 0, 0 )) ) ]
             |> World.addMap
                 ( -10, 5, 5 )
                 Content.Map.testGrid3
-                []
+                [ ( ( -1, 2, -1 ), Content.Characters.airplane (WorldPosition mapPosition ( 0, 0, 0 )) ) ]
         )
         Nothing
     , Cmd.none
@@ -206,25 +205,24 @@ selectedEntityAdjacent selected world =
             False
 
 
-viewDebug : Maybe Selected -> World Tile Character -> Html Msg
-viewDebug selected world =
-    let
-        button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
-        button mapPos _ =
-            Just <|
-                Html.button
-                    [ Html.Events.onClick <| MapTransition mapPos ( 0, 0, 0 ) ]
-                    [ Html.text <| "Travel to " ++ Point.toString mapPos ]
 
-        adjacent =
-            if selectedEntityAdjacent selected world then
-                Html.p [] [ Html.text "adjacent" ]
-
-            else
-                Html.p [] [ Html.text "not entity adjacent" ]
-    in
-    Html.div [ Html.Attributes.class "debug" ]
-        (adjacent :: World.filterMapGrids button world)
+-- viewDebug : Maybe Selected -> World Tile Character -> Html Msg
+-- viewDebug selected world =
+--     let
+--         button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
+--         button mapPos _ =
+--             Just <|
+--                 Html.button
+--                     [ Html.Events.onClick <| MapTransition mapPos ( 0, 0, 0 ) ]
+--                     [ Html.text <| "Travel to " ++ Point.toString mapPos ]
+--         adjacent =
+--             if selectedEntityAdjacent selected world then
+--                 Html.p [] [ Html.text "adjacent" ]
+--             else
+--                 Html.p [] [ Html.text "not entity adjacent" ]
+--     in
+--     Html.div [ Html.Attributes.class "debug" ]
+--         (adjacent :: World.filterMapGrids button world)
 
 
 renderTile : ( Point, Tile ) -> Svg Msg
@@ -241,7 +239,8 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-        , viewDebug model.selected model.world
+
+        -- , viewDebug model.selected model.world
         , Render.viewWorld
             model.renderConfig
             View.svgDefs
