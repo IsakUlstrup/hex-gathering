@@ -123,8 +123,8 @@ viewEntityActions index _ =
             60
 
         ( x, y ) =
-            ( radius * sin (toFloat index * spread)
-            , radius * cos (toFloat index * spread)
+            ( radius * sin (toFloat index * spread |> degrees)
+            , radius * cos (toFloat index * spread |> degrees)
             )
     in
     Svg.circle
