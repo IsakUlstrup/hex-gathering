@@ -24,8 +24,7 @@ cactus =
     Character '🌵' []
 
 
-airplane : WorldPosition -> Character
-airplane destination =
+airplane : List WorldPosition -> Character
+airplane destinations =
     Character '🛫'
-        [ Character.Travel destination
-        ]
+        (List.map Character.Travel destinations)
