@@ -113,8 +113,8 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
-viewEntityActions : Int -> CharacterMsg -> Svg msg
-viewEntityActions index _ =
+viewEntityActions : (CharacterMsg -> msg) -> Int -> CharacterMsg -> Svg msg
+viewEntityActions actionMsg index action =
     let
         radius =
             10
@@ -132,12 +132,13 @@ viewEntityActions index _ =
         , Svg.Attributes.cy <| (y |> String.fromFloat)
         , Svg.Attributes.r "2.5"
         , Svg.Attributes.class "action"
+        , Svg.Events.onClick <| actionMsg action
         ]
         []
 
 
-viewEntity : (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
-viewEntity clickEvent ( position, entity ) =
+viewEntity : (CharacterMsg -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
+viewEntity action clickEvent ( position, entity ) =
     Svg.g
         [ Svg.Attributes.class "enter-animation"
         , animationDelay position
@@ -149,7 +150,7 @@ viewEntity clickEvent ( position, entity ) =
             , Svg.Attributes.class "shadow"
             ]
             []
-        , Svg.g [ Svg.Attributes.class "actions" ] (List.indexedMap viewEntityActions (entity.data.actions |> List.take 6))
+        , Svg.g [ Svg.Attributes.class "actions" ] (List.indexedMap (viewEntityActions action) (entity.data.actions |> List.take 6))
         , Svg.g
             [ Svg.Attributes.class "animation"
             ]
