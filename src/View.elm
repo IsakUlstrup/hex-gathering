@@ -1,5 +1,6 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
+import AnimationConstants
 import Character exposing (Character, CharacterMsg(..))
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
@@ -132,12 +133,15 @@ viewEntityActions actionMsg index action =
                 Travel _ ->
                     '🚌'
     in
-    Svg.g [ Svg.Events.onClick <| actionMsg action ]
+    Svg.g
+        [ Svg.Events.onClick <| actionMsg action
+        , Svg.Attributes.class "action"
+        , Svg.Attributes.style ("animation-delay: " ++ String.fromInt (AnimationConstants.fallDuration.value + (index * 200)) ++ "ms")
+        ]
         [ Svg.circle
             [ Svg.Attributes.cx <| (x |> String.fromFloat)
             , Svg.Attributes.cy <| (y |> String.fromFloat)
             , Svg.Attributes.r "2.5"
-            , Svg.Attributes.class "action"
             , Svg.Attributes.fill "beige"
             , Svg.Attributes.stroke "cyan"
             , Svg.Attributes.strokeWidth "0.3"

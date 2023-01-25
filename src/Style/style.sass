@@ -75,7 +75,13 @@ main
     .shadow
         fill: $primary-color
         fill-opacity: 0.5
-        filter: blur(1px)
+        // filter: blur(1px)
+
+    .action
+        cursor: pointer
+        transform: scale(0)
+        opacity: 0
+        animation: fade-scale 300ms ease-out forwards
 
     .enter-animation
         opacity: 0
