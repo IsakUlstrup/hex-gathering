@@ -1,6 +1,6 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
-import Character exposing (Character, CharacterMsg)
+import Character exposing (Character, CharacterMsg(..))
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
@@ -126,15 +126,32 @@ viewEntityActions actionMsg index action =
             ( radius * sin (toFloat index * spread |> degrees)
             , radius * cos (toFloat index * spread |> degrees)
             )
+
+        icon =
+            case action of
+                Travel _ ->
+                    '🚌'
     in
-    Svg.circle
-        [ Svg.Attributes.cx <| (x |> String.fromFloat)
-        , Svg.Attributes.cy <| (y |> String.fromFloat)
-        , Svg.Attributes.r "2.5"
-        , Svg.Attributes.class "action"
-        , Svg.Events.onClick <| actionMsg action
+    Svg.g [ Svg.Events.onClick <| actionMsg action ]
+        [ Svg.circle
+            [ Svg.Attributes.cx <| (x |> String.fromFloat)
+            , Svg.Attributes.cy <| (y |> String.fromFloat)
+            , Svg.Attributes.r "2.5"
+            , Svg.Attributes.class "action"
+            , Svg.Attributes.fill "beige"
+            , Svg.Attributes.stroke "cyan"
+            , Svg.Attributes.strokeWidth "0.3"
+            ]
+            []
+        , Svg.text_
+            [ Svg.Attributes.x <| (x |> String.fromFloat)
+            , Svg.Attributes.y <| (y |> String.fromFloat)
+            , Svg.Attributes.textAnchor "middle"
+            , Svg.Attributes.dominantBaseline "middle"
+            , Svg.Attributes.fontSize "2pt"
+            ]
+            [ Svg.text <| String.fromChar icon ]
         ]
-        []
 
 
 viewEntity : (CharacterMsg -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg

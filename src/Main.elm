@@ -51,7 +51,7 @@ init _ =
             ( playerPosition, Content.Characters.panda )
             [ ( ( 0, -3, 3 ), Content.Characters.hibiscus )
             , ( ( 3, -2, -1 )
-              , Content.Characters.airplane
+              , Content.Characters.busStop
                     [ WorldPosition ( 8, 5, -13 ) ( 0, 0, 0 )
                     , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
                     ]
@@ -61,12 +61,12 @@ init _ =
                 ( 8, 5, -13 )
                 Content.Map.testGrid2
                 [ ( ( 1, 0, -1 ), Content.Characters.sunflower )
-                , ( ( -1, 2, -1 ), Content.Characters.airplane [ WorldPosition mapPosition ( 0, 0, 0 ) ] )
+                , ( ( -1, 2, -1 ), Content.Characters.busStop [ WorldPosition mapPosition ( 0, 0, 0 ) ] )
                 ]
             |> World.addMap
                 ( -10, 5, 5 )
                 Content.Map.testGrid3
-                [ ( ( -1, 2, -1 ), Content.Characters.airplane [ WorldPosition mapPosition ( 0, 0, 0 ) ] ) ]
+                [ ( ( -1, 2, -1 ), Content.Characters.busStop [ WorldPosition mapPosition ( 0, 0, 0 ) ] ) ]
         )
         Nothing
     , Cmd.none

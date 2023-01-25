@@ -1,4 +1,4 @@
-module Content.Characters exposing (airplane, cactus, hibiscus, panda, sunflower)
+module Content.Characters exposing (busStop, cactus, hibiscus, panda, sunflower)
 
 import Character exposing (Character)
 import HexEngine.Entity exposing (WorldPosition)
@@ -24,7 +24,7 @@ cactus =
     Character '🌵' []
 
 
-airplane : List WorldPosition -> Character
-airplane destinations =
-    Character '🛫'
+busStop : List WorldPosition -> Character
+busStop destinations =
+    Character '🚏'
         (List.map Character.Travel destinations)
