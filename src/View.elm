@@ -117,7 +117,7 @@ viewEntityActions : (CharacterMsg -> msg) -> Int -> CharacterMsg -> Svg msg
 viewEntityActions actionMsg index action =
     let
         radius =
-            10
+            6
 
         spread =
             60
