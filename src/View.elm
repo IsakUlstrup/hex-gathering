@@ -136,7 +136,7 @@ viewEntityActions actionMsg index action =
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
         , Svg.Attributes.class "action"
-        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (AnimationConstants.fallDuration.value + (index * 200)) ++ "ms")
+        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (AnimationConstants.playerMoveTime.value + (index * 200)) ++ "ms")
         ]
         [ Svg.circle
             [ Svg.Attributes.cx <| (x |> String.fromFloat)
@@ -158,8 +158,17 @@ viewEntityActions actionMsg index action =
         ]
 
 
-viewEntity : (CharacterMsg -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
-viewEntity action clickEvent ( position, entity ) =
+viewEntity : Maybe Point -> (CharacterMsg -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
+viewEntity selectedPoint action clickEvent ( position, entity ) =
+    let
+        isSelected =
+            case selectedPoint of
+                Just p ->
+                    p == position
+
+                Nothing ->
+                    False
+    in
     Svg.g
         [ Svg.Attributes.class "enter-animation"
         , animationDelay position
@@ -172,8 +181,10 @@ viewEntity action clickEvent ( position, entity ) =
             ]
             []
         , Svg.g
-            [ Svg.Attributes.class "actions"
-            , Svg.Attributes.class "active"
+            [ svgClassList
+                [ ( "actions", True )
+                , ( "active", isSelected )
+                ]
             ]
             (List.indexedMap (viewEntityActions action) (entity.data.actions |> List.take 6))
         , Svg.g

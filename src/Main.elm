@@ -211,24 +211,18 @@ selectedEntityAdjacent selected world =
             False
 
 
+selectedEntity : Maybe Selected -> World Tile Character -> Maybe Point
+selectedEntity selected world =
+    case selected of
+        Just (Entity p) ->
+            if Point.distance p (World.getPlayer world |> Entity.getPosition).local == 1 then
+                Just p
 
--- viewDebug : Maybe Selected -> World Tile Character -> Html Msg
--- viewDebug selected world =
---     let
---         button : Point -> List ( Point, Tile ) -> Maybe (Html Msg)
---         button mapPos _ =
---             Just <|
---                 Html.button
---                     [ Html.Events.onClick <| MapTransition mapPos ( 0, 0, 0 ) ]
---                     [ Html.text <| "Travel to " ++ Point.toString mapPos ]
---         adjacent =
---             if selectedEntityAdjacent selected world then
---                 Html.p [] [ Html.text "adjacent" ]
---             else
---                 Html.p [] [ Html.text "not entity adjacent" ]
---     in
---     Html.div [ Html.Attributes.class "debug" ]
---         (adjacent :: World.filterMapGrids button world)
+            else
+                Nothing
+
+        _ ->
+            Nothing
 
 
 renderTile : ( Point, Tile ) -> Svg Msg
@@ -236,9 +230,9 @@ renderTile =
     View.viewTile ClickHex
 
 
-renderEntity : ( Point, Entity.Entity Character ) -> Svg Msg
-renderEntity =
-    View.viewEntity CharacterAction ClickEntity
+renderEntity : Maybe Point -> ( Point, Entity.Entity Character ) -> Svg Msg
+renderEntity selectedPoint =
+    View.viewEntity selectedPoint CharacterAction ClickEntity
 
 
 view : Model -> Html Msg
@@ -252,7 +246,7 @@ view model =
             View.svgDefs
             model.world
             renderTile
-            renderEntity
+            (renderEntity (selectedEntity model.selected model.world))
         ]
 
 
