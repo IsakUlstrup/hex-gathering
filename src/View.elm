@@ -136,7 +136,7 @@ viewEntityActions actionMsg index action =
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
         , Svg.Attributes.class "action"
-        , Svg.Attributes.style ("animation-delay: " ++ String.fromInt (AnimationConstants.fallDuration.value + (index * 200)) ++ "ms")
+        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (AnimationConstants.fallDuration.value + (index * 200)) ++ "ms")
         ]
         [ Svg.circle
             [ Svg.Attributes.cx <| (x |> String.fromFloat)
@@ -171,7 +171,11 @@ viewEntity action clickEvent ( position, entity ) =
             , Svg.Attributes.class "shadow"
             ]
             []
-        , Svg.g [ Svg.Attributes.class "actions" ] (List.indexedMap (viewEntityActions action) (entity.data.actions |> List.take 6))
+        , Svg.g
+            [ Svg.Attributes.class "actions"
+            , Svg.Attributes.class "active"
+            ]
+            (List.indexedMap (viewEntityActions action) (entity.data.actions |> List.take 6))
         , Svg.g
             [ Svg.Attributes.class "animation"
             ]

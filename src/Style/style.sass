@@ -78,10 +78,14 @@ main
         // filter: blur(1px)
 
     .action
-        cursor: pointer
         transform: scale(0)
         opacity: 0
-        animation: fade-scale 300ms ease-out forwards
+        transition: transform 300ms, opacity 300ms
+
+    .active .action
+        cursor: pointer
+        transform: scale(1)
+        opacity: 1
 
     .enter-animation
         opacity: 0
