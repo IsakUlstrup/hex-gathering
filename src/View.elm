@@ -116,9 +116,11 @@ viewTerrain clickEvent ( position, _ ) =
 viewEntityActions : (CharacterMsg -> msg) -> Int -> CharacterMsg -> Svg msg
 viewEntityActions actionMsg index action =
     let
+        radius : Float
         radius =
             6
 
+        spread : Float
         spread =
             60
 
@@ -127,6 +129,7 @@ viewEntityActions actionMsg index action =
             , radius * cos (toFloat index * spread |> degrees)
             )
 
+        icon : Char
         icon =
             case action of
                 Travel _ ->
@@ -160,6 +163,7 @@ viewEntityActions actionMsg index action =
 viewEntity : Maybe Point -> (CharacterMsg -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
 viewEntity selectedPoint action clickEvent ( position, entity ) =
     let
+        isSelected : Bool
         isSelected =
             case selectedPoint of
                 Just p ->

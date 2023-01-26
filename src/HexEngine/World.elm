@@ -1,7 +1,6 @@
 module HexEngine.World exposing
     ( World
     , addMap
-    , filterMapGrids
     , getEntities
     , getMaps
     , getPlayer
@@ -150,16 +149,6 @@ updateEntities f (World world) =
             | player = f world.player
             , entities = List.map f world.entities
         }
-
-
-{-| filterMap all grids in the world with provided function
--}
-filterMapGrids : (Point -> List ( Point, tileData ) -> Maybe a) -> World tileData entityData -> List a
-filterMapGrids f (World world) =
-    world.maps
-        |> Dict.toList
-        |> List.map (Tuple.mapSecond Grid.toList)
-        |> List.filterMap (\( pos, grid ) -> f pos grid)
 
 
 {-| Move player to another map, does nothing if map doesn't exist

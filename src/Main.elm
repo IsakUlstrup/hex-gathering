@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg, main)
+module Main exposing (Model, Msg, Selected, main)
 
 import AnimationConstants
 import Browser
@@ -22,7 +22,7 @@ import View
 
 type Selected
     = Entity Point
-    | Tile Point
+    | Tile
 
 
 type alias Model =
@@ -66,7 +66,9 @@ init _ =
             |> World.addMap
                 ( -10, 5, 5 )
                 Content.Map.testGrid3
-                [ ( ( -1, 2, -1 ), Content.Characters.busStop [ WorldPosition mapPosition ( 0, 0, 0 ) ] ) ]
+                [ ( ( -1, 2, -1 ), Content.Characters.busStop [ WorldPosition mapPosition ( 0, 0, 0 ) ] )
+                , ( ( 1, 1, -2 ), Content.Characters.cactus )
+                ]
         )
         Nothing
     , Cmd.none
@@ -79,7 +81,6 @@ init _ =
 
 type Msg
     = Tick Int
-    | MapTransition Point Point
     | ClickHex Point
     | ClickEntity Point
     | CharacterAction CharacterMsg
@@ -149,20 +150,12 @@ update msg model =
             , Cmd.none
             )
 
-        MapTransition map position ->
-            ( { model
-                | world = World.playerMoveMap 200 map position model.world
-                , selectedPoint = Nothing
-              }
-            , Cmd.none
-            )
-
         ClickHex point ->
             ( { model
                 | world =
                     World.updatePlayer (Entity.findPath (isWalkable model.world) point) model.world
                 , selected =
-                    Just <| Tile point
+                    Just Tile
               }
             , Cmd.none
             )

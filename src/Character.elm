@@ -1,4 +1,4 @@
-module Character exposing (Character, CharacterMsg(..), new)
+module Character exposing (Character, CharacterMsg(..))
 
 import HexEngine.Entity exposing (WorldPosition)
 
@@ -11,8 +11,3 @@ type alias Character =
     { icon : Char
     , actions : List CharacterMsg
     }
-
-
-new : Char -> List CharacterMsg -> Character
-new icon actions =
-    Character icon actions
