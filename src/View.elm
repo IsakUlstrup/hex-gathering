@@ -1,6 +1,5 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
-import AnimationConstants
 import Character exposing (Character, CharacterMsg(..))
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
@@ -136,7 +135,7 @@ viewEntityActions actionMsg index action =
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
         , Svg.Attributes.class "action"
-        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (AnimationConstants.playerMoveTime.value + (index * 200)) ++ "ms")
+        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 200) ++ "ms")
         ]
         [ Svg.circle
             [ Svg.Attributes.cx <| (x |> String.fromFloat)
