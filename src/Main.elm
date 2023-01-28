@@ -43,7 +43,7 @@ init _ =
         Nothing
         (Render.initRenderConfig
             |> Render.withEntityFocus (Entity.WorldPosition mapPosition playerPosition)
-            |> Render.withZoom 0.3
+            |> Render.withZoom 0.2
         )
         (World.newWorld
             mapPosition
@@ -106,10 +106,10 @@ isWalkable world point =
 zoomIfAdjacent : Maybe Selected -> World Tile Character -> RenderConfig -> RenderConfig
 zoomIfAdjacent selected world config =
     if selectedEntityAdjacent selected world then
-        Render.withZoom 0.4 config
+        Render.withZoom 0.35 config
 
     else
-        Render.withZoom 0.3 config
+        Render.withZoom 0.2 config
 
 
 cameraFocus : Maybe Selected -> World Tile Character -> RenderConfig -> RenderConfig
