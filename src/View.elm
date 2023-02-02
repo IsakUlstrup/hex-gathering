@@ -113,8 +113,8 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
-viewEntityActions : (CharacterMsg -> msg) -> Int -> CharacterMsg -> Svg msg
-viewEntityActions actionMsg index action =
+viewEntityAction : Int -> (CharacterMsg -> msg) -> Int -> CharacterMsg -> Svg msg
+viewEntityAction actionCount actionMsg index action =
     let
         radius : Float
         radius =
@@ -122,7 +122,7 @@ viewEntityActions actionMsg index action =
 
         spread : Float
         spread =
-            90
+            360 / toFloat actionCount
 
         ( x, y ) =
             ( radius * sin (toFloat index * spread |> degrees)
@@ -144,7 +144,7 @@ viewEntityActions actionMsg index action =
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
         , Svg.Attributes.class "action"
-        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 200) ++ "ms")
+        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 70) ++ "ms")
         ]
         [ Svg.rect
             [ Svg.Attributes.x <| (x |> String.fromFloat)
@@ -155,8 +155,6 @@ viewEntityActions actionMsg index action =
             , Svg.Attributes.class "action-background"
             ]
             []
-
-        -- <rect x="120" width="100" height="100" rx="15" />
         , Svg.text_
             [ Svg.Attributes.x <| (x + 1 |> String.fromFloat)
             , Svg.Attributes.y <| (y |> String.fromFloat)
@@ -203,7 +201,7 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
                 , ( "active", isSelected )
                 ]
             ]
-            (List.indexedMap (viewEntityActions action) (entity.data.actions |> List.take 6))
+            (List.indexedMap (viewEntityAction (List.length entity.data.actions) action) entity.data.actions)
         , Svg.g
             [ Svg.Attributes.class "animation"
             ]
