@@ -122,7 +122,7 @@ viewEntityActions actionMsg index action =
 
         spread : Float
         spread =
-            60
+            90
 
         ( x, y ) =
             ( radius * sin (toFloat index * spread |> degrees)
@@ -134,29 +134,43 @@ viewEntityActions actionMsg index action =
             case action of
                 Travel _ ->
                     '🚌'
+
+        label : String
+        label =
+            case action of
+                Travel destination ->
+                    "Travel to " ++ Point.toString destination.map
     in
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
         , Svg.Attributes.class "action"
         , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 200) ++ "ms")
         ]
-        [ Svg.circle
-            [ Svg.Attributes.cx <| (x |> String.fromFloat)
-            , Svg.Attributes.cy <| (y |> String.fromFloat)
-            , Svg.Attributes.r "2.5"
-            , Svg.Attributes.fill "beige"
-            , Svg.Attributes.stroke "cyan"
-            , Svg.Attributes.strokeWidth "0.3"
+        [ Svg.rect
+            [ Svg.Attributes.x <| (x |> String.fromFloat)
+            , Svg.Attributes.y <| (y - 2 |> String.fromFloat)
+            , Svg.Attributes.width "20"
+            , Svg.Attributes.height "4"
+            , Svg.Attributes.rx "1"
+            , Svg.Attributes.class "action-background"
             ]
             []
+
+        -- <rect x="120" width="100" height="100" rx="15" />
         , Svg.text_
-            [ Svg.Attributes.x <| (x |> String.fromFloat)
+            [ Svg.Attributes.x <| (x + 1 |> String.fromFloat)
             , Svg.Attributes.y <| (y |> String.fromFloat)
-            , Svg.Attributes.textAnchor "middle"
             , Svg.Attributes.dominantBaseline "middle"
             , Svg.Attributes.fontSize "2pt"
             ]
             [ Svg.text <| String.fromChar icon ]
+        , Svg.text_
+            [ Svg.Attributes.x <| (x + 5 |> String.fromFloat)
+            , Svg.Attributes.y <| (y |> String.fromFloat)
+            , Svg.Attributes.dominantBaseline "middle"
+            , Svg.Attributes.fontSize "1pt"
+            ]
+            [ Svg.text label ]
         ]
 
 
