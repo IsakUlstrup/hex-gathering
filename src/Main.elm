@@ -195,10 +195,22 @@ update msg model =
                     )
 
                 IncrementCounter ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | world =
+                            model.world
+                                |> World.updateEntities (Entity.updateData Character.incrementCharacter)
+                      }
+                    , Cmd.none
+                    )
 
                 DecrementCounter ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | world =
+                            model.world
+                                |> World.updateEntities (Entity.updateData Character.decrementCharacter)
+                      }
+                    , Cmd.none
+                    )
 
 
 

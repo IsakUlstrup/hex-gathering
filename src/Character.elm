@@ -1,4 +1,4 @@
-module Character exposing (Character, CharacterData(..), CharacterInteraction(..))
+module Character exposing (Character, CharacterData(..), CharacterInteraction(..), decrementCharacter, incrementCharacter)
 
 import HexEngine.Entity exposing (WorldPosition)
 
@@ -20,3 +20,23 @@ type alias Character =
     , interactions : List CharacterInteraction
     , data : CharacterData
     }
+
+
+incrementCharacter : Character -> Character
+incrementCharacter char =
+    case char.data of
+        Counter c ->
+            { char | data = Counter (c + 1) }
+
+        _ ->
+            char
+
+
+decrementCharacter : Character -> Character
+decrementCharacter char =
+    case char.data of
+        Counter c ->
+            { char | data = Counter (c - 1) }
+
+        _ ->
+            char

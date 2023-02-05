@@ -11,6 +11,7 @@ module HexEngine.Entity exposing
     , new
     , stateString
     , tickCooldown
+    , updateData
     )
 
 import HexEngine.Point as Point exposing (Point)
@@ -247,3 +248,8 @@ move moveTime entity =
 
         MapTransitionMove _ _ _ ->
             entity
+
+
+updateData : (entityData -> entityData) -> Entity entityData -> Entity entityData
+updateData f entity =
+    { entity | data = f entity.data }
