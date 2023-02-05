@@ -1,13 +1,22 @@
-module Character exposing (Character, CharacterMsg(..))
+module Character exposing (Character, CharacterData(..), CharacterInteraction(..))
 
 import HexEngine.Entity exposing (WorldPosition)
 
 
-type CharacterMsg
+type CharacterInteraction
     = Travel WorldPosition
+    | IncrementCounter
+    | DecrementCounter
+
+
+type CharacterData
+    = None
+    | Counter Int
+    | Description String
 
 
 type alias Character =
     { icon : Char
-    , actions : List CharacterMsg
+    , interactions : List CharacterInteraction
+    , data : CharacterData
     }

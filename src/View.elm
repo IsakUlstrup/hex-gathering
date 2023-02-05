@@ -1,6 +1,6 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
-import Character exposing (Character, CharacterMsg(..))
+import Character exposing (Character, CharacterInteraction(..))
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
@@ -113,7 +113,7 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
-viewEntityAction : Int -> (CharacterMsg -> msg) -> Int -> CharacterMsg -> Svg msg
+viewEntityAction : Int -> (Character.CharacterInteraction -> msg) -> Int -> Character.CharacterInteraction -> Svg msg
 viewEntityAction actionCount actionMsg index action =
     let
         radius : Float
@@ -149,6 +149,12 @@ viewEntityAction actionCount actionMsg index action =
             case action of
                 Travel destination ->
                     "Travel to " ++ Point.toString destination.map
+
+                IncrementCounter ->
+                    "+"
+
+                DecrementCounter ->
+                    "-"
     in
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
@@ -174,7 +180,7 @@ viewEntityAction actionCount actionMsg index action =
         ]
 
 
-viewEntity : Maybe Point -> (CharacterMsg -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
+viewEntity : Maybe Point -> (Character.CharacterInteraction -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
 viewEntity selectedPoint action clickEvent ( position, entity ) =
     let
         isSelected : Bool
@@ -212,7 +218,7 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
                 , ( "active", isSelected )
                 ]
             ]
-            (List.indexedMap (viewEntityAction (List.length entity.data.actions) action) entity.data.actions)
+            (List.indexedMap (viewEntityAction (List.length entity.data.interactions) action) entity.data.interactions)
         ]
 
 

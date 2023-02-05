@@ -1,30 +1,36 @@
-module Content.Characters exposing (busStop, cactus, hibiscus, panda, sunflower)
+module Content.Characters exposing (busStop, cactus, counter, hibiscus, panda, sunflower)
 
-import Character exposing (Character)
+import Character exposing (Character, CharacterData(..), CharacterInteraction(..))
 import HexEngine.Entity exposing (WorldPosition)
 
 
 panda : Character
 panda =
-    Character '🐼' []
+    Character '🐼' [] None
 
 
 hibiscus : Character
 hibiscus =
-    Character '🌺' []
+    Character '🌺' [] (Description "A pretty flower")
 
 
 sunflower : Character
 sunflower =
-    Character '🌻' []
+    Character '🌻' [] None
 
 
 cactus : Character
 cactus =
-    Character '🌵' []
+    Character '🌵' [] None
+
+
+counter : Character
+counter =
+    Character 'x' [ IncrementCounter, DecrementCounter ] (Counter 0)
 
 
 busStop : List WorldPosition -> Character
 busStop destinations =
     Character '🚏'
         (List.map Character.Travel destinations)
+        None

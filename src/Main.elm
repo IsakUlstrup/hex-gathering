@@ -3,7 +3,7 @@ module Main exposing (Model, Msg, Selected, main)
 import AnimationConstants
 import Browser
 import Browser.Events
-import Character exposing (Character, CharacterMsg(..))
+import Character exposing (Character, CharacterInteraction(..))
 import Content.Characters
 import Content.Map
 import HexEngine.Entity as Entity exposing (WorldPosition)
@@ -50,6 +50,7 @@ init _ =
             Content.Map.testGrid
             ( playerPosition, Content.Characters.panda )
             [ ( ( 0, -3, 3 ), Content.Characters.hibiscus )
+            , ( ( -1, 3, -2 ), Content.Characters.counter )
             , ( ( 3, -2, -1 )
               , Content.Characters.busStop
                     [ WorldPosition ( 8, 5, -13 ) ( 0, 0, 0 )
@@ -87,7 +88,7 @@ type Msg
     = Tick Int
     | ClickHex Point
     | ClickEntity Point
-    | CharacterAction CharacterMsg
+    | CharacterAction CharacterInteraction
 
 
 {-| determine if a given point is walkable
@@ -192,6 +193,12 @@ update msg model =
                       }
                     , Cmd.none
                     )
+
+                IncrementCounter ->
+                    ( model, Cmd.none )
+
+                DecrementCounter ->
+                    ( model, Cmd.none )
 
 
 
