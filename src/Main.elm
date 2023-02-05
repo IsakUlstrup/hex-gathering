@@ -57,6 +57,7 @@ init _ =
                     , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
                     , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
                     , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
+                    , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
                     ]
               )
             ]

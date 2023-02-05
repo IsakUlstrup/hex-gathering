@@ -118,22 +118,31 @@ viewEntityAction actionCount actionMsg index action =
     let
         radius : Float
         radius =
-            6
+            8
 
         spread : Float
         spread =
             360 / toFloat actionCount
 
-        ( x, y ) =
-            ( radius * sin (toFloat index * spread |> degrees)
-            , radius * cos (toFloat index * spread |> degrees)
-            )
+        angle : Float
+        angle =
+            toFloat index * spread
 
-        icon : Char
-        icon =
-            case action of
-                Travel _ ->
-                    '🚌'
+        ( x, y ) =
+            if angle == 0 || angle == 180 then
+                ( radius * sin (angle |> degrees) - 7
+                , radius * cos (angle |> degrees)
+                )
+
+            else if angle > 180 then
+                ( radius * sin (angle |> degrees) - 14
+                , radius * cos (angle |> degrees)
+                )
+
+            else
+                ( radius * sin (angle |> degrees)
+                , radius * cos (angle |> degrees)
+                )
 
         label : String
         label =
@@ -149,7 +158,7 @@ viewEntityAction actionCount actionMsg index action =
         [ Svg.rect
             [ Svg.Attributes.x <| (x |> String.fromFloat)
             , Svg.Attributes.y <| (y - 2 |> String.fromFloat)
-            , Svg.Attributes.width "20"
+            , Svg.Attributes.width "14"
             , Svg.Attributes.height "4"
             , Svg.Attributes.rx "1"
             , Svg.Attributes.class "action-background"
@@ -157,13 +166,6 @@ viewEntityAction actionCount actionMsg index action =
             []
         , Svg.text_
             [ Svg.Attributes.x <| (x + 1 |> String.fromFloat)
-            , Svg.Attributes.y <| (y |> String.fromFloat)
-            , Svg.Attributes.dominantBaseline "middle"
-            , Svg.Attributes.fontSize "2pt"
-            ]
-            [ Svg.text <| String.fromChar icon ]
-        , Svg.text_
-            [ Svg.Attributes.x <| (x + 5 |> String.fromFloat)
             , Svg.Attributes.y <| (y |> String.fromFloat)
             , Svg.Attributes.dominantBaseline "middle"
             , Svg.Attributes.fontSize "1pt"
@@ -196,13 +198,6 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
             ]
             []
         , Svg.g
-            [ svgClassList
-                [ ( "actions", True )
-                , ( "active", isSelected )
-                ]
-            ]
-            (List.indexedMap (viewEntityAction (List.length entity.data.actions) action) entity.data.actions)
-        , Svg.g
             [ Svg.Attributes.class "animation"
             ]
             [ Svg.text_
@@ -211,6 +206,13 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
                 ]
                 [ Svg.text <| String.fromChar entity.data.icon ]
             ]
+        , Svg.g
+            [ svgClassList
+                [ ( "actions", True )
+                , ( "active", isSelected )
+                ]
+            ]
+            (List.indexedMap (viewEntityAction (List.length entity.data.actions) action) entity.data.actions)
         ]
 
 
