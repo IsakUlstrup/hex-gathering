@@ -212,6 +212,9 @@ update msg model =
                     , Cmd.none
                     )
 
+                Display _ ->
+                    ( model, Cmd.none )
+
 
 
 -- VIEW

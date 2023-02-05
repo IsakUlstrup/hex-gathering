@@ -26,7 +26,7 @@ cactus =
 
 counter : Character
 counter =
-    Character 'x' [ IncrementCounter, DecrementCounter ] (Counter 0)
+    Character '🧮' [ IncrementCounter, DecrementCounter ] (Counter 0)
 
 
 busStop : List WorldPosition -> Character

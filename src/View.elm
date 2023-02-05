@@ -1,6 +1,6 @@
 module View exposing (svgDefs, viewEntity, viewTile)
 
-import Character exposing (Character, CharacterInteraction(..))
+import Character exposing (Character, CharacterData(..), CharacterInteraction(..))
 import HexEngine.Entity
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
@@ -155,6 +155,9 @@ viewEntityAction actionCount actionMsg index action =
 
                 DecrementCounter ->
                     "-"
+
+                Display text ->
+                    text
     in
     Svg.g
         [ Svg.Events.onClick <| actionMsg action
@@ -191,6 +194,18 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
 
                 Nothing ->
                     False
+
+        stateDisplay : List Character.CharacterInteraction
+        stateDisplay =
+            case entity.data.state of
+                None ->
+                    []
+
+                Description desc ->
+                    [ Display desc ]
+
+                Counter c ->
+                    [ Display (String.fromInt c) ]
     in
     Svg.g
         [ Svg.Attributes.class "enter-animation"
@@ -218,7 +233,7 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
                 , ( "active", isSelected )
                 ]
             ]
-            (List.indexedMap (viewEntityAction (List.length entity.data.interactions) action) entity.data.interactions)
+            (List.indexedMap (viewEntityAction (List.length (stateDisplay ++ entity.data.interactions)) action) (stateDisplay ++ entity.data.interactions))
         ]
 
 

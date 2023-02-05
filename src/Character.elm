@@ -7,6 +7,7 @@ type CharacterInteraction
     = Travel WorldPosition
     | IncrementCounter
     | DecrementCounter
+    | Display String
 
 
 type CharacterData
@@ -18,15 +19,15 @@ type CharacterData
 type alias Character =
     { icon : Char
     , interactions : List CharacterInteraction
-    , data : CharacterData
+    , state : CharacterData
     }
 
 
 incrementCharacter : Character -> Character
 incrementCharacter char =
-    case char.data of
+    case char.state of
         Counter c ->
-            { char | data = Counter (c + 1) }
+            { char | state = Counter (c + 1) }
 
         _ ->
             char
@@ -34,9 +35,9 @@ incrementCharacter char =
 
 decrementCharacter : Character -> Character
 decrementCharacter char =
-    case char.data of
+    case char.state of
         Counter c ->
-            { char | data = Counter (c - 1) }
+            { char | state = Counter (c - 1) }
 
         _ ->
             char
