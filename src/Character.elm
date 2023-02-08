@@ -40,4 +40,4 @@ incrementCharacter char =
 
 decrementCharacter : Character -> Character
 decrementCharacter char =
-    { char | states = List.map (updateCounter ((-) 1)) char.states }
+    { char | states = List.map (updateCounter (\x -> x - 1)) char.states }

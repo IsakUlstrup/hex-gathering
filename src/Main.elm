@@ -13,7 +13,7 @@ import HexEngine.World as World exposing (World)
 import Html exposing (Html, main_)
 import Svg exposing (Svg)
 import Tile exposing (Tile(..))
-import View
+import View exposing (CharacterAction(..))
 
 
 
@@ -88,6 +88,7 @@ type Msg
     = Tick Int
     | ClickHex Point
     | ClickEntity Point
+    | CharacterAction CharacterAction
 
 
 {-| determine if a given point is walkable
@@ -183,6 +184,34 @@ update msg model =
             , Cmd.none
             )
 
+        CharacterAction action ->
+            case action of
+                Travel coords ->
+                    ( { model
+                        | world = World.playerMoveMap 200 coords.map coords.local model.world
+                        , selectedPoint = Nothing
+                      }
+                    , Cmd.none
+                    )
+
+                IncrementCounter ->
+                    ( { model
+                        | world =
+                            model.world
+                                |> World.updateEntities (Entity.updateData Character.incrementCharacter)
+                      }
+                    , Cmd.none
+                    )
+
+                DecrementCounter ->
+                    ( { model
+                        | world =
+                            model.world
+                                |> World.updateEntities (Entity.updateData Character.decrementCharacter)
+                      }
+                    , Cmd.none
+                    )
+
 
 
 -- VIEW
@@ -219,7 +248,7 @@ renderTile =
 
 renderEntity : Maybe Point -> ( Point, Entity.Entity Character ) -> Svg Msg
 renderEntity selectedPoint =
-    View.viewEntity selectedPoint ClickEntity
+    View.viewEntity selectedPoint ClickEntity CharacterAction
 
 
 view : Model -> Html Msg

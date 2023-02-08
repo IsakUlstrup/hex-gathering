@@ -119,8 +119,8 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
-viewEntityAction : Int -> Int -> String -> Svg msg
-viewEntityAction actionCount index label =
+viewEntityAction : Int -> (CharacterAction -> msg) -> Int -> ( Maybe CharacterAction, String ) -> Svg msg
+viewEntityAction actionCount actionMsg index ( action, label ) =
     let
         radius : Float
         radius =
@@ -149,14 +149,22 @@ viewEntityAction actionCount index label =
                 ( radius * sin (angle |> degrees)
                 , radius * cos (angle |> degrees)
                 )
+
+        clickEvents =
+            case action of
+                Just a ->
+                    [ Svg.Events.onClick <| actionMsg a ]
+
+                Nothing ->
+                    []
     in
     Svg.g
-        [ Svg.Attributes.class "action"
-
-        -- , Svg.Events.onClick <| actionMsg action
-        , Svg.Attributes.class "action"
-        , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 70) ++ "ms")
-        ]
+        ([ Svg.Attributes.class "action"
+         , Svg.Attributes.class "action"
+         , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 70) ++ "ms")
+         ]
+            ++ clickEvents
+        )
         [ Svg.rect
             [ Svg.Attributes.x <| (x |> String.fromFloat)
             , Svg.Attributes.y <| (y - 2 |> String.fromFloat)
@@ -176,8 +184,8 @@ viewEntityAction actionCount index label =
         ]
 
 
-viewEntity : Maybe Point -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
-viewEntity selectedPoint clickEvent ( position, entity ) =
+viewEntity : Maybe Point -> (Point -> msg) -> (CharacterAction -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
+viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
     let
         isSelected : Bool
         isSelected =
@@ -188,17 +196,20 @@ viewEntity selectedPoint clickEvent ( position, entity ) =
                 Nothing ->
                     False
 
-        stateLabels : CharacterState -> List String
+        stateLabels : CharacterState -> List ( Maybe CharacterAction, String )
         stateLabels s =
             case s of
                 Character.Counter c ->
-                    [ "-", "+", String.fromInt c ]
+                    [ ( Just DecrementCounter, "-" )
+                    , ( Just IncrementCounter, "+" )
+                    , ( Nothing, String.fromInt c )
+                    ]
 
                 Character.TravelDestination dest ->
-                    [ "Travel to " ++ Point.toString dest.map ]
+                    [ ( Just <| Travel dest, "Travel to " ++ Point.toString dest.map ) ]
 
                 Character.Description desc ->
-                    [ desc ]
+                    [ ( Nothing, desc ) ]
 
         interactions =
             List.concatMap stateLabels entity.data.states
@@ -229,7 +240,7 @@ viewEntity selectedPoint clickEvent ( position, entity ) =
                 , ( "active", isSelected )
                 ]
             ]
-            (List.indexedMap (viewEntityAction (List.length interactions)) interactions)
+            (List.indexedMap (viewEntityAction (List.length interactions) actionMsg) interactions)
         ]
 
 
