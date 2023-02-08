@@ -3,7 +3,7 @@ module Main exposing (Model, Msg, Selected, main)
 import AnimationConstants
 import Browser
 import Browser.Events
-import Character exposing (Character, CharacterInteraction(..))
+import Character exposing (Character)
 import Content.Characters
 import Content.Map
 import HexEngine.Entity as Entity exposing (WorldPosition)
@@ -88,7 +88,6 @@ type Msg
     = Tick Int
     | ClickHex Point
     | ClickEntity Point
-    | CharacterAction CharacterInteraction
 
 
 {-| determine if a given point is walkable
@@ -184,37 +183,6 @@ update msg model =
             , Cmd.none
             )
 
-        CharacterAction action ->
-            case action of
-                Travel coords ->
-                    ( { model
-                        | world = World.playerMoveMap 200 coords.map coords.local model.world
-                        , selectedPoint = Nothing
-                      }
-                    , Cmd.none
-                    )
-
-                IncrementCounter ->
-                    ( { model
-                        | world =
-                            model.world
-                                |> World.updateEntities (Entity.updateData Character.incrementCharacter)
-                      }
-                    , Cmd.none
-                    )
-
-                DecrementCounter ->
-                    ( { model
-                        | world =
-                            model.world
-                                |> World.updateEntities (Entity.updateData Character.decrementCharacter)
-                      }
-                    , Cmd.none
-                    )
-
-                Display _ ->
-                    ( model, Cmd.none )
-
 
 
 -- VIEW
@@ -251,7 +219,7 @@ renderTile =
 
 renderEntity : Maybe Point -> ( Point, Entity.Entity Character ) -> Svg Msg
 renderEntity selectedPoint =
-    View.viewEntity selectedPoint CharacterAction ClickEntity
+    View.viewEntity selectedPoint ClickEntity
 
 
 view : Model -> Html Msg

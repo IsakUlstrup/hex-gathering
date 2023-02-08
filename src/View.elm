@@ -1,13 +1,19 @@
-module View exposing (svgDefs, viewEntity, viewTile)
+module View exposing (CharacterAction(..), svgDefs, viewEntity, viewTile)
 
-import Character exposing (Character, CharacterData(..), CharacterInteraction(..))
-import HexEngine.Entity
+import Character exposing (Character, CharacterState(..))
+import HexEngine.Entity exposing (WorldPosition)
 import HexEngine.Point as Point exposing (Point)
 import HexEngine.Render as Render exposing (HexCorners)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes
 import Svg.Events
 import Tile exposing (Tile)
+
+
+type CharacterAction
+    = Travel WorldPosition
+    | IncrementCounter
+    | DecrementCounter
 
 
 animationDelay : Point -> Attribute msg
@@ -113,8 +119,8 @@ viewTerrain clickEvent ( position, _ ) =
     ]
 
 
-viewEntityAction : Int -> (Character.CharacterInteraction -> msg) -> Int -> Character.CharacterInteraction -> Svg msg
-viewEntityAction actionCount actionMsg index action =
+viewEntityAction : Int -> Int -> String -> Svg msg
+viewEntityAction actionCount index label =
     let
         radius : Float
         radius =
@@ -143,24 +149,11 @@ viewEntityAction actionCount actionMsg index action =
                 ( radius * sin (angle |> degrees)
                 , radius * cos (angle |> degrees)
                 )
-
-        label : String
-        label =
-            case action of
-                Travel destination ->
-                    "Travel to " ++ Point.toString destination.map
-
-                IncrementCounter ->
-                    "+"
-
-                DecrementCounter ->
-                    "-"
-
-                Display text ->
-                    text
     in
     Svg.g
-        [ Svg.Events.onClick <| actionMsg action
+        [ Svg.Attributes.class "action"
+
+        -- , Svg.Events.onClick <| actionMsg action
         , Svg.Attributes.class "action"
         , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 70) ++ "ms")
         ]
@@ -183,8 +176,8 @@ viewEntityAction actionCount actionMsg index action =
         ]
 
 
-viewEntity : Maybe Point -> (Character.CharacterInteraction -> msg) -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
-viewEntity selectedPoint action clickEvent ( position, entity ) =
+viewEntity : Maybe Point -> (Point -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
+viewEntity selectedPoint clickEvent ( position, entity ) =
     let
         isSelected : Bool
         isSelected =
@@ -195,17 +188,20 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
                 Nothing ->
                     False
 
-        stateDisplay : List Character.CharacterInteraction
-        stateDisplay =
-            case entity.data.state of
-                None ->
-                    []
+        stateLabels : CharacterState -> List String
+        stateLabels s =
+            case s of
+                Character.Counter c ->
+                    [ "-", "+", String.fromInt c ]
 
-                Description desc ->
-                    [ Display desc ]
+                Character.TravelDestination dest ->
+                    [ "Travel to " ++ Point.toString dest.map ]
 
-                Counter c ->
-                    [ Display (String.fromInt c) ]
+                Character.Description desc ->
+                    [ desc ]
+
+        interactions =
+            List.concatMap stateLabels entity.data.states
     in
     Svg.g
         [ Svg.Attributes.class "enter-animation"
@@ -233,7 +229,7 @@ viewEntity selectedPoint action clickEvent ( position, entity ) =
                 , ( "active", isSelected )
                 ]
             ]
-            (List.indexedMap (viewEntityAction (List.length (stateDisplay ++ entity.data.interactions)) action) (stateDisplay ++ entity.data.interactions))
+            (List.indexedMap (viewEntityAction (List.length interactions)) interactions)
         ]
 
 

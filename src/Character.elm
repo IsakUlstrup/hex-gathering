@@ -1,43 +1,43 @@
-module Character exposing (Character, CharacterData(..), CharacterInteraction(..), decrementCharacter, incrementCharacter)
+module Character exposing (Character, CharacterState(..), decrementCharacter, incrementCharacter)
 
 import HexEngine.Entity exposing (WorldPosition)
 
 
-type CharacterInteraction
-    = Travel WorldPosition
-    | IncrementCounter
-    | DecrementCounter
-    | Display String
+
+-- type CharacterInteraction
+--     = Travel WorldPosition
+--     | IncrementCounter
+--     | DecrementCounter
+--     | Display String
 
 
-type CharacterData
-    = None
-    | Counter Int
+type CharacterState
+    = Counter Int
     | Description String
+    | TravelDestination WorldPosition
 
 
 type alias Character =
     { icon : Char
-    , interactions : List CharacterInteraction
-    , state : CharacterData
+    , states : List CharacterState
     }
+
+
+updateCounter : (Int -> Int) -> CharacterState -> CharacterState
+updateCounter f state =
+    case state of
+        Counter c ->
+            Counter <| f c
+
+        _ ->
+            state
 
 
 incrementCharacter : Character -> Character
 incrementCharacter char =
-    case char.state of
-        Counter c ->
-            { char | state = Counter (c + 1) }
-
-        _ ->
-            char
+    { char | states = List.map (updateCounter ((+) 1)) char.states }
 
 
 decrementCharacter : Character -> Character
 decrementCharacter char =
-    case char.state of
-        Counter c ->
-            { char | state = Counter (c - 1) }
-
-        _ ->
-            char
+    { char | states = List.map (updateCounter ((-) 1)) char.states }
