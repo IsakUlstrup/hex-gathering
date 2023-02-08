@@ -168,19 +168,23 @@ findPath walkable to entity =
 -}
 findPathAdjacent : (Point -> Bool) -> Point -> Entity entityData -> Entity entityData
 findPathAdjacent walkable to entity =
-    Point.neighbors to
-        |> Set.toList
-        |> List.filterMap (Point.pathfind walkable (getPosition entity).local)
-        |> List.sortBy List.length
-        |> List.head
-        |> (\p ->
-                case p of
-                    Just path ->
-                        setPath path entity
+    if (getPosition entity).local /= to then
+        Point.neighbors to
+            |> Set.toList
+            |> List.filterMap (Point.pathfind walkable (getPosition entity).local)
+            |> List.sortBy List.length
+            |> List.head
+            |> (\p ->
+                    case p of
+                        Just path ->
+                            setPath path entity
 
-                    Nothing ->
-                        { entity | state = BlockedPath 200 (getPosition entity) }
-           )
+                        Nothing ->
+                            { entity | state = BlockedPath 200 (getPosition entity) }
+               )
+
+    else
+        entity
 
 
 tickCooldown : Int -> Entity entityData -> Entity entityData
