@@ -135,20 +135,9 @@ viewEntityAction actionCount actionMsg index ( action, label ) =
             toFloat index * spread
 
         ( x, y ) =
-            if angle == 0 || angle == 180 then
-                ( radius * sin (angle |> degrees) - 7
-                , radius * cos (angle |> degrees)
-                )
-
-            else if angle > 180 then
-                ( radius * sin (angle |> degrees) - 14
-                , radius * cos (angle |> degrees)
-                )
-
-            else
-                ( radius * sin (angle |> degrees)
-                , radius * cos (angle |> degrees)
-                )
+            ( radius * sin (angle |> degrees)
+            , radius * cos (angle |> degrees)
+            )
 
         clickEvents =
             case action of
@@ -165,19 +154,18 @@ viewEntityAction actionCount actionMsg index ( action, label ) =
          ]
             ++ clickEvents
         )
-        [ Svg.rect
-            [ Svg.Attributes.x <| (x |> String.fromFloat)
-            , Svg.Attributes.y <| (y - 2 |> String.fromFloat)
-            , Svg.Attributes.width "14"
-            , Svg.Attributes.height "4"
-            , Svg.Attributes.rx "1"
+        [ Svg.circle
+            [ Svg.Attributes.cx <| (x |> String.fromFloat)
+            , Svg.Attributes.cy <| (y |> String.fromFloat)
+            , Svg.Attributes.r "3.5"
             , Svg.Attributes.class "action-background"
             ]
             []
         , Svg.text_
-            [ Svg.Attributes.x <| (x + 1 |> String.fromFloat)
+            [ Svg.Attributes.x <| (x |> String.fromFloat)
             , Svg.Attributes.y <| (y |> String.fromFloat)
             , Svg.Attributes.dominantBaseline "middle"
+            , Svg.Attributes.textAnchor "middle"
             , Svg.Attributes.fontSize "1pt"
             ]
             [ Svg.text label ]
@@ -206,7 +194,7 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
                     ]
 
                 Character.TravelDestination dest ->
-                    [ ( Just <| Travel dest, "Travel to " ++ Point.toString dest.map ) ]
+                    [ ( Just <| Travel dest, Point.toString dest.map ) ]
 
                 Character.Description desc ->
                     [ ( Nothing, desc ) ]
