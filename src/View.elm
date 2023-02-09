@@ -179,7 +179,7 @@ viewEntityAction actionCount actionMsg index ( action, label ) =
         ]
 
 
-viewEntity : Maybe Point -> (Point -> msg) -> (CharacterAction -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
+viewEntity : Maybe Point -> (Point -> msg) -> (Int -> CharacterAction -> msg) -> ( Point, HexEngine.Entity.Entity Character ) -> Svg msg
 viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
     let
         isSelected : Bool
@@ -235,7 +235,7 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
                 , ( "active", isSelected )
                 ]
             ]
-            (List.indexedMap (viewEntityAction (List.length interactions) actionMsg) interactions)
+            (List.indexedMap (viewEntityAction (List.length interactions) (actionMsg entity.id)) interactions)
         ]
 
 

@@ -88,7 +88,7 @@ type Msg
     = Tick Int
     | ClickHex Point
     | ClickEntity Point
-    | CharacterAction CharacterAction
+    | CharacterAction Int CharacterAction
 
 
 {-| determine if a given point is walkable
@@ -129,13 +129,6 @@ cameraFocus selected world config =
 
         _ ->
             Render.withPlayerFocus world config
-
-
-
--- if selectedEntityAdjacent selected world then
---     Render.withEntityFocus
--- else
---     Render.withZoom 0.3 config
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -184,7 +177,7 @@ update msg model =
             , Cmd.none
             )
 
-        CharacterAction action ->
+        CharacterAction id action ->
             case action of
                 Travel coords ->
                     ( { model
@@ -198,7 +191,7 @@ update msg model =
                     ( { model
                         | world =
                             model.world
-                                |> World.updateEntities (Entity.updateData Character.incrementCharacter)
+                                |> World.updateEntity id (Entity.updateData Character.incrementCharacter)
                       }
                     , Cmd.none
                     )
@@ -207,7 +200,7 @@ update msg model =
                     ( { model
                         | world =
                             model.world
-                                |> World.updateEntities (Entity.updateData Character.decrementCharacter)
+                                |> World.updateEntity id (Entity.updateData Character.decrementCharacter)
                       }
                     , Cmd.none
                     )
@@ -255,8 +248,6 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ AnimationConstants.styleNode [ AnimationConstants.fallDuration, AnimationConstants.playerMoveTime ]
-
-        -- , viewDebug model.selected model.world
         , Render.viewWorld
             model.renderConfig
             View.svgDefs

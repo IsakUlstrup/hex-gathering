@@ -9,6 +9,7 @@ module HexEngine.World exposing
     , newWorld
     , playerMoveMap
     , updateEntities
+    , updateEntity
     , updatePlayer
     )
 
@@ -148,6 +149,28 @@ updateEntities f (World world) =
         { world
             | player = f world.player
             , entities = List.map f world.entities
+        }
+
+
+updateEntity : Int -> (Entity entityData -> Entity entityData) -> World tileData entityData -> World tileData entityData
+updateEntity id f (World world) =
+    let
+        updateById e =
+            if e.id == id then
+                f e
+
+            else
+                e
+    in
+    World
+        { world
+            | player =
+                if world.player.id == id then
+                    f world.player
+
+                else
+                    world.player
+            , entities = List.map updateById world.entities
         }
 
 
