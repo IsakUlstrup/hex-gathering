@@ -13,7 +13,7 @@ hibiscus : Character
 hibiscus =
     Character '🌺'
         [ Description "Hibiscus"
-        , Growable { current = 50, max = 100 }
+        , Growable { current = 50, max = 1000 }
         ]
 
 

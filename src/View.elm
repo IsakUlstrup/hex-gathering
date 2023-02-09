@@ -14,6 +14,7 @@ type CharacterAction
     = Travel WorldPosition
     | IncrementCounter
     | DecrementCounter
+    | HarvestGrowable
 
 
 animationDelay : Point -> Attribute msg
@@ -207,7 +208,13 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
                     [ ( Nothing, desc ) ]
 
                 Character.Growable grow ->
-                    [ ( Nothing, (((grow.current // grow.max) * 100) |> String.fromInt) ++ "%" ) ]
+                    ( Nothing, (((toFloat grow.current / toFloat grow.max) * 100) |> round |> String.fromInt) ++ "%" )
+                        :: (if grow.current == grow.max then
+                                [ ( Just HarvestGrowable, "Cut" ) ]
+
+                            else
+                                []
+                           )
 
         interactions =
             List.concatMap stateLabels entity.data.states

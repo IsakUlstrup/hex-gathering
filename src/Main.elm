@@ -140,6 +140,7 @@ update msg model =
                     model.world
                         |> World.updateEntities (Entity.tickCooldown dt)
                         |> World.updateEntities (Entity.move AnimationConstants.playerMoveTime.value)
+                        |> World.updateEntities (Entity.updateData (Character.grow dt))
                 , renderConfig =
                     model.renderConfig
                         |> cameraFocus model.selected model.world
@@ -201,6 +202,15 @@ update msg model =
                         | world =
                             model.world
                                 |> World.updateEntity id (Entity.updateData Character.decrementCharacter)
+                      }
+                    , Cmd.none
+                    )
+
+                HarvestGrowable ->
+                    ( { model
+                        | world =
+                            model.world
+                                |> World.updateEntity id (Entity.updateData Character.harvest)
                       }
                     , Cmd.none
                     )
