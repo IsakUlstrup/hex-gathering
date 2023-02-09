@@ -124,7 +124,7 @@ viewEntityAction actionCount actionMsg index ( action, label ) =
     let
         radius : Float
         radius =
-            8
+            10
 
         spread : Float
         spread =
@@ -146,10 +146,17 @@ viewEntityAction actionCount actionMsg index ( action, label ) =
 
                 Nothing ->
                     []
+
+        isButton =
+            case action of
+                Just _ ->
+                    True
+
+                Nothing ->
+                    False
     in
     Svg.g
-        ([ Svg.Attributes.class "action"
-         , Svg.Attributes.class "action"
+        ([ svgClassList [ ( "action", True ), ( "button", isButton ) ]
          , Svg.Attributes.style ("transition-delay: " ++ String.fromInt (index * 70) ++ "ms")
          ]
             ++ clickEvents
