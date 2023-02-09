@@ -11,7 +11,10 @@ panda =
 
 hibiscus : Character
 hibiscus =
-    Character '🌺' [ Description "A pretty flower", Counter 0 ]
+    Character '🌺'
+        [ Description "Hibiscus"
+        , Growable { current = 50, max = 100 }
+        ]
 
 
 sunflower : Character
@@ -26,7 +29,10 @@ cactus =
 
 counter : Character
 counter =
-    Character '🧮' [ Counter 0, Description "A counter" ]
+    Character '🧮'
+        [ Counter 0
+        , Description "A counter"
+        ]
 
 
 busStop : List WorldPosition -> Character

@@ -206,6 +206,9 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
                 Character.Description desc ->
                     [ ( Nothing, desc ) ]
 
+                Character.Growable grow ->
+                    [ ( Nothing, (((grow.current // grow.max) * 100) |> String.fromInt) ++ "%" ) ]
+
         interactions =
             List.concatMap stateLabels entity.data.states
     in

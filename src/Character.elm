@@ -11,10 +11,17 @@ import HexEngine.Entity exposing (WorldPosition)
 --     | Display String
 
 
+type alias GrowableData =
+    { current : Int
+    , max : Int
+    }
+
+
 type CharacterState
     = Counter Int
     | Description String
     | TravelDestination WorldPosition
+    | Growable GrowableData
 
 
 type alias Character =
