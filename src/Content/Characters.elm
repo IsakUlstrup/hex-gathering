@@ -11,7 +11,7 @@ panda =
 
 hibiscus : Character
 hibiscus =
-    Character '🌺' [ Description "A pretty flower" ]
+    Character '🌺' [ Description "A pretty flower", Counter 0 ]
 
 
 sunflower : Character
