@@ -216,6 +216,9 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
                                 []
                            )
 
+                Character.Inventory inv ->
+                    [ ( Nothing, "🎒" ++ (List.length inv |> String.fromInt) ) ]
+
         interactions =
             List.concatMap stateLabels entity.data.states
     in

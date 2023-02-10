@@ -3,18 +3,18 @@ module Character exposing (Character, CharacterState(..), decrementCharacter, gr
 import HexEngine.Entity exposing (WorldPosition)
 
 
-
--- type CharacterInteraction
---     = Travel WorldPosition
---     | IncrementCounter
---     | DecrementCounter
---     | Display String
-
-
 type alias GrowableData =
     { current : Int
     , max : Int
     }
+
+
+type alias Item =
+    Char
+
+
+type alias InventoryData =
+    List ( Int, Item )
 
 
 type CharacterState
@@ -22,6 +22,7 @@ type CharacterState
     | Description String
     | TravelDestination WorldPosition
     | Growable GrowableData
+    | Inventory InventoryData
 
 
 type alias Character =
@@ -50,6 +51,10 @@ updateGrowable f state =
             state
 
 
+
+-- COUNTER
+
+
 incrementCharacter : Character -> Character
 incrementCharacter char =
     { char | states = List.map (updateCounter ((+) 1)) char.states }
@@ -58,6 +63,10 @@ incrementCharacter char =
 decrementCharacter : Character -> Character
 decrementCharacter char =
     { char | states = List.map (updateCounter (\x -> x - 1)) char.states }
+
+
+
+-- GROWABLE
 
 
 grow : Int -> Character -> Character

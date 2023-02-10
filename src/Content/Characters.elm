@@ -6,7 +6,7 @@ import HexEngine.Entity exposing (WorldPosition)
 
 panda : Character
 panda =
-    Character '🐼' []
+    Character '🐼' [ Inventory [] ]
 
 
 hibiscus : Character
@@ -24,7 +24,7 @@ sunflower =
 
 cactus : Character
 cactus =
-    Character '🌵' []
+    Character '🌵' [ Inventory [ ( 1, '💧' ) ] ]
 
 
 counter : Character
