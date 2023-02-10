@@ -107,7 +107,7 @@ isWalkable world point =
 zoomIfAdjacent : Maybe Selected -> World Tile Character -> RenderConfig -> RenderConfig
 zoomIfAdjacent selected world config =
     if selectedEntityAdjacent selected world then
-        Render.withZoom 0.25 config
+        Render.withZoom 0.22 config
 
     else
         Render.withZoom 0.2 config
