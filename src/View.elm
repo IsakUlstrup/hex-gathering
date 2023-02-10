@@ -234,6 +234,13 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
             ]
             []
         , Svg.g
+            [ svgClassList
+                [ ( "actions", True )
+                , ( "active", isSelected )
+                ]
+            ]
+            (List.indexedMap (viewEntityAction (List.length interactions) (actionMsg entity.id)) interactions)
+        , Svg.g
             [ Svg.Attributes.class "animation"
             ]
             [ Svg.text_
@@ -242,13 +249,6 @@ viewEntity selectedPoint clickEvent actionMsg ( position, entity ) =
                 ]
                 [ Svg.text <| String.fromChar entity.data.icon ]
             ]
-        , Svg.g
-            [ svgClassList
-                [ ( "actions", True )
-                , ( "active", isSelected )
-                ]
-            ]
-            (List.indexedMap (viewEntityAction (List.length interactions) (actionMsg entity.id)) interactions)
         ]
 
 
