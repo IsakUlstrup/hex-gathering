@@ -55,10 +55,6 @@ init _ =
               , Content.Characters.busStop
                     [ WorldPosition ( 8, 5, -13 ) ( 0, 0, 0 )
                     , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
-                    , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
-                    , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
-                    , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
-                    , WorldPosition ( -10, 5, 5 ) ( 0, 0, 0 )
                     ]
               )
             ]
