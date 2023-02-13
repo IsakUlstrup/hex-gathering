@@ -127,17 +127,15 @@ viewEntityAction actionCount actionMsg index ( action, label ) =
         radius =
             10
 
-        spread : Float
-        spread =
-            360 / toFloat actionCount
+        theta =
+            45
 
-        angle : Float
-        angle =
-            toFloat index * spread
+        offset =
+            90 / toFloat actionCount
 
         ( x, y ) =
-            ( radius * sin (angle |> degrees)
-            , radius * cos (angle |> degrees)
+            ( radius * cos ((toFloat index * theta) + offset |> degrees)
+            , radius * sin ((toFloat index * theta) + offset |> degrees)
             )
 
         clickEvents =
